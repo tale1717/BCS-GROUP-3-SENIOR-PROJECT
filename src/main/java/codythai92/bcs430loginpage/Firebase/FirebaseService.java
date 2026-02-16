@@ -1,4 +1,5 @@
-/*import com.google.auth.oauth2.GoogleCredentials;
+package codythai92.bcs430loginpage.Firebase;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
@@ -24,7 +25,7 @@ public class FirebaseService {
                     FirebaseService.class.getClassLoader().getResourceAsStream("key.json");
 
             if (serviceAccount == null) {
-                throw new RuntimeException("key.json not found in src/main/resources");
+                throw new RuntimeException("key.json not found in src/main/resources/codythai92.bcs430loginpage/key.json");
             }
 
             FirebaseOptions options = FirebaseOptions.builder()
@@ -47,4 +48,4 @@ public class FirebaseService {
     public static Firestore getDb() {
         return db;
     }
-    **/
+}
