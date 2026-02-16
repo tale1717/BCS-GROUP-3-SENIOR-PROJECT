@@ -61,7 +61,7 @@ nav a {
 /* Hero */
 .hero-index {
 	height: 550px;
-    background-image: url("barber.jpeg");
+    background-image: url("barber.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: 0px 25%;
@@ -265,8 +265,8 @@ th, td {
     cursor: pointer;
 }
 
-.custom-selection {
-    width: 150px;
+.input-select {
+    width: 200px;
     display: flex;
     justify-content: space-between;
     align-items: center;
