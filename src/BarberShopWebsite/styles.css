@@ -7,7 +7,11 @@
 }
 
 body {
-	height: 100%
+	height: 100%;
+}
+
+body::-webkit-scrollbar {
+    display: none;
 }
 
 a:link {
@@ -204,3 +208,156 @@ h1 {
     font-size: 14px;
 }
 
+/* Booking Interface */
+.booking-interface {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin-top: 30px;
+}
+
+/* Calendar Styles */
+.calendar-container {
+    flex: 1.5;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    border: 1px solid #999;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.month-header {
+    background-color: #eee;
+    font-weight: 400;
+}
+
+.holiday { color: red; }
+.muted { color: #ccc; }
+.selected-day {
+    background-color: #fcebb6; /* Pale yellow from image */
+}
+
+/* Form Styles */
+.form-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.custom-select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border: 1px solid #333;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.custom-selection {
+    width: 150px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border: 1px solid #FFFFFF;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.arrow-down::after {
+    content: '▼';
+    font-size: 12px;
+}
+
+.btn-confirm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 75px;
+    background-color: #000;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+}
+
+/* Header styling */
+.confirmation-header {
+    text-align: center;
+}
+
+/* Layout for the bottom half */
+.location-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 50px;
+    margin-top: 40px;
+}
+
+.address-card {
+    flex: 1;
+}
+
+.address-card h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.address-card address {
+    font-style: normal;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: fit-content;
+}
+
+/* Map Mockup */
+.map-container {
+    flex: 1.2;
+}
+
+.map-mockup {
+    background-color: #e3f2fd; /* Light blue map color */
+    height: 350px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.map-pin {
+    width: 60px; /* Adjust based on your pin icon size */
+    height: auto;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    .location-details {
+        flex-direction: column;
+        text-align: center;
+    }
+    .action-buttons {
+        margin: 0 auto;
+    }
+}
