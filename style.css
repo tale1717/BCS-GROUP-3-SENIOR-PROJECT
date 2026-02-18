@@ -1,0 +1,103 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Times New Roman", serif;
+    background: url("https://images.newrepublic.com/9bba0e56c589fb3e06191969202abb446327a86a.jpeg?auto=format&fit=crop&crop=faces&ar=3%3A2&ixlib=react-9.11.0&q=65&w=1400&dpr=2") no-repeat;
+    background-size: cover;
+}
+.center-box{
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform : translate(-50%, -50%);
+    width: 400px;
+    padding: 40px;
+    background: rgba(123, 69, 25, 0.8);
+    border-radius: 30px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+}
+.text-field{
+    padding : 10px 80px;
+    position: relative;
+    margin-bottom: 30px;
+    border: 2px solid #3a2402;
+    border-radius: 10px;
+}
+.logintitletext {
+    position:center;
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e6cba2;
+    font-size: 40px;
+}
+
+.text{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
+    color: #f9f8f6;
+}
+
+.btn-style{
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    font-family: "Times New Roman", serif;
+    color: #f1e2d0;
+    font-size: 20px;
+    background: #3a2402;
+    cursor: pointer;
+}
+
+.btn-style:hover{
+    background: #f1e2d0;
+    color: #b37a25;
+    transition: 0.5s;
+}
+
+.an-button{
+    position: center;
+    background-color: rgba(123, 69, 25, 0.8);;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color:#dbc5a3;
+    text-decoration: none;
+    border: 0;
+}
+
+.an-button:hover{
+    color: #b37a25;
+    transition: 0.5s;
+}
+
+#register-div{
+   display: none;
+}
+
+#result-box{
+    display:none;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform : translate(-50%, -50%);
+    width: 400px;
+    padding: 40px;
+
+}
+
+#result-gview{
+    display:none;
+    position : absolute;
+    top : 50%;
+    left : 50%;
+    transform : translate(-50%, -50%);
+    width: 400px;
+    padding: 40px;
+    color: white
+
+}
