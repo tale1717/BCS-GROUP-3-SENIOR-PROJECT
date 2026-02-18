@@ -17,8 +17,10 @@ body {
     box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
 }
 .text-field{
-    padding : 10px 80px;
-    position: relative;
+    padding : 10px 130px;
+    position: sticky;
+    text-align: left;
+    text
     margin-bottom: 30px;
     border: 2px solid #3a2402;
     border-radius: 10px;
