@@ -6,28 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="style.css">
-    <script src="key.js"></script>
+    <script type="module" src="form.js"></script>
 </head>
 <body>
     <div class="center-box" id="login-div">
         <h2 class="logintitletext">Login </h2>
-        <label for="username" class="text">Username:</label>
-        <input type="text" id="username" class="text-field" name="username" placeholder="Email"> <br>
-        <label for="password" class="text">Password:</label>
-        <input type="loginpassword" id="loginpassword" class="text-field" name="password" placeholder="Password"> <br>
-        <button type="submit" class="btn-style">Login</button> 
-        <button type="reg-button" class="an-button">New User? Sign up here</button> 
+        <label for="username" class="text">Username:</label> <br>
+        <br>
+        <input type="text" id="username" class="text-field" name="username" placeholder="Email" required> <br>
+        <br>
+        <label for="password" class="text">Password:</label> <br>
+        <br>
+        <input type="password" id="loginpassword" class="text-field" name="password" placeholder="Password" required> <br>
+        <br>
+        <button id="submit" class="btn-style">Login</button> 
+        <button id="reg-button" class="an-button">New User? Sign up here</button> 
        
     </div>
    
      <div class="center-box" id="register-div">
-        <h2 class="signuppage">Sign Up </h2>
-        <label for="email" class="text">Email:</label>
-        <input type="email" id="reg-email" class="text-field" name="email" placeholder="Email"> <br>
-        <label for="password" class="text">Password:</label>
-        <input type="reg-password" id="reg-password" class="text-field" name="password" placeholder="Password"> <br>
-        <button type="signup" class="btn-style">Sign Up</button> 
-        <button type="loginpage" class="an-btton">Already have an account? Login here</button> 
+        <h2 class="logintitletext">Sign Up </h2>
+        <label for="email" class="text">Email:</label> <br>
+        <br>
+        <input type="email" id="reg-email" class="text-field" name="email" placeholder="Email" required> <br>
+        <br>
+        <label for="password" class="text">Password:</label> <br>
+        <br>
+        <input type="password" id="reg-password" class="text-field" name="password" placeholder="Password" required> <br>
+        <br>
+        <button id="signup" class="btn-style">Sign Up</button> 
+        <button id="loginpage" class="an-button">Already have an account? Login here</button> 
         
     </div>
 
@@ -41,3 +49,5 @@
 </body>
 
 </html>
+
+
