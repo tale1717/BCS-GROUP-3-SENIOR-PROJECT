@@ -41,7 +41,7 @@ document.getElementById("submit").addEventListener('click', function() {
             const user = userCredential.user;
             document.getElementById("result-box").style.display = "inline";
             document.getElementById("login-div").style.display = "none";
-            document.getElementById("result").innerHTML = "Login successful! Welcome, " + username.email;
+            document.getElementById("result").innerHTML = "Login successful! Welcome to Triple T and G Barbershop ";
           
         })
         .catch((error) => {
