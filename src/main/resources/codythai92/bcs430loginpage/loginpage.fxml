@@ -44,18 +44,18 @@
                </font>
             </Label>
             <TextField fx:id="enterPasswordField" layoutX="110.0" layoutY="249.0" prefHeight="26.0" prefWidth="215.0" />
-            <Button fx:id="loginButton" layoutX="139.0" layoutY="292.0" mnemonicParsing="false" onAction="#loginButtonOnAction" prefHeight="26.0" prefWidth="157.0" style="-fx-background-color: #945323;" text="Log in" textFill="WHITE">
+            <Button fx:id="loginButton" layoutX="139.0" layoutY="292.0" mnemonicParsing="false" onAction="#loginButtonOnAction" prefHeight="26.0" prefWidth="157.0" style="-fx-background-color: #945323; -fx-cursor: hand;" text="Log in" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
             </Button>
-            <Label graphicTextGap="5.0" layoutX="155.0" layoutY="369.0" text="Forgot your password" />
             <Button fx:id="cancelButton" layoutX="139.0" layoutY="331.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="157.0" style="-fx-background-color: #945143;" text="Cancel" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
             </Button>
             <Label layoutX="72.0" layoutY="166.0" text="Invalid username or password. Please try again!" textFill="#f83f3f" />
+            <Button fx:id="forgotyourpassword" layoutX="153.0" layoutY="366.0" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Forgot your password" />
          </children>
       </AnchorPane>
    </center>
