@@ -2,8 +2,8 @@ package codythai92.bcs430loginpage;
 
 import javafx.application.Application;
 
-public class Launcher {
+public class loginLauncher {
     public static void main(String[] args) {
-        Application.launch(HelloApplication.class, args);
+        Application.launch(loginApplication.class, args);
     }
 }
