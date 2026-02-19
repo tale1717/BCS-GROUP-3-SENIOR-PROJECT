@@ -20,13 +20,12 @@ body {
     padding : 10px 130px;
     position: sticky;
     text-align: left;
-    text
     margin-bottom: 30px;
     border: 2px solid #3a2402;
     border-radius: 10px;
 }
 .logintitletext {
-    position:center;
+    position: center;
     width: 100%;
     padding: 10px;
     background: transparent;
