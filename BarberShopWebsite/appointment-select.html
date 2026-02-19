@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Triple T Barbers - Booking</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<header>
+    <div class="container nav">
+        <a href="index.html">
+            <h1 class="logo">TRIPLE T BARBERS</h1>
+        </a>
+        <nav>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+            <a href="#">Sign In</a>
+            <a href="appointment.html" class="book-now">Book Now</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero Image -->
+<section class="hero-appointment"></section>
+
+<!-- Appointment Selection -->
+<main class="appointment-container">
+    <h1>Book Your Appointment</h1>
+    <p class="subtitle">Please choose a selected time and day</p>
+
+    <div class="booking-interface">
+        <div class="calendar-container">
+            <table>
+                <thead>
+                <tr><th colspan="7" class="month-header">November</th></tr>
+                <tr>
+                    <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td></td><td></td><td></td><td></td><td></td><td></td><td class="muted">1</td>
+                </tr>
+                <tr>
+                    <td class="holiday">2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td class="muted">8</td>
+                </tr>
+                <tr>
+                    <td class="holiday">9</td><td>10</td><td class="holiday">11</td><td>12</td><td class="selected-day">13</td><td>14</td><td class="muted">15</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-container">
+            <div class="custom-select">
+                Barber:
+                <select class="input-select">
+                    <option>Talero</option>
+                    <option>Thai</option>
+                    <option>Tobias</option>
+                    <option>Guaman</option>
+                </select>
+            </div>
+            <div class="custom-select">
+                Time:
+                <input type="time" class="input-select">
+            </div>
+            <div class="custom-select">
+                Type of Haircut:
+                <select class="input-select">
+                    <option>Regular</option>
+                    <option>Fade</option>
+                    <option>Beard Trim</option>
+                    <option>Hot Towel</option>
+                </select>
+            </div>
+            <a href="appointment-confirm.html" class="btn-confirm">Confirm Appointment</a>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

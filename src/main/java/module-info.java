@@ -2,9 +2,6 @@ module codythai92.bcs430loginpage {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
-    requires javafx.graphics;
-    requires java.sql;
-
 
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;

@@ -10,14 +10,15 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="codythai92.bcs430loginpage.loginController">
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <left>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#b2a79d" height="400.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
-            <ImageView fx:id="brandingImageView" fitHeight="150.0" fitWidth="200.0" layoutX="25.0" layoutY="93.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="25.0" layoutY="93.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../images/logo.png" />
+                  <Image url="@../../../../../../../Desktop/Desktop%20-%20Cody’s%20MacBook%20Air/FSC/BCS430%20SENIOR/project/icon%20list/logo.png" />
                </image>
             </ImageView>
          </children>
@@ -27,9 +28,9 @@
       <AnchorPane prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
          <children>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#616060" height="400.0" opacity="0.21" stroke="#281d17" strokeType="INSIDE" width="400.0" />
-            <ImageView fx:id="loginImageView" fitHeight="150.0" fitWidth="200.0" layoutX="139.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="139.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../images/loginicon.png" />
+                  <Image url="@../../../../../../../Desktop/Desktop%20-%20Cody’s%20MacBook%20Air/FSC/BCS430%20SENIOR/project/icon%20list/login%20icon.png" />
                </image>
             </ImageView>
             <Label layoutX="32.0" layoutY="207.0" text="User name">
@@ -37,25 +38,19 @@
                   <Font name="System Bold Italic" size="13.0" />
                </font>
             </Label>
-            <TextField fx:id="usernameTextField" layoutX="110.0" layoutY="203.0" prefHeight="26.0" prefWidth="215.0" />
+            <TextField layoutX="110.0" layoutY="203.0" prefHeight="26.0" prefWidth="215.0" />
             <Label graphicTextGap="6.0" layoutX="32.0" layoutY="253.0" lineSpacing="1.0" text="Password">
                <font>
                   <Font name="System Bold Italic" size="13.0" />
                </font>
             </Label>
-            <TextField fx:id="enterPasswordField" layoutX="110.0" layoutY="249.0" prefHeight="26.0" prefWidth="215.0" />
-            <Button fx:id="loginButton" layoutX="139.0" layoutY="292.0" mnemonicParsing="false" onAction="#loginButtonOnAction" prefHeight="26.0" prefWidth="157.0" style="-fx-background-color: #945323; -fx-cursor: hand;" text="Log in" textFill="WHITE">
+            <TextField layoutX="110.0" layoutY="249.0" prefHeight="26.0" prefWidth="215.0" />
+            <Button layoutX="139.0" layoutY="292.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="157.0" style="-fx-background-color: #945323;" text="Sign in" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
             </Button>
-            <Button fx:id="cancelButton" layoutX="139.0" layoutY="331.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="157.0" style="-fx-background-color: #945143;" text="Cancel" textFill="WHITE">
-               <font>
-                  <Font name="System Bold" size="13.0" />
-               </font>
-            </Button>
-            <Label layoutX="72.0" layoutY="166.0" text="Invalid username or password. Please try again!" textFill="#f83f3f" />
-            <Button fx:id="forgotyourpassword" layoutX="153.0" layoutY="366.0" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Forgot your password" />
+            <Label layoutX="158.0" layoutY="347.0" text="Forgot your password" />
          </children>
       </AnchorPane>
    </center>
