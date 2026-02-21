@@ -28,7 +28,7 @@ document.getElementById("submit").addEventListener('click', function() {
         .then((userCredential) => {
            
             const user = userCredential.user;
-            window.location.href = "BarberShopManagement/index.html";
+            window.location.href = "../BarberShopManagement/index.html";
             // document.getElementById("result-box").style.display = "inline";
             // document.getElementById("login-div").style.display = "none";
             // document.getElementById("result").innerHTML = "Login successful! Welcome to Triple T and G Barbershop ";
