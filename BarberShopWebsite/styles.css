@@ -361,3 +361,85 @@ th, td {
         margin: 0 auto;
     }
 }
+
+/* Auth (Sign In / Register) */
+.hero-auth {
+    height: 250px;
+    background-image: url("barberlog.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 0px 35%;
+}
+
+.auth-container {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 520px;
+    border: 1px solid #efefef;
+    border-radius: 12px;
+    padding: 28px;
+    background: white;
+}
+
+.auth-subtitle {
+    color: #888;
+    margin-top: 6px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.auth-form .form-group {
+    margin-bottom: 16px;
+}
+
+.auth-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 12px 12px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+}
+
+.auth-form input:focus {
+    border-color: #000;
+}
+
+.auth-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.auth-link {
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.auth-divider {
+    height: 1px;
+    background: #efefef;
+    margin: 22px 0;
+}
+
+.auth-footer {
+    color: #666;
+    font-size: 14px;
+}
