@@ -6,8 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="BCS430-LoginPage" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="BCS430-LoginPage" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>
