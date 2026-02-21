@@ -1,10 +1,21 @@
+* {
+    font-family: 'Inter', sans-serif;
+}
+
 body {
     margin: 0;
     padding: 0;
-    font-family: "Times New Roman", serif;
-    background: url("https://images.newrepublic.com/9bba0e56c589fb3e06191969202abb446327a86a.jpeg?auto=format&fit=crop&crop=faces&ar=3%3A2&ixlib=react-9.11.0&q=65&w=1400&dpr=2") no-repeat;
+    background: url("barber-bg.png") no-repeat;
     background-size: cover;
 }
+
+.image-logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 175px;
+}
+
 .center-box{
     position : absolute;
     top : 50%;
@@ -16,8 +27,12 @@ body {
     border-radius: 30px;
     box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
 }
+
 .text-field{
-    padding : 10px 130px;
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 15px;
+    box-sizing: border-box;
     position: sticky;
     text-align: left;
     margin-bottom: 30px;
@@ -25,9 +40,8 @@ body {
     border-radius: 10px;
 }
 .logintitletext {
-    position: center;
+    font-family: 'Times', serif;
     width: 100%;
-    padding: 10px;
     background: transparent;
     border: none;
     outline: none;
@@ -36,8 +50,8 @@ body {
 }
 
 .text{
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 18px;
+    font-family: 'Times', serif;
+    font-size: 20px;
     color: #f9f8f6;
 }
 
@@ -47,7 +61,6 @@ body {
     border: none;
     border-radius: 10px;
     outline: none;
-    font-family: "Times New Roman", serif;
     color: #f1e2d0;
     font-size: 20px;
     background: #3a2402;
@@ -61,8 +74,7 @@ body {
 }
 
 .an-button{
-    position: center;
-    background-color: rgba(123, 69, 25, 0.8);;
+    background-color: rgba(0, 0, 0, 0);;
     margin-top: 20px;
     text-align: center;
     font-size: 13px;

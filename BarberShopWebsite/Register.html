@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Triple T Barbers - Sign In</title>
+    <title>Triple T&G Barbers - Sign In</title>
     <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="customer-form.js"></script>
 </head>
 <body>
 
 <header>
     <div class="container nav">
         <a href="index.html">
-            <h1 class="logo">TRIPLE T BARBERS</h1>
+            <h1 class="logo">TRIPLE T&G BARBERS</h1>
         </a>
         <nav>
             <a href="#">About Us</a>
@@ -25,32 +26,31 @@
 <!--image-->
 <section class="hero-auth"></section>
 
-
 <section class="auth-container">
     <div class="auth-card">
         <h1>Register</h1>
         <p class="auth-subtitle">CREATE AN ACCOUNT</p>
 
-        <form id="registerForm" action="#" method="post" class="auth-form">
+        <form id="register-form" method="post" class="auth-form">
 
             <div class="form-group">
-                <input id="FirstName" name="FirstName" type="text" placeholder="First Name*" required />
+                <input id="first-name" name="FirstName" type="text" placeholder="First Name*" required />
             </div>
 
             <div class="form-group">
-                <input id="LastName" name="LastName" type="text" placeholder="Last Name*" required />
+                <input id="last-name" name="LastName" type="text" placeholder="Last Name*" required />
             </div>
 
             <div class="form-group">
-                <input id="email" name="email" type="email" placeholder="you@example.com*" required />
+                <input id="customer-email" name="email" type="email" placeholder="you@example.com*" required />
             </div>
 
             <div class="form-group">
-                <input id="dob" name="dob" type="date" required />
+                <input id="customer-dob" name="dob" type="date" required />
             </div>
 
             <div class="form-group">
-                <input id="password" name="password" type="password" placeholder="password*" required />
+                <input id="customer-password" name="password" type="password" placeholder="password*" required />
             </div>
 
             <div class="form-group">
@@ -59,7 +59,7 @@
             </div>
 
             <div class="auth-actions">
-                <button type="submit" class="primary-btn">Create Account</button>
+                <button id="customer-register" type="submit" class="primary-btn">Create Account</button>
             </div>
 
             <div class="auth-divider"></div>
@@ -70,6 +70,7 @@
             </p>
         </form>
     </div>
+
 </section>
 
 </body>
