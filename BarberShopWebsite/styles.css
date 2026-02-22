@@ -156,6 +156,17 @@ h1 {
     margin-bottom: 40px;
 }
 
+/* Bottom Info */
+.bottom-info {
+    padding: 30px;
+    background: #000;
+}
+
+.bottom-info a {
+    color: #efefef;
+    padding: 0 60px;
+}
+
 /* Barber Cards Grid */
 .barber-grid {
     display: grid;
