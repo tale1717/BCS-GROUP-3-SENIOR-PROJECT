@@ -1,6 +1,6 @@
 // js/login.js
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { auth } from "../BarberShopWebsite/firebase.js";
+import { auth } from "./firebase.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector("form.auth-form");
@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            window.location.href = "BarberShopManagement/index.html";
+            window.location.href = "BarberShopWebsite/TBA";
         } catch (error) {
             console.error("Login failed:", error.code, error.message);
             alert("Login failed: " + error.message);

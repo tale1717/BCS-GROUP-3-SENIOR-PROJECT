@@ -1,0 +1,111 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: url("barber-bg.png") no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* Logo */
+.image-logo {
+    display: block;
+    margin: 0 auto 20px auto;
+    width: 175px;
+}
+
+/* Centered container */
+.center-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    padding: 40px;
+    background: rgba(123, 69, 25, 0.85);
+    border-radius: 30px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Input fields */
+.text-field {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 25px;
+    border: 2px solid #3a2402;
+    border-radius: 10px;
+    background-color: #fff;
+    text-align: left;
+    font-size: 16px;
+}
+
+/* Title */
+.logintitletext {
+    font-family: 'Times New Roman', serif;
+    margin-bottom: 25px;
+    color: #e6cba2;
+    font-size: 40px;
+}
+
+/* Label text */
+.text {
+    font-family: 'Times New Roman', serif;
+    font-size: 18px;
+    color: #f9f8f6;
+}
+
+/* Primary button */
+.btn-style {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    color: #f1e2d0;
+    font-size: 18px;
+    background: #3a2402;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.btn-style:hover {
+    background: #f1e2d0;
+    color: #b37a25;
+}
+
+/* Secondary link-style button */
+.an-button {
+    background-color: rgba(0, 0, 0, 0);
+    margin-top: 15px;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: #dbc5a3;
+    border: 0;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.an-button:hover {
+    color: #b37a25;
+}
+
+/* Hide register section by default */
+#register-div {
+    display: none;
+}
+
+/* Result boxes */
+#result-box,
+#result-gview {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    padding: 40px;
+    color: white;
+}
