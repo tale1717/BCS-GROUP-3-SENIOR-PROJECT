@@ -1,7 +1,6 @@
-// js/register.js
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { auth } from "./firebase.js";
-import { createUserProfile } from "./userModel.js";
+import { createUserProfile } from "./users.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("registerForm");

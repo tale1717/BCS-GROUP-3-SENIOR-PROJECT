@@ -1,48 +1,46 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barber Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Login</title>
+
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./form.js"></script>
 </head>
 <body>
-<div class="app-container">
-    <nav class="sidebar">
-        <div class="logo">
-            <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
-        </div>
-        <ul>
-            <li class="active">Dashboard</li>
-            <li>Appointments</li>
-            <li>Customers</li>
-            <li>Barbers</li>
-        </ul>
-    </nav>
 
-    <main class="content">
-        <header>
-            <h1>Dashboard</h1>
-            <p>Welcome back! Here's what's happening today.</p>
-        </header>
+<div class="center-box" id="login-div">
+    <h2 class="logintitletext">Login</h2>
 
-        <section class="stats-grid">
-            <div class="card">Today's Appointments <h3>12</h3></div>
-            <div class="card">Total Customers <h3>324</h3></div>
-            <div class="card">Today's Revenue <h3>$840</h3></div>
-            <div class="card">Avg. Rating <h3>4.8</h3></div>
-        </section>
+    <label for="username" class="text">Username:</label><br><br>
+    <input type="text" id="username" class="text-field" name="username" placeholder="Email" autocomplete="username" required><br><br>
 
-        <section class="appointments-section">
-            <h2>Upcoming Appointments</h2>
-            <div id="appointment-list">
-                <div class="appointment-item">
-                    <span>10:00 AM</span>
-                    <strong>John Smith</strong>
-                    <span class="status confirmed">Confirmed</span>
-                </div>
-            </div>
-        </section>
-    </main>
+    <label for="loginpassword" class="text">Password:</label><br><br>
+    <input type="password" id="loginpassword" class="text-field" name="password" placeholder="Password" autocomplete="current-password" required><br><br>
+
+    <button id="submit" class="btn-style">Login</button>
+    <button id="reg-button" class="an-button">New User? Sign up here</button>
 </div>
+
+<div class="center-box" id="register-div">
+    <h2 class="logintitletext">Sign Up</h2>
+
+    <label for="reg-email" class="text">Email:</label><br><br>
+    <input type="email" id="reg-email" class="text-field" name="email" placeholder="Email" autocomplete="email" required><br><br>
+
+    <label for="reg-password" class="text">Password:</label><br><br>
+    <input type="password" id="reg-password" class="text-field" name="password" placeholder="Password" autocomplete="new-password" required><br><br>
+
+    <button id="signup" class="btn-style">Sign Up</button>
+    <button id="loginpage" class="an-button">Already have an account? Login here</button>
+</div>
+
+<div id="result-box" class="center-box">
+    <h2 class="result-title">Result</h2>
+    <p id="result" class="result"></p>
+</div>
+
 </body>
 </html>

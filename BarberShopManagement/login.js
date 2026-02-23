@@ -1,6 +1,6 @@
 // js/login.js
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { auth } from "./firebase.js";
+import { auth } from "../BarberShopWebsite/firebase.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector("form.auth-form");

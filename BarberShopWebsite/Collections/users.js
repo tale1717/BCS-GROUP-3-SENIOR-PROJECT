@@ -1,5 +1,4 @@
-// js/userModel.js
-import { db } from "./firebase.js";
+import { db } from "../firebase.js";
 import {
     doc,
     setDoc,
@@ -8,11 +7,11 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-export async function createUserProfile(user, profile) {
+export async function createUserProfile(user, profile, role = "customer") {
     await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         email: user.email || "",
-        role: "customer",
+        role,
         firstName: profile.firstName || "",
         lastName: profile.lastName || "",
         dob: profile.dob || "",
