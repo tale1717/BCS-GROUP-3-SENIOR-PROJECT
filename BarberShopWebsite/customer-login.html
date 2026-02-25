@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Triple T&G Barbers - Sign In</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="customer-form.js"></script>
+    <script type="module" src="isCustomerLoggedIn.js"></script>
+</head>
+<body>
+
+<header>
+    <div class="container nav">
+        <a href="./">
+            <h1 class="logo">TRIPLE T&G BARBERS</h1>
+        </a>
+        <nav>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+            <a id="profile-login" href="isCustomerLoggedIn.js">Sign In</a>
+            <a href="appointment.html" class="book-now">Book Now</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Image -->
+<section class="hero-auth"></section>
+
+<section class="auth-container">
+    <div class="auth-card">
+        <h1>Sign In</h1>
+        <p class="auth-subtitle">Welcome back — sign in to manage appointments.</p>
+
+        <form id="signin-form" method="post" class="auth-form">
+            <div class="form-group">
+                <label for="signin-email">Email</label>
+                <input id="signin-email" name="email" type="email" placeholder="you@example.com" required />
+            </div>
+
+            <div class="form-group">
+                <label for="signin-password">Password</label>
+                <input id="signin-password" name="password" type="password" placeholder="••••••••" required />
+            </div>
+
+            <div class="auth-actions">
+                <button id="customer-signin" type="submit" class="primary-btn">Sign In</button>
+                <a href="forgotpassword.html" class="auth-link">Forgot password?</a>
+            </div>
+
+            <div class="auth-divider"></div>
+
+            <p class="auth-footer">
+                Don’t have an account?
+                <a href="customer-register.html" class="auth-link"><strong>Register</strong></a>
+            </p>
+        </form>
+    </div>
+
+</section>
+
+</body>
+</html>

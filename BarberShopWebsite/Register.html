@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Triple T Barbers - Sign In</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<script type="module" src="js/register.js"></script>
+<body>
+
+<header>
+    <div class="container nav">
+        <a href="register1.html">
+            <h1 class="logo">TRIPLE T BARBERS</h1>
+        </a>
+        <nav>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+            <a href="logincustomer1.html">Sign In</a>
+            <a href="appointment.html" class="book-now">Book Now</a>
+        </nav>
+    </div>
+</header>
+
+<!--image-->
+<section class="hero-auth"></section>
+
+
+<section class="auth-container">
+    <div class="auth-card">
+        <h1>Register</h1>
+        <p class="auth-subtitle">CREATE AN ACCOUNT</p>
+
+        <form id="registerForm" action="#" method="post" class="auth-form">
+
+            <div class="form-group">
+                <input id="FirstName" name="FirstName" type="text" placeholder="First Name*" required />
+            </div>
+
+            <div class="form-group">
+                <input id="LastName" name="LastName" type="text" placeholder="Last Name*" required />
+            </div>
+
+            <div class="form-group">
+                <input id="email" name="email" type="email" placeholder="you@example.com*" required />
+            </div>
+
+            <div class="form-group">
+                <input id="dob" name="dob" type="date" required />
+            </div>
+
+            <div class="form-group">
+                <input id="password" name="password" type="password" placeholder="password*" required />
+            </div>
+
+            <div class="form-group">
+                <input id="ConfirmPassword" name="ConfirmPassword" type="password" placeholder="Confirm Password*" required />
+                <small id="pwMsg" style="display:block; margin-top:8px;"></small>
+            </div>
+
+            <div class="auth-actions">
+                <button type="submit" class="primary-btn">Create Account</button>
+            </div>
+
+            <div class="auth-divider"></div>
+
+            <p class="auth-footer">
+                Have an account?
+                <a href="logincustomer.html" class="auth-link"><strong>Sign In</strong></a>
+            </p>
+        </form>
+    </div>
+</section>
+
+</body>
+</html>

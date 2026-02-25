@@ -1,10 +1,25 @@
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { auth } from "./firebase.js";
-import { createUserProfile } from "./users.js";
+import { createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { auth } from "/BarberShopWebsite/firebase.js";
+import { createUserProfile, getUserProfile } from "/BarberShopWebsite/Collections/users.js";
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("registerForm");
     if (!form) return;
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            alert("You must be logged in as a manager.");
+            window.location.href = "/BarberShopManagement/employeeLogin.html";
+            return;
+        }
+
+        const profile = await getUserProfile(user.uid);
+        if (!profile || profile.role !== "manager") {
+            await signOut(auth);
+            alert("Access denied. Managers only.");
+            window.location.href = "/BarberShopManagement/employeeLogin.html";
+        }
+    });
 
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
@@ -26,14 +41,9 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-            await createUserProfile(userCredential.user, {
-                firstName,
-                lastName,
-                dob
-            });
+            await createUserProfile(userCredential.user, { firstName, lastName, dob }, "employee");
 
-            alert("Registration successful! Please sign in.");
-            window.location.href = "logincustomer.html";
+            alert("Employee created. Manager will need to log back in.");
         } catch (error) {
             console.error("Registration failed:", error.code, error.message);
             alert("Registration failed: " + error.message);

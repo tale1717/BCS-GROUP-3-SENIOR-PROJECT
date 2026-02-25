@@ -156,6 +156,17 @@ h1 {
     margin-bottom: 40px;
 }
 
+/* Bottom Info */
+.bottom-info {
+    padding: 30px;
+    background: #000;
+}
+
+.bottom-info a {
+    color: #efefef;
+    padding: 0 60px;
+}
+
 /* Barber Cards Grid */
 .barber-grid {
     display: grid;
@@ -442,4 +453,60 @@ th, td {
 .auth-footer {
     color: #666;
     font-size: 14px;
+}
+
+/* Customer Profile */
+
+.profile-container {
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.profile-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #efefef;
+}
+
+.receipt-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #efefef;
+}
+
+.history-card {
+  margin-top: 40px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #efefef;
+}
+
+.upcoming-card {
+  margin-top: 40px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #efefef;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
 }
