@@ -1,4 +1,4 @@
-  import { firebaseConfig } from "../firebaseConfig.js";
+  import { firebaseConfig } from "./firebaseConfig.js";
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
@@ -16,7 +16,7 @@ document.getElementById("signin-form").addEventListener('submit', function(e) {
         .then((userCredential) => {
            
             const user = userCredential.user;
-            alert("Login successful! Welcome to Triple T & G Barbershop");
+            window.location.href = "customer-profile.html";
           
         })
         .catch((error) => {
