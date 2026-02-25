@@ -1,51 +1,76 @@
+// BarberShopWebsite/appointment-select.js
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { auth } from "/BarberShopWebsite/firebase.js";
+import {
+    addDoc,
+    collection,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
-import { createAppointment } from "/BarberShopWebsite/Collections/appointments.js";
 
-document.addEventListener("DOMContentLoaded", function () {
-    const btn = document.getElementById("confirm-appointment");
-    if (!btn) return;
+function mustGet(id) {
+    const el = document.getElementById(id);
+    if (!el) throw new Error(`Missing element: #${id}`);
+    return el;
+}
 
-    // Preselect barber from ?barber=...
-    const params = new URLSearchParams(window.location.search);
-    const barberParam = params.get("barber");
-    const barberSelect = document.getElementById("barber");
-    if (barberParam && barberSelect) {
-        barberSelect.value = barberParam;
-    }
+document.addEventListener("DOMContentLoaded", () => {
+    const confirmBtn = document.getElementById("confirm-appointment");
+    if (!confirmBtn) return;
 
     onAuthStateChanged(auth, async (user) => {
+        // Not logged in: send them to login first
         if (!user) {
-            alert("Please sign in to book an appointment.");
-            window.location.href = "customer-login.html";
+            confirmBtn.addEventListener("click", () => {
+                alert("Please sign in first.");
+                window.location.href = "customer-login.html";
+            });
             return;
         }
 
+        // Logged in but not a customer: block
         const profile = await getUserProfile(user.uid);
         if (!profile || profile.role !== "customer") {
-            alert("Only customers can book appointments.");
-            window.location.href = "index.html";
+            confirmBtn.addEventListener("click", () => {
+                alert("This booking page is for customers only.");
+            });
             return;
         }
 
-        btn.addEventListener("click", async function () {
-            const barber = document.getElementById("barber").value;
-            const date = document.getElementById("date").value;
-            const time = document.getElementById("time").value;
-            const service = document.getElementById("service").value;
-
-            if (!barber || !date || !time || !service) {
-                alert("Please fill out barber, date, time, and service.");
-                return;
-            }
-
+        // Customer can book
+        confirmBtn.addEventListener("click", async () => {
             try {
-                const appointmentId = await createAppointment(user, { barber, date, time, service });
-                window.location.href = `appointment-confirm.html?id=${encodeURIComponent(appointmentId)}`;
-            } catch (error) {
-                console.error("Create appointment failed:", error.code, error.message);
-                alert("Could not create appointment: " + error.message);
+                const barber = mustGet("barber").value;
+                const date = mustGet("date").value;   // yyyy-mm-dd
+                const time = mustGet("time").value;   // HH:mm
+                const service = mustGet("service").value;
+
+                if (!barber || !date || !time || !service) {
+                    alert("Please fill out barber, date, time, and service.");
+                    return;
+                }
+
+                // Create appointment in Firestore
+                const ref = await addDoc(collection(db, "appointments"), {
+                    customerUid: user.uid,
+                    customerEmail: user.email || "",
+                    barber,
+                    date,
+                    time,
+                    service,
+                    status: "confirmed",
+                    createdAt: serverTimestamp()
+                });
+
+                // Fallback storage in case URL param is lost
+                sessionStorage.setItem("lastAppointmentId", ref.id);
+
+                // Go to confirm page with the id
+                window.location.href = `appointment-confirm.html?appointmentId=${encodeURIComponent(ref.id)}`;
+            } catch (err) {
+                console.error("Failed to create appointment:", err);
+                alert("Failed to create appointment. Check console for details.");
             }
         });
     });

@@ -1,10 +1,12 @@
+<!-- BarberShopWebsite/appointment-confirm.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Triple T&G Barbers - Booking</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="customer-login.html"></script>
+    <script type="module" src="isCustomerLoggedIn.js"></script>
+    <script type="module" src="appointment-confirm.js"></script>
 </head>
 <body>
 
@@ -18,7 +20,6 @@
             <a href="#">About Us</a>
             <a href="#">Contact</a>
             <a id="profile-login" href="customer-login.html">Sign In</a>
-            <a id="logout-link" href="#" style="display:none;">Logout</a>
             <a href="appointment.html" class="book-now">Book Now</a>
         </nav>
     </div>
@@ -27,10 +28,11 @@
 <!-- Hero Image -->
 <section class="hero-appointment"></section>
 
+<!-- Appointment Selection -->
 <main class="appointment-container">
     <section class="confirmation-header">
         <h1>Your appointment has been confirmed!</h1>
-        <p>You will be meeting with Tobias at 10:00 AM on Thursday, November 13th for your Regular Haircut!</p>
+        <p id="confirm-details"></p>
     </section>
 
     <section class="location-details">
@@ -43,7 +45,7 @@
             </address>
             <div class="action-buttons">
                 <a href="https://maps.app.goo.gl/ziWrtmWSH8d463cc6" class="btn btn-black">Get Directions</a>
-                <a href="#" class="btn btn-outline">View Your Appointment Details</a>
+                <a id="view-appointment-link" href="#" class="btn btn-outline">View Your Appointment Details</a>
             </div>
         </div>
 

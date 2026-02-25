@@ -1,29 +1,22 @@
-import { db } from "/BarberShopWebsite/firebase.js";
+// BarberShopWebsite/Collections/appointments.js
+import { db } from "../firebase.js";
 import {
     collection,
     addDoc,
-    serverTimestamp,
     doc,
-    getDoc
+    getDoc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-export async function createAppointment(user, data) {
-    const payload = {
-        customerUid: user.uid,
-        customerEmail: user.email || "",
-        barber: data.barber || "",
-        service: data.service || "",
-        date: data.date || "",
-        time: data.time || "",
-        status: "pending",
+export async function createAppointment(data) {
+    const ref = await addDoc(collection(db, "appointments"), {
+        ...data,
         createdAt: serverTimestamp()
-    };
-
-    const ref = await addDoc(collection(db, "appointments"), payload);
+    });
     return ref.id;
 }
 
-export async function getAppointmentById(id) {
-    const snap = await getDoc(doc(db, "appointments", id));
+export async function getAppointment(appointmentId) {
+    const snap = await getDoc(doc(db, "appointments", appointmentId));
     return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
