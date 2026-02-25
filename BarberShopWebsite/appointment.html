@@ -8,7 +8,6 @@
 </head>
 <body>
 
-<!-- Navigation -->
 <header>
     <div class="container nav">
         <a href="./">
@@ -17,62 +16,61 @@
         <nav>
             <a href="#">About Us</a>
             <a href="#">Contact</a>
-            <a id="profile-login" href="isCustomerLoggedIn.js">Sign In</a>
+            <a id="profile-login" href="customer-login.html">Sign In</a>
+            <a id="logout-link" href="#" style="display:none;">Logout</a>
             <a href="appointment.html" class="book-now">Book Now</a>
         </nav>
     </div>
 </header>
 
-<!-- Hero Image -->
 <section class="hero-appointment"></section>
 
-<!-- Appointment Information -->
 <section class="appointment-container">
     <h1>Book Your Appointment</h1>
     <p class="subtitle">Please choose one of the following barbers:</p>
 
     <section class="barber-grid">
         <div class="card">
-            <a href="appointment-select.html">
+            <a href="appointment-select.html?barber=Talero">
                 <div class="card-img bg-green"></div>
             </a>
             <div class="card-content">
                 <h3>Talero</h3>
                 <p>Available Every Day</p>
-                <a href="appointment-select.html" class="check-availability">Check Availability &rarr;</a>
+                <a href="appointment-select.html?barber=Talero" class="check-availability">Check Availability &rarr;</a>
             </div>
         </div>
 
         <div class="card">
-            <a href="appointment-select.html">
+            <a href="appointment-select.html?barber=Thai">
                 <div class="card-img bg-pink"></div>
             </a>
             <div class="card-content">
                 <h3>Thai</h3>
                 <p>Available Tuesdays, Wednesdays and Fridays</p>
-                <a href="appointment-select.html" class="check-availability">Check Availability &rarr;</a>
+                <a href="appointment-select.html?barber=Thai" class="check-availability">Check Availability &rarr;</a>
             </div>
         </div>
 
         <div class="card">
-            <a href="appointment-select.html">
+            <a href="appointment-select.html?barber=Tobias">
                 <div class="card-img bg-blue"></div>
             </a>
             <div class="card-content">
                 <h3>Tobias</h3>
                 <p>Available Mondays, Thursdays and Weekends</p>
-                <a href="appointment-select.html" class="check-availability">Check Availability &rarr;</a>
+                <a href="appointment-select.html?barber=Tobias" class="check-availability">Check Availability &rarr;</a>
             </div>
         </div>
 
         <div class="card">
-            <a href="appointment-select.html">
+            <a href="appointment-select.html?barber=Guaman">
                 <div class="card-img bg-purple"></div>
             </a>
             <div class="card-content">
                 <h3>Guaman</h3>
                 <p>Available Weekends</p>
-                <a href="appointment-select.html" class="check-availability">Check Availability &rarr;</a>
+                <a href="appointment-select.html?barber=Guaman" class="check-availability">Check Availability &rarr;</a>
             </div>
         </div>
     </section>

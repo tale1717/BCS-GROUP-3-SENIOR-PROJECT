@@ -22,65 +22,116 @@
         </nav>
     </div>
 </header>
+<!-- Hero Image ---><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Triple T&G Barbers - Booking</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="isCustomerLoggedIn.js"></script>
+    <script type="module" src="appointment-confirm.js"></script>
+</head>
+<body>
 
-<!-- Hero Image -->
+<header>
+    <div class="container nav">
+        <a href="./">
+            <h1 class="logo">TRIPLE T&G BARBERS</h1>
+        </a>
+        <nav>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+            <a id="profile-login" href="customer-login.html">Sign In</a>
+            <a href="appointment.html" class="book-now">Book Now</a>
+        </nav>
+    </div>
+</header>
+
+<section class="hero-appointment"></section>
+
+<main class="appointment-container">
+    <section class="confirmation-header">
+        <h1>Your appointment has been confirmed!</h1>
+        <p id="confirm-text">Loading your appointment...</p>
+    </section>
+
+    <section class="location-details">
+        <div class="address-card">
+            <h2>See you soon!</h2>
+            <address>
+                Triple T Barber Shop<br>
+                12345 Broadhollow Road<br>
+                East Farmingdale, NY 11735
+            </address>
+            <div class="action-buttons">
+                <a href="https://maps.app.goo.gl/ziWrtmWSH8d463cc6" class="btn btn-black">Get Directions</a>
+                <a href="#" class="btn btn-outline">View Your Appointment Details</a>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-mockup">
+                <img src="#" alt="Map Location" class="map-pin">
+            </div>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
 <section class="hero-appointment"></section>
 
 <!-- Appointment Selection -->
-<main class="appointment-container">
+<section class="appointment-container">
     <h1>Book Your Appointment</h1>
-    <p class="subtitle">Please choose a selected time and day</p>
+    <p class="subtitle">Please choose one of the following barbers:</p>
 
-    <div class="booking-interface">
-        <div class="calendar-container">
-            <table>
-                <thead>
-                <tr><th colspan="7" class="month-header">November</th></tr>
-                <tr>
-                    <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td class="muted">1</td>
-                </tr>
-                <tr>
-                    <td class="holiday">2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td class="muted">8</td>
-                </tr>
-                <tr>
-                    <td class="holiday">9</td><td>10</td><td class="holiday">11</td><td>12</td><td class="selected-day">13</td><td>14</td><td class="muted">15</td>
-                </tr>
-                </tbody>
-            </table>
+    <section class="barber-grid">
+        <div class="card">
+            <a href="appointment-select.html?barber=Talero">
+                <div class="card-img bg-green"></div>
+            </a>
+            <div class="card-content">
+                <h3>Talero</h3>
+                <p>Available Every Day</p>
+                <a href="appointment-select.html?barber=Talero" class="check-availability">Check Availability &rarr;</a>
+            </div>
         </div>
 
-        <div class="form-container">
-            <div class="custom-select">
-                Barber:
-                <select class="input-select">
-                    <option>Talero</option>
-                    <option>Thai</option>
-                    <option>Tobias</option>
-                    <option>Guaman</option>
-                </select>
+        <div class="card">
+            <a href="appointment-select.html?barber=Thai">
+                <div class="card-img bg-pink"></div>
+            </a>
+            <div class="card-content">
+                <h3>Thai</h3>
+                <p>Available Tuesdays, Wednesdays and Fridays</p>
+                <a href="appointment-select.html?barber=Thai" class="check-availability">Check Availability &rarr;</a>
             </div>
-            <div class="custom-select">
-                Time:
-                <input type="time" class="input-select">
-            </div>
-            <div class="custom-select">
-                Type of Haircut:
-                <select class="input-select">
-                    <option>Regular</option>
-                    <option>Fade</option>
-                    <option>Beard Trim</option>
-                    <option>Hot Towel</option>
-                </select>
-            </div>
-            <a href="appointment-confirm.html" class="btn-confirm">Confirm Appointment</a>
         </div>
-    </div>
-</main>
+
+        <div class="card">
+            <a href="appointment-select.html?barber=Tobias">
+                <div class="card-img bg-blue"></div>
+            </a>
+            <div class="card-content">
+                <h3>Tobias</h3>
+                <p>Available Mondays, Thursdays and Weekends</p>
+                <a href="appointment-select.html?barber=Tobias" class="check-availability">Check Availability &rarr;</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <a href="appointment-select.html?barber=Guaman">
+                <div class="card-img bg-purple"></div>
+            </a>
+            <div class="card-content">
+                <h3>Guaman</h3>
+                <p>Available Weekends</p>
+                <a href="appointment-select.html?barber=Guaman" class="check-availability">Check Availability &rarr;</a>
+            </div>
+        </div>
+    </section>
+</section>
 
 </body>
 </html>
