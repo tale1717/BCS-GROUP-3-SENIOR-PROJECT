@@ -92,11 +92,6 @@ body {
     color: #b37a25;
 }
 
-/* Hide register section by default */
-#register-div {
-    display: none;
-}
-
 /* Result boxes */
 #result-box,
 #result-gview {
