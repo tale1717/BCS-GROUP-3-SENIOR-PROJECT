@@ -1,0 +1,92 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Customer Management</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="./customersModule.js"></script>
+</head>
+
+<body>
+<div class="app-container">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="logo">
+            <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
+        </div>
+
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li>Appointments</li>
+            <li class="active"><a href="customers.html">Customers</a></li>
+            <li>Barbers</li>
+        </ul>
+
+        <a href="dashboard.html"><li>back</li></a>
+
+    </nav>
+
+    <!-- RIGHT CONTENT -->
+    <main class="content">
+
+        <header class="page-header">
+            <h1>Customer Management</h1>
+
+            <div class="toolbar">
+
+                <!-- SEARCH -->
+                <input type="text" id="searchInput" placeholder="🔍 Search customers..." />
+
+                <!-- ACTION BUTTONS -->
+                <button id="createBtn" class="create-buttons">+ Create</button>
+                <button id="editBtn" class="edit-button">Edit</button>
+                <button id="deleteBtn" class="danger">Delete</button>
+
+            </div>
+        </header>
+
+        <!-- CUSTOMER TABLE -->
+        <div class="card">
+            <table id="customer-table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                </tr>
+                </thead>
+                <tbody id="customer-body"></tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- CREATE MODAL -->
+<div id="createModal" class="modal">
+    <div class="modal-content">
+        <h2>Create Customer</h2>
+        <input id="c-name" placeholder="Full Name" />
+        <input id="c-phone" placeholder="Phone" />
+        <input id="c-email" placeholder="Email" />
+        <button id="saveCreate">Save</button>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h2>Edit Customer</h2>
+        <input id="e-name" placeholder="Name" />
+        <input id="e-phone" placeholder="Phone" />
+        <input id="e-email" placeholder="Email" />
+        <button id="saveEdit">Update</button>
+    </div>
+</div>
+
+</body>
+</html>
