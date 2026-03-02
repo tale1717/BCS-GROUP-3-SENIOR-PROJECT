@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <title>Triple T&G Barbers - Booking</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="calendar.css">
     <script type="module" src="isCustomerLoggedIn.js"></script>
-    <script type="module" src="appointment-select.js"></script>
+    <script type="module" src="calendar.js"></script>
 </head>
 <body>
 
+<!-- Navigation -->
 <header>
     <div class="container nav">
         <a href="./">
@@ -23,67 +25,70 @@
     </div>
 </header>
 
+<!-- Hero Image -->
 <section class="hero-appointment"></section>
 
+<!-- Appointment Selection -->
 <main class="appointment-container">
     <h1>Book Your Appointment</h1>
     <p class="subtitle">Please choose a selected time and day</p>
 
     <div class="booking-interface">
-        <div class="calendar-container">
-            <table>
-                <thead>
-                <tr><th colspan="7" class="month-header">November</th></tr>
-                <tr>
-                    <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td class="muted">1</td>
-                </tr>
-                <tr>
-                    <td class="holiday">2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td class="muted">8</td>
-                </tr>
-                <tr>
-                    <td class="holiday">9</td><td>10</td><td class="holiday">11</td><td>12</td><td class="selected-day">13</td><td>14</td><td class="muted">15</td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="calendar">
+            <div class="calendar-container">
+                <header class="calendar-header">
+                    <p class="calendar-current-date"></p>
+                    <div class="calendar-navigation">
+                <span id="calendar-prev"
+                      class="material-symbols-rounded">
+                    <
+                </span>
+                        <span id="calendar-next"
+                              class="material-symbols-rounded">
+                    >
+                </span>
+                    </div>
+                </header>
+
+                <div class="calendar-body">
+                    <ul class="calendar-weekdays">
+                        <li>Sun</li>
+                        <li>Mon</li>
+                        <li>Tue</li>
+                        <li>Wed</li>
+                        <li>Thu</li>
+                        <li>Fri</li>
+                        <li>Sat</li>
+                    </ul>
+                    <ul class="calendar-dates"></ul>
+                </div>
+            </div>
         </div>
 
         <div class="form-container">
             <div class="custom-select">
                 Barber:
-                <select id="barber" class="input-select" required>
-                    <option value="Talero">Talero</option>
-                    <option value="Thai">Thai</option>
-                    <option value="Tobias">Tobias</option>
-                    <option value="Guaman">Guaman</option>
+                <select class="input-select">
+                    <option>Talero</option>
+                    <option>Thai</option>
+                    <option>Tobias</option>
+                    <option>Guaman</option>
                 </select>
             </div>
-
-            <div class="custom-select">
-                Date:
-                <input id="date" type="date" class="input-select" required>
-            </div>
-
             <div class="custom-select">
                 Time:
-                <input id="time" type="time" class="input-select" required>
+                <input type="time" class="input-select">
             </div>
-
             <div class="custom-select">
                 Type of Haircut:
-                <select id="service" class="input-select" required>
-                    <option value="Regular">Regular</option>
-                    <option value="Fade">Fade</option>
-                    <option value="Beard Trim">Beard Trim</option>
-                    <option value="Hot Towel">Hot Towel</option>
+                <select class="input-select">
+                    <option>Regular</option>
+                    <option>Fade</option>
+                    <option>Beard Trim</option>
+                    <option>Hot Towel</option>
                 </select>
             </div>
-
-            <button id="confirm-appointment" class="btn-confirm" type="button">Confirm Appointment</button>
+            <a href="appointment-confirm.html" class="btn-confirm">Confirm Appointment</a>
         </div>
     </div>
 </main>
