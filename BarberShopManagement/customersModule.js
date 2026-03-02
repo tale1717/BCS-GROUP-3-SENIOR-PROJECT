@@ -21,7 +21,7 @@ async function initialize() {
 }
 
 //
-// ================= LOAD CUSTOMERS =================
+// Customer list
 //
 async function loadCustomers() {
     allCustomers = await getCustomers();
@@ -56,7 +56,7 @@ function renderTable(list) {
 }
 
 //
-// ================= SEARCH =================
+// Search function
 //
 function setupSearch() {
     const searchInput = document.getElementById("searchInput");
@@ -76,7 +76,7 @@ function setupSearch() {
 }
 
 //
-// ================= CREATE =================
+// Create
 //
 function setupCreate() {
     const createBtn = document.getElementById("createBtn");
@@ -114,7 +114,7 @@ function clearCreateFields() {
 }
 
 //
-// ================= EDIT =================
+// edit
 //
 function setupEdit() {
     const editBtn = document.getElementById("editBtn");
@@ -155,7 +155,7 @@ function setupEdit() {
 }
 
 //
-// ================= DELETE =================
+// delete
 //
 function setupDelete() {
     const deleteBtn = document.getElementById("deleteBtn");
