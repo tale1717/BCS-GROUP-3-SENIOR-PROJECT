@@ -117,6 +117,16 @@ nav a {
     cursor: pointer;
 }
 
+.primary-btn-logout {
+    background: darkred;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
 .secondary-btn {
     background: #e0e0e0;
     border: 1px solid #ccc;

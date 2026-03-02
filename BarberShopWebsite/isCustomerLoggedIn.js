@@ -5,7 +5,9 @@ import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
 document.addEventListener("DOMContentLoaded", function () {
 
     const navLink = document.getElementById("profile-login");
-    const logoutLink = document.getElementById("logout-link"); // optional logout anchor
+    const logoutButton = document.getElementById("logout-button");
+    const registerButton = document.getElementById("home-register-button");
+    const registerButtonText = document.getElementById("home-register-button-text");
     if (!navLink) return;
 
     onAuthStateChanged(auth, async (user) => {
@@ -15,8 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
             navLink.textContent = "Sign In";
             navLink.href = "customer-login.html";
             navLink.style.display = "inline";
-
-            if (logoutLink) logoutLink.style.display = "none";
+            registerButton.href = "register.html";
             return;
         }
 
@@ -28,8 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 navLink.textContent = "Sign In";
                 navLink.href = "customer-login.html";
                 navLink.style.display = "inline";
+                registerButton.href = "register.html";
 
-                if (logoutLink) logoutLink.style.display = "none";
                 return;
             }
 
@@ -38,20 +39,27 @@ document.addEventListener("DOMContentLoaded", function () {
             navLink.href = "customer-profile.html";
             navLink.style.display = "inline";
 
-            // Optional Logout Support
-            if (logoutLink) {
-                logoutLink.style.display = "inline";
-                logoutLink.onclick = async function (e) {
-                    e.preventDefault();
-                    await signOut(auth);
-                    window.location.href = "index.html";
-                };
-            }
+            registerButtonText.textContent = "Profile";
+            registerButton.href = "customer-profile.html";
 
         } catch (error) {
             console.error("Auth state check failed:", error.code, error.message);
         }
 
     });
+
+    if (logoutButton) {
+        logoutButton.addEventListener("click", async (e) => {
+            e.preventDefault();
+            try {
+                await signOut(auth);
+                console.log("User logged out");
+                window.location.href = "./"; // redirect after logout
+            } catch (error) {
+                console.error("Sign-out error:", error);
+                alert("Failed to log out. Try again.");
+            }
+        });
+    }
 
 });
