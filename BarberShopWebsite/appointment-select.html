@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="calendar.css">
     <script type="module" src="isCustomerLoggedIn.js"></script>
     <script type="module" src="calendar.js"></script>
+    <script type="module" src="appointment-select.js"></script>
+    <script type="module" src="time-select.js"></script>
 </head>
 <body>
 
@@ -67,8 +69,13 @@
 
         <div class="form-container">
             <div class="custom-select">
+                Date:
+                <p id="date-display" class="input-select"></p>
+                <input type="hidden" id="date">
+            </div>
+            <div class="custom-select">
                 Barber:
-                <select class="input-select">
+                <select class="input-select" id="barber">
                     <option>Talero</option>
                     <option>Thai</option>
                     <option>Tobias</option>
@@ -77,18 +84,18 @@
             </div>
             <div class="custom-select">
                 Time:
-                <input type="time" class="input-select">
+                <select class="input-select" id="time"></select>
             </div>
             <div class="custom-select">
                 Type of Haircut:
-                <select class="input-select">
-                    <option>Regular</option>
-                    <option>Fade</option>
-                    <option>Beard Trim</option>
-                    <option>Hot Towel</option>
+                <select class="input-select" id="service">
+                    <option value="Regular">Regular ($30)</option>
+                    <option value="Fade">Fade ($30)</option>
+                    <option value="Beard Trim">Beard Trim ($20)</option>
+                    <option value="Hot Towel">Hot Towel ($25)</option>
                 </select>
             </div>
-            <a href="appointment-confirm.html" class="btn-confirm">Confirm Appointment</a>
+            <a href="appointment-confirm.html" class="btn-confirm" id="confirm-appointment">Confirm Appointment</a>
         </div>
     </div>
 </main>

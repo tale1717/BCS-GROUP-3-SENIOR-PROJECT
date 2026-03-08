@@ -11,8 +11,17 @@ const months = [
     "July", "August", "September", "October", "November", "December"
 ];
 
-let clickedDay = null;
+let clickedDay = date.getDate();   // default to today
 let selectedDayElement = null;
+
+const displayDate = document.getElementById("date-display");
+const monthNumber = String(month + 1).padStart(2, '0');
+const dayNumber = String(clickedDay).padStart(2, '0');
+
+let storedDate = `${year}-${monthNumber}-${dayNumber}`;
+
+document.getElementById("date").value = storedDate;
+console.log("Stored:", storedDate);
 
 const manipulate = () => {
     let dayone = new Date(year, month, 1).getDay();
@@ -53,6 +62,7 @@ function addClickListenersToDays() {
     const allDays = day.querySelectorAll('li:not(.inactive)');
     allDays.forEach(li => {
         li.addEventListener('click', () => {
+
             if (selectedDayElement) {
                 selectedDayElement.classList.remove('highlight');
             }
@@ -62,12 +72,29 @@ function addClickListenersToDays() {
 
             clickedDay = parseInt(li.getAttribute('data-day'));
 
-            console.log('Clicked day:', clickedDay);
+            // format month and day with leading zeros
+            const monthNumber = String(month + 1).padStart(2, '0');
+            const dayNumber = String(clickedDay).padStart(2, '0');
+
+            // storage format
+            const storedDate = `${year}-${monthNumber}-${dayNumber}`;
+            document.getElementById("date").value = storedDate;
+
+            // display format
+            const displayDateText = `${months[month]} ${clickedDay}, ${year}`;
+
+            displayDate.textContent = displayDateText;
+
+            console.log("Stored:", storedDate);
+            console.log("Display:", displayDateText);
         });
     });
 }
 
 manipulate();
+
+const todayDisplay = `${months[month]} ${clickedDay}, ${year}`;
+displayDate.textContent = todayDisplay;
 
 prenexIcons.forEach(icon => {
     icon.addEventListener("click", () => {
