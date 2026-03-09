@@ -124,3 +124,8 @@ header .calendar-current-date {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.disabled-day {
+    color: #aaa;
+    pointer-events: none;
+}
