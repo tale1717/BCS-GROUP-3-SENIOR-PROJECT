@@ -73,6 +73,19 @@ nav a {
     background: url("barber-seats.png") no-repeat 0px 45%;
 }
 
+.hero-about {
+    background-image: url("barber-about.png");
+    background-size: cover;
+    background-position: center;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    text-shadow: #000000 2px 2px 5px;
+}
+
 /* Info Section */
 .info {
     padding: 30px 0;
@@ -175,6 +188,32 @@ h1 {
 .bottom-info a {
     color: #efefef;
     padding: 0 60px;
+}
+
+/* About Us Styles */
+.hero-about h1 {
+    font-size: 64px;
+    margin: 0;
+}
+
+.hero-about h2 {
+    font-size: 32px;
+    margin: 0;
+}
+
+.mission-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px 0;
+}
+
+.mission-content {
+    display: flex;
+    flex-direction: column;
+    padding: 0 160px;
+    font-size: 20px;
 }
 
 /* Barber Cards Grid */
