@@ -5,6 +5,9 @@ import {
     addDoc,
     doc,
     getDoc,
+    getDocs,
+    deleteDoc,
+    updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
@@ -21,20 +24,20 @@ export async function getAppointment(appointmentId) {
     return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
 
-// Get Appointment from database to appointment modules
+// Get all appointments
 export async function getAppointments() {
 
     const snap = await getDocs(collection(db, "appointments"));
 
-    return snap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
+    return snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
     }));
 
 }
 
 
-// update Appointment  from appointment modules to firebase
+// Update appointment
 export async function updateAppointment(id, data) {
 
     await updateDoc(doc(db, "appointments", id), data);
@@ -42,9 +45,10 @@ export async function updateAppointment(id, data) {
 }
 
 
-// Delete appointment from appointment modules
+// Delete appointment
 export async function deleteAppointment(id) {
 
     await deleteDoc(doc(db, "appointments", id));
+
 
 }

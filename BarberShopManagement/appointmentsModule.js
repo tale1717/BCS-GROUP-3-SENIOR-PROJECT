@@ -1,9 +1,10 @@
+console.log("appointmentsModule loaded");
 import {
     createAppointment,
     getAppointments,
     updateAppointment,
     deleteAppointment
-} from "../Collections/appointments.js";
+} from "../BarberShopWebsite/Collections/appointments.js";
 
 let allAppointments = [];
 
@@ -14,6 +15,11 @@ async function init() {
     await loadAppointments();
     setupSearch();
     setupCreate();
+
+    // Close create new appointment modal when clicking Cancel
+    document.getElementById("cancelAppointment").onclick = () => {
+        document.getElementById("appointmentModal").style.display = "none";
+    };
 
 }
 
@@ -38,7 +44,7 @@ function renderTable(list){
 <td>${a.barber}</td>
 <td>${a.service}</td>
 <td>${formatDate(a.datetime)}</td>
-<td>$${a.price}</td>
+
 <td><span class="status ${a.status}">${a.status}</span></td>
 <td>
 <button class="edit" data-id="${a.id}">Edit</button>
@@ -67,6 +73,8 @@ function setupSearch(){
 
     const input = document.getElementById("searchAppointment");
 
+    if(!input) return;
+
     input.addEventListener("input", e => {
 
         const term = e.target.value.toLowerCase();
@@ -89,35 +97,43 @@ function setupCreate(){
     const btn = document.getElementById("createAppointmentBtn");
     const modal = document.getElementById("appointmentModal");
 
-    btn.onclick = () => modal.style.display = "block";
+    if(!btn || !modal){
+        console.error("Create button or modal not found");
+        return;
+    }
 
-    document.getElementById("saveAppointment").onclick = async () => {
+    btn.onclick = () => {
+        modal.style.display = "block";
+    };
+
+    const saveBtn = document.getElementById("saveAppointment");
+
+    if(!saveBtn) return;
+
+    saveBtn.onclick = async () => {
 
         await createAppointment({
             customer: document.getElementById("a-customer").value,
             barber: document.getElementById("a-barber").value,
             service: document.getElementById("a-service").value,
-            price: document.getElementById("a-price").value,
             datetime: document.getElementById("a-datetime").value,
             status: document.getElementById("a-status").value
         });
 
         modal.style.display = "none";
-
         loadAppointments();
-
     };
 
 }
 
 
-function setupActions(){
+function setupActions() {
 
     document.querySelectorAll(".delete").forEach(btn => {
 
         btn.onclick = async () => {
 
-            if(!confirm("Cancel this appointment?")) return;
+            if (!confirm("Cancel this appointment?")) return;
 
             await deleteAppointment(btn.dataset.id);
 

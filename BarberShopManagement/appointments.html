@@ -39,7 +39,7 @@
                 <p>Manage and schedule appointments</p>
             </div>
 
-            <button id="createAppointmentBtn" class="create-buttons">
+            <button type="button" id="createAppointmentBtn" class="create-buttons">
                 + New Appointment
             </button>
 
@@ -99,8 +99,10 @@
             <option value="confirmed">Confirmed</option>
             <option value="pending">Pending</option>
         </select>
-
-        <button id="saveAppointment">Save Appointment</button>
+        <div class="modal-actions">
+            <button id="saveAppointment">Save Appointment</button>
+            <button id="cancelAppointment">Cancel</button>
+        </div>
 
     </div>
 
