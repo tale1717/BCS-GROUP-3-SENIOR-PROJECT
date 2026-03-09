@@ -1,20 +1,64 @@
-import { firebaseConfig } from "./firebaseConfig.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { auth } from "/BarberShopWebsite/firebase.js";
+import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+document.addEventListener("DOMContentLoaded", function () {
 
-const a = document.getElementById("profile-login");
+    const navLink = document.getElementById("profile-login");
+    const logoutButton = document.getElementById("logout-button");
+    const registerButton = document.getElementById("home-register-button");
+    const registerButtonText = document.getElementById("home-register-button-text");
+    if (!navLink) return;
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // User is logged in
-        a.textContent = "Profile";
-        a.href = "./customer-profile.html";
-    } else {
-        // User is not logged in
-        a.textContent = "Sign In";
-        a.href = "./customer-login.html";
+    onAuthStateChanged(auth, async (user) => {
+
+        // Not logged in
+        if (!user) {
+            navLink.textContent = "Sign In";
+            navLink.href = "customer-login.html";
+            navLink.style.display = "inline";
+            registerButton.href = "customer-register.html";
+            return;
+        }
+
+        try {
+            const profile = await getUserProfile(user.uid);
+
+            // If user exists but no profile OR not a customer
+            if (!profile || profile.role !== "customer") {
+                navLink.textContent = "Sign In";
+                navLink.href = "customer-login.html";
+                navLink.style.display = "inline";
+                registerButton.href = "customer-register.html";
+                return;
+            }
+
+            // Logged in as customer
+            navLink.textContent = "Profile";
+            navLink.href = "customer-profile.html";
+            navLink.style.display = "inline";
+
+            registerButtonText.textContent = "Profile";
+            registerButton.href = "customer-profile.html";
+
+        } catch (error) {
+            console.error("Auth state check failed:", error.code, error.message);
+        }
+
+    });
+
+    if (logoutButton) {
+        logoutButton.addEventListener("click", async (e) => {
+            e.preventDefault();
+            try {
+                await signOut(auth);
+                console.log("User logged out");
+                window.location.href = "./"; // redirect after logout
+            } catch (error) {
+                console.error("Sign-out error:", error);
+                alert("Failed to log out. Try again.");
+            }
+        });
     }
+
 });

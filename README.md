@@ -1,0 +1,1 @@
+A web based application and soon website for Triple T and G Barber's customers, employees, and managers. It should handle making appointments, rating barbers, and much more. Senior Project for Jozka Guaman, Vinh Co Thai, Jared Tobias, and David Talero of Farmingdale State College.

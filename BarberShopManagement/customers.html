@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Customer Management</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="./customersModule.js"></script>
+</head>
+
+<body>
+<div class="app-container">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="logo">
+            <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
+        </div>
+
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li>Appointments</li>
+            <li class="active"><a href="customers.html">Customers</a></li>
+            <li>Barbers</li>
+        </ul>
+
+        <a href="dashboard.html"><li>back</li></a>
+
+    </nav>
+
+    <!-- RIGHT CONTENT -->
+    <main class="content">
+
+        <header class="page-header">
+            <h1>Customer Management</h1>
+
+            <div class="toolbar">
+
+                <!-- search function -->
+                <input type="text" id="searchInput" placeholder="🔍 Search customers..." />
+
+                <!-- action button -->
+                <button id="createBtn" class="create-buttons">+ Create</button>
+                <button id="editBtn" class="edit-button">Edit</button>
+                <button id="deleteBtn" class="danger">Delete</button>
+
+            </div>
+        </header>
+
+        <!-- customer list area-->
+        <div class="card">
+            <table id="customer-table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                </tr>
+                </thead>
+                <tbody id="customer-body"></tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- create customer -->
+<div id="createModal" class="modal">
+    <div class="modal-content">
+        <h2>Create Customer</h2><br><br>
+        <label class="text">Customer Name</label>
+        <input id="c-name" class="text-field" placeholder="Full Name" /> <br><br>
+        <label class="text">Customer Phone</label>
+        <input id="c-phone" class="text-field" placeholder="Phone" /> <br><br>
+        <label class="text">Customer Email</label>
+        <input id="c-email" class="text-field" placeholder="Email" /> <br><br>
+        <div class="modal-action-forButtons">
+            <button id="saveCreate" class="create-buttons">Save</button>
+            <button id="cancelCreate" class="cancel-buttons">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- edit customer -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h2>Edit Customer</h2> <br><br>
+        <label class="text">Customer Name</label>
+        <input id="e-name" class="text-field" placeholder="Name" /> <br><br>
+        <label class="text">Customer Phone</label>
+        <input id="e-phone"class="text-field" placeholder="Phone" /> <br><br>
+        <label class="text">Customer Email</label>
+        <input id="e-email" class="text-field" placeholder="Email" /> <br><br>
+        <div class="modal-action-forButtons">
+            <button id="saveEdit" class="edit-button">Update</button>
+            <button id="cancelEdit" class="cancel-buttons">Cancel</button>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
