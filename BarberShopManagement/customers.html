@@ -86,11 +86,18 @@
 <!-- edit customer -->
 <div id="editModal" class="modal">
     <div class="modal-content">
-        <h2>Edit Customer</h2>
-        <input id="e-name" placeholder="Name" />
-        <input id="e-phone" placeholder="Phone" />
-        <input id="e-email" placeholder="Email" />
-        <button id="saveEdit">Update</button>
+        <h2>Edit Customer</h2> <br><br>
+        <label class="text">Customer Name</label>
+        <input id="e-name" class="text-field" placeholder="Name" /> <br><br>
+        <label class="text">Customer Phone</label>
+        <input id="e-phone"class="text-field" placeholder="Phone" /> <br><br>
+        <label class="text">Customer Email</label>
+        <input id="e-email" class="text-field" placeholder="Email" /> <br><br>
+        <div class="modal-action-forButtons">
+            <button id="saveEdit" class="edit-button">Update</button>
+            <button id="cancelEdit" class="cancel-buttons">Cancel</button>
+        </div>
+
     </div>
 </div>
 
