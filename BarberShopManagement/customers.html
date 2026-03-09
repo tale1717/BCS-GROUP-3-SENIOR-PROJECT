@@ -69,11 +69,17 @@
 <!-- create customer -->
 <div id="createModal" class="modal">
     <div class="modal-content">
-        <h2>Create Customer</h2>
-        <input id="c-name" placeholder="Full Name" />
-        <input id="c-phone" placeholder="Phone" />
-        <input id="c-email" placeholder="Email" />
-        <button id="saveCreate">Save</button>
+        <h2>Create Customer</h2><br><br>
+        <label class="text">Customer Name</label>
+        <input id="c-name" class="text-field" placeholder="Full Name" /> <br><br>
+        <label class="text">Customer Phone</label>
+        <input id="c-phone" class="text-field" placeholder="Phone" /> <br><br>
+        <label class="text">Customer Email</label>
+        <input id="c-email" class="text-field" placeholder="Email" /> <br><br>
+        <div class="modal-action-forButtons">
+            <button id="saveCreate" class="create-buttons">Save</button>
+            <button id="cancelCreate" class="cancel-buttons">Cancel</button>
+        </div>
     </div>
 </div>
 
