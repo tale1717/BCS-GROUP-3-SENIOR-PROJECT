@@ -1,10 +1,10 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { auth } from "/BarberShopWebsite/firebase.js";
 import { createUserProfile, getUserProfile } from "/BarberShopWebsite/Collections/users.js";
+import { createCustomerProfile } from "/BarberShopWebsite/Collections/customers.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // Login form (only runs on pages that actually have signin-form)
     const signinForm = document.getElementById("signin-form");
     if (signinForm) {
         signinForm.addEventListener("submit", async function (e) {
@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Register form (only runs on pages that actually have register-form)
     const registerForm = document.getElementById("register-form");
     if (registerForm) {
         registerForm.addEventListener("submit", async function (e) {
@@ -65,6 +64,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     { firstName, lastName, dob },
                     "customer"
                 );
+
+                await createCustomerProfile(cred.user.uid, {
+                    firstName,
+                    lastName,
+                    dob,
+                    email
+                });
 
                 alert("Registration successful! You can now log in.");
                 window.location.href = "customer-login.html";
