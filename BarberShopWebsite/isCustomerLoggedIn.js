@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 navLink.textContent = "Sign In";
                 navLink.href = "customer-login.html";
                 navLink.style.display = "inline";
-                registerButton.href = "register.html";
+                registerButton.href = "register.html/";
 
                 return;
             }
