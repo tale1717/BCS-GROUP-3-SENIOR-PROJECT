@@ -29,4 +29,6 @@ export async function updateCustomer(id, data) {
 // DELETE
 export async function deleteCustomer(id) {
     await deleteDoc(doc(db, "customers", id));
+
+
 }
