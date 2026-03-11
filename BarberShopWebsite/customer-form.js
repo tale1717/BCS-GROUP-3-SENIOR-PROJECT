@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const firstName = document.getElementById("first-name").value.trim();
             const lastName = document.getElementById("last-name").value.trim();
             const email = document.getElementById("customer-email").value.trim();
+            const phone = document.getElementById("phone-number").value.trim();
             const dob = document.getElementById("customer-dob").value;
             const password = document.getElementById("customer-password").value;
             const confirmPassword = document.getElementById("ConfirmPassword").value;
@@ -61,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 await createUserProfile(
                     cred.user,
-                    { firstName, lastName, dob },
+                    { firstName, lastName, dob, phone },
                     "customer"
                 );
 

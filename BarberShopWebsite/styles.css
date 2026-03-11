@@ -115,9 +115,10 @@ nav a {
 }
 
 /* Buttons */
-.buttons {
+
+.button-group {
     display: flex;
-    gap: 15px;
+    gap: 10px; /* space between buttons */
 }
 
 .primary-btn {
@@ -553,4 +554,12 @@ th, td {
   padding: 12px;
   border-bottom: 1px solid #eee;
   text-align: left;
+}
+
+.selected-row {
+    background-color: #d0ebff;  /* Light blue highlight */
+}
+
+.todo {
+    color: orange;
 }
