@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Triple T Barbers - My Profile</title>
+    <title>Triple T&G Barbers - My Profile</title>
+    <link rel="icon" href="./3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
+    <script type="module" src="/BarberShopWebsite/isCustomerLoggedIn.js"></script>
+    <script type="module" src="customer-profile.js"></script>
 
     <style>
 
@@ -59,17 +62,21 @@
 
             <h2>My Information</h2>
 
-            <p><strong>Name:</strong> <span id="nameText">John Doe</span></p>
-            <p><strong>Email:</strong> <span id="emailText">john@email.com</span></p>
-            <p><strong>Mobile Number:</strong> <span id="mobileText">1234567890</span></p>
-            <p><strong>Date of Birth:</strong> <span id="dobText">2000-01-01</span></p>
+            <p><strong>Name:</strong> <span id="nameText"></span></p>
+            <p><strong>Email:</strong> <span id="emailText"></span></p>
+            <p><strong>Mobile Number:</strong> <span id="mobileText"></span></p>
+            <p><strong>Date of Birth:</strong> <span id="dobText"></span></p>
 
-            <button class="primary-btn" id="editBtn">Edit Profile</button>
-            <button class="primary-btn">Change Password</button>
+            <div class="button-group">
+                <button class="primary-btn" id="editBtn">Edit Profile</button>
+                <button class="primary-btn">Change Password</button>
+                <button class="primary-btn-logout" id="logout-button">Log Out</button>
+            </div>
 
             <div class="edit-form" id="editForm">
 
-                <input id="nameInput" type="text" placeholder="Enter Name">
+                <input id="fnameInput" type="text" placeholder="Enter First Name">
+                <input id="lnameInput" type="text" placeholder="Enter Last Name">
                 <input id="emailInput" type="email" placeholder="Enter Email">
                 <input id="mobileInput" type="text" placeholder="Enter Mobile Number">
                 <input id="dobInput" type="date">
@@ -94,8 +101,8 @@
 
                 <tbody>
                 <tr>
-                    <td>03/01/2026</td>
-                    <td>$35</td>
+                    <td>None</td>
+                    <td></td>
                 </tr>
                 </tbody>
 
@@ -107,7 +114,7 @@
 
     <div class="upcoming-card">
 
-        <h2>Upcoming Appointment</h2>
+        <h2>Upcoming Appointments</h2>
 
         <table>
 
@@ -120,20 +127,43 @@
             </tr>
             </thead>
 
-            <tbody>
-            <tr>
-                <td>03/15/2026</td>
-                <td>Mike</td>
-                <td>Haircut</td>
-                <td>2:00 PM</td>
-            </tr>
-            </tbody>
+            <tbody id="appointments-table"></tbody>
 
         </table>
 
         <br>
 
-        <button class="primary-btn">Cancel Appointment</button>
+        <button class="primary-btn" id="cancel-appointment-btn">Cancel Appointment</button>
+        <button class="primary-btn" id="edit-appointment-btn">Edit Appointment</button>
+
+        <div class="edit-form" id="editAppointmentForm">
+
+            Date: <input id="editDate" type="date">
+
+            Barber: <select id="editBarber">
+                        <option>Talero</option>
+                        <option>Thai</option>
+                        <option>Tobias</option>
+                        <option>Guaman</option>
+                    </select>
+            <br>
+
+            Service: <select id="editService">
+                        <option value="Regular">Regular ($30)</option>
+                        <option value="Fade">Fade ($30)</option>
+                        <option value="Beard Trim">Beard Trim ($20)</option>
+                        <option value="Hot Towel">Hot Towel ($25)</option>
+                    </select>
+            <br>
+
+            Time: <input id="editTime" type="time">
+
+            <button class="primary-btn" id="saveAptBtn">Save</button>
+            <button class="primary-btn" id="cancelAptBtn">Cancel</button>
+
+            <br> <br> <h2 class="todo">This function is in Work In Progress</h2>
+
+        </div>
 
     </div>
 
@@ -155,10 +185,10 @@
 
             <tbody>
             <tr>
-                <td>02/10/2026</td>
-                <td>Chris</td>
-                <td>Fade</td>
-                <td>Completed</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
             </tbody>
 
@@ -167,8 +197,6 @@
     </div>
 
 </section>
-
-<script src="customer-profile.js"></script>
 
 </body>
 </html>

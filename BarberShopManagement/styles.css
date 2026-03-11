@@ -79,6 +79,8 @@
 }
 .status.confirmed { color: green; background: #e6ffed; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; }
 
+.status.cancelled { color: red; background: #ffd3d3; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; }
+
 .page-header {
     display: flex;
     justify-content: space-between;
