@@ -181,3 +181,20 @@ th, td {
     border-radius: 6px;
     width: 220px;
 }
+
+/*appointment Module*/
+.status{
+    padding:4px 10px;
+    border-radius:12px;
+    font-size:12px;
+}
+
+.status.confirmed{
+    background:#d1fae5;
+    color:#065f46;
+}
+
+.status.pending{
+    background:#fef3c7;
+    color:#92400e;
+}
