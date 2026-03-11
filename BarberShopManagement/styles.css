@@ -58,6 +58,7 @@
     padding: 20px;
     border-radius: 12px;
     border: 1px solid #eee;
+    width: 100%;
 }
 
 .appointment-item {
@@ -102,9 +103,20 @@
     align-items: center;
     background: cornflowerblue;
     color: white;
+    padding:8px 30px;
+    border-radius: 10px;
+}
+
+.cancel-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #a80505;
+    color: white;
     padding:8px 12px;
     border-radius: 10px;
 }
+
 .edit-button {
     background: gray;
     color: white;
@@ -133,12 +145,29 @@ th, td {
 }
 
 .modal-content {
+
     background: white;
-    width: 300px;
+    width: 30%;
     margin: 10% auto;
     padding: 20px;
     border-radius: 8px;
 }
+
+.text-field{
+    width: 100%;
+    padding: 10px 50px;
+    border-radius: 10px;
+    align-content: normal;
+
+}
+.modal-action-forButtons{
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+
 
 .toolbar {
     display: flex;
@@ -151,4 +180,21 @@ th, td {
     border: 1px solid #ddd;
     border-radius: 6px;
     width: 220px;
+}
+
+/*appointment Module*/
+.status{
+    padding:4px 10px;
+    border-radius:12px;
+    font-size:12px;
+}
+
+.status.confirmed{
+    background:#d1fae5;
+    color:#065f46;
+}
+
+.status.pending{
+    background:#fef3c7;
+    color:#92400e;
 }

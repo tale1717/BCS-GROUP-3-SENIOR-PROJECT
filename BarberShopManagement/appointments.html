@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Appointments</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="./appointmentsModule.js"></script>
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+
+        <div class="logo">
+            <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
+        </div>
+
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li class="active"><a href="appointments.html">Appointments</a></li>
+            <li><a href="customers.html">Customers</a></li>
+            <li><a href="barbers.html">Barbers</a></li>
+            <li><a href="services.html">Services</a></li>
+        </ul>
+
+    </nav>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <header class="page-header">
+
+            <div>
+                <h1>Appointments</h1>
+                <p>Manage and schedule appointments</p>
+            </div>
+
+            <button type="button" id="createAppointmentBtn" class="create-buttons">
+                + New Appointment
+            </button>
+
+        </header>
+
+
+        <!-- SEARCH -->
+        <div class="card">
+            <input
+                    id="searchAppointment"
+                    placeholder="Search appointments..."
+                    class="search"
+            />
+        </div>
+
+
+        <!-- APPOINTMENT TABLE -->
+        <div class="card">
+
+            <table>
+
+                <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Barber</th>
+                    <th>Service</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody id="appointment-body"></tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+</div>
+
+
+<!-- CREATE APPOINTMENT MODAL -->
+
+<div id="appointmentModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Create Appointment</h2>
+
+        <input id="a-customer" placeholder="Customer Name">
+        <input id="a-barber" placeholder="Barber Name">
+        <input id="a-service" placeholder="Service">
+        <input type="datetime-local" id="a-datetime">
+
+        <select id="a-status">
+            <option value="confirmed">Confirmed</option>
+            <option value="pending">Pending</option>
+        </select>
+        <div class="modal-actions">
+            <button id="saveAppointment">Save Appointment</button>
+            <button id="cancelAppointment">Cancel</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+</html>

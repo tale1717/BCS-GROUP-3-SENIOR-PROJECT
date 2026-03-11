@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const logoutButton = document.getElementById("logout-button");
     const registerButton = document.getElementById("home-register-button");
     const registerButtonText = document.getElementById("home-register-button-text");
+    const bookNowButton = document.getElementById("book-now");
+    const bookAppointmentButton = document.getElementById("book-appointment-button");
     if (!navLink) return;
 
     onAuthStateChanged(auth, async (user) => {
@@ -17,7 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
             navLink.textContent = "Sign In";
             navLink.href = "customer-login.html";
             navLink.style.display = "inline";
-            registerButton.href = "register.html";
+            registerButton.href = "customer-register.html";
+            bookNowButton.href = "customer-login.html";
+            bookAppointmentButton.href = "customer-login.html";
             return;
         }
 
@@ -29,8 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 navLink.textContent = "Sign In";
                 navLink.href = "customer-login.html";
                 navLink.style.display = "inline";
-                registerButton.href = "register.html/";
-
+                registerButton.href = "customer-register.html";
+                bookNowButton.href = "customer-login.html";
+                bookAppointmentButton.href = "customer-login.html";
                 return;
             }
 
@@ -41,6 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             registerButtonText.textContent = "Profile";
             registerButton.href = "customer-profile.html";
+
+            bookNowButton.href = "appointment.html";
+            bookAppointmentButton.href = "appointment.html";
 
         } catch (error) {
             console.error("Auth state check failed:", error.code, error.message);

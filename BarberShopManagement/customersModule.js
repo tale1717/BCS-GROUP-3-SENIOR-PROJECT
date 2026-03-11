@@ -9,6 +9,14 @@ let allCustomers = [];
 let selectedId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Cancel button closes create modal
+    document.getElementById("cancelCreate").onclick = () => {
+        document.getElementById("createModal").style.display = "none";
+    };
+    //cancel button closes edit modal
+    document.getElementById("cancelEdit").onclick = () => {
+        document.getElementById("editModal").style.display = "none";
+    };
     initialize();
 });
 
@@ -106,6 +114,8 @@ function setupCreate() {
         await loadCustomers();
     });
 }
+
+
 
 function clearCreateFields() {
     document.getElementById("c-name").value = "";
