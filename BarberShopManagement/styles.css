@@ -198,3 +198,25 @@ th, td {
     background:#fef3c7;
     color:#92400e;
 }
+
+.status{
+    padding:5px 12px;
+    border-radius:12px;
+    font-size:13px;
+    font-weight:500;
+}
+
+.status.confirmed{
+    background:#d1fae5;
+    color:#065f46;
+}
+
+.status.pending{
+    background:#fef3c7;
+    color: #cd916c;
+}
+
+.status.cancelled{
+    background:#fee2e2;
+    color:#991b1b;
+}
