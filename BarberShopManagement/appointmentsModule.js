@@ -5,6 +5,9 @@ import {
     updateAppointment,
     deleteAppointment
 } from "../BarberShopWebsite/Collections/appointments.js";
+import {
+    getUserProfile
+} from "../BarberShopWebsite/Collections/users.js";
 
 let allAppointments = [];
 
@@ -26,36 +29,36 @@ async function init() {
 async function loadAppointments() {
 
     allAppointments = await getAppointments();
-    renderTable(allAppointments);
+    await renderTable(allAppointments);
 
 }
 
-function renderTable(list){
-
+async function renderTable(list) {
     const body = document.getElementById("appointment-body");
     body.innerHTML = "";
 
-    list.forEach(a => {
+    for (const a of list) {
+        // Get the user profile by customerUid
+        const user = await getUserProfile(a.customerUid);
+        const customerName = user ? (user.firstName + " " + user.lastName) : "Unknown";
 
         const row = document.createElement("tr");
 
         row.innerHTML = `
-<td>${a.customer}</td>
-<td>${a.barber}</td>
-<td>${a.service}</td>
-<td>${formatDate(a.date)}</td>
-<td>${formatDate(a.time)}</td>
-
-<td><span class="status ${a.status}">${a.status}</span></td>
-<td>
-<button class="edit" data-id="${a.id}">Edit</button>
-<button class="delete" data-id="${a.id}">Cancel</button>
-</td>
-`;
+            <td>${customerName}</td>
+            <td>${a.barber}</td>
+            <td>${a.service}</td>
+            <td>${a.date}</td>
+            <td>${a.time}</td>
+            <td><span class="status ${a.status}">${a.status}</span></td>
+            <td>
+            <button class="edit" data-id="${a.id}">Edit</button>
+            <button class="delete" data-id="${a.id}">Cancel</button>
+            </td>
+        `;
 
         body.appendChild(row);
-
-    });
+    }
 
     setupActions();
 
