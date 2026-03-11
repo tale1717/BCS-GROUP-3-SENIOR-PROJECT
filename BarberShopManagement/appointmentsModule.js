@@ -10,6 +10,7 @@ import {
 } from "../BarberShopWebsite/Collections/users.js";
 
 let allAppointments = [];
+let userCache = {};
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -38,9 +39,15 @@ async function renderTable(list) {
     body.innerHTML = "";
 
     for (const a of list) {
-        // Get the user profile by customerUid
-        const user = await getUserProfile(a.customerUid);
-        const customerName = user ? (user.firstName + " " + user.lastName) : "Unknown";
+
+        if (!userCache[a.customerUid]) {
+            const user = await getUserProfile(a.customerUid);
+            userCache[a.customerUid] = user
+                ? user.firstName + " " + user.lastName
+                : "Unknown";
+        }
+
+        const customerName = userCache[a.customerUid];
 
         const row = document.createElement("tr");
 
@@ -48,12 +55,12 @@ async function renderTable(list) {
             <td>${customerName}</td>
             <td>${a.barber}</td>
             <td>${a.service}</td>
-            <td>${a.date}</td>
+            <td>${formatDate(a.date)}</td>
             <td>${a.time}</td>
             <td><span class="status ${a.status}">${a.status}</span></td>
             <td>
-            <button class="edit" data-id="${a.id}">Edit</button>
-            <button class="delete" data-id="${a.id}">Cancel</button>
+                <button class="edit" data-id="${a.id}">Edit</button>
+                <button class="delete" data-id="${a.id}">Cancel</button>
             </td>
         `;
 
@@ -61,7 +68,6 @@ async function renderTable(list) {
     }
 
     setupActions();
-
 }
 
 function formatDate(date){
@@ -76,18 +82,25 @@ function formatDate(date){
 function setupSearch(){
 
     const input = document.getElementById("searchAppointment");
-
     if(!input) return;
 
     input.addEventListener("input", e => {
 
         const term = e.target.value.toLowerCase();
 
-        const filtered = allAppointments.filter(a =>
-            a.customer.toLowerCase().includes(term) ||
-            a.barber.toLowerCase().includes(term) ||
-            a.service.toLowerCase().includes(term)
-        );
+        const filtered = allAppointments.filter(a => {
+
+            const name = (userCache[a.customerUid] || "").toLowerCase();
+
+            return (
+                name.includes(term) ||
+                (a.barber || "").toLowerCase().includes(term) ||
+                (a.service || "").toLowerCase().includes(term) ||
+                (a.date || "").toLowerCase().includes(term) ||
+                (a.time || "").toLowerCase().includes(term)
+            );
+
+        });
 
         renderTable(filtered);
 
