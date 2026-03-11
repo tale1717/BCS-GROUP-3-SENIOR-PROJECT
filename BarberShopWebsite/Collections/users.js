@@ -15,6 +15,7 @@ export async function createUserProfile(user, profile, role = "customer") {
         firstName: profile.firstName || "",
         lastName: profile.lastName || "",
         dob: profile.dob || "",
+        phone: profile.phone || "",
         createdAt: serverTimestamp()
     });
 }
