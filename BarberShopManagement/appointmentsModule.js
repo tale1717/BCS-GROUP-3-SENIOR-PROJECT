@@ -43,7 +43,8 @@ function renderTable(list){
 <td>${a.customer}</td>
 <td>${a.barber}</td>
 <td>${a.service}</td>
-<td>${formatDate(a.datetime)}</td>
+<td>${formatDate(a.date)}</td>
+<td>${formatDate(a.time)}</td>
 
 <td><span class="status ${a.status}">${a.status}</span></td>
 <td>
@@ -116,7 +117,8 @@ function setupCreate(){
             customer: document.getElementById("a-customer").value,
             barber: document.getElementById("a-barber").value,
             service: document.getElementById("a-service").value,
-            datetime: document.getElementById("a-datetime").value,
+            date: document.getElementById("a-date").value,
+            time: document.getElementById("a-time").value,
             status: document.getElementById("a-status").value
         });
 
