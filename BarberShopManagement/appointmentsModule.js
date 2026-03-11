@@ -5,8 +5,12 @@ import {
     updateAppointment,
     deleteAppointment
 } from "../BarberShopWebsite/Collections/appointments.js";
+import {
+    getUserProfile
+} from "../BarberShopWebsite/Collections/users.js";
 
 let allAppointments = [];
+let userCache = {};
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -26,39 +30,44 @@ async function init() {
 async function loadAppointments() {
 
     allAppointments = await getAppointments();
-    renderTable(allAppointments);
+    await renderTable(allAppointments);
 
 }
 
-function renderTable(list){
-
+async function renderTable(list) {
     const body = document.getElementById("appointment-body");
     body.innerHTML = "";
 
-    list.forEach(a => {
+    for (const a of list) {
+
+        if (!userCache[a.customerUid]) {
+            const user = await getUserProfile(a.customerUid);
+            userCache[a.customerUid] = user
+                ? user.firstName + " " + user.lastName
+                : "Unknown";
+        }
+
+        const customerName = userCache[a.customerUid];
 
         const row = document.createElement("tr");
 
         row.innerHTML = `
-<td>${a.customer}</td>
-<td>${a.barber}</td>
-<td>${a.service}</td>
-<td>${formatDate(a.date)}</td>
-<td>${formatDate(a.time)}</td>
-
-<td><span class="status ${a.status}">${a.status}</span></td>
-<td>
-<button class="edit" data-id="${a.id}">Edit</button>
-<button class="delete" data-id="${a.id}">Cancel</button>
-</td>
-`;
+            <td>${customerName}</td>
+            <td>${a.barber}</td>
+            <td>${a.service}</td>
+            <td>${formatDate(a.date)}</td>
+            <td>${a.time}</td>
+            <td><span class="status ${a.status}">${a.status}</span></td>
+            <td>
+                <button class="edit" data-id="${a.id}">Edit</button>
+                <button class="delete" data-id="${a.id}">Cancel</button>
+            </td>
+        `;
 
         body.appendChild(row);
-
-    });
+    }
 
     setupActions();
-
 }
 
 function formatDate(date){
@@ -73,18 +82,25 @@ function formatDate(date){
 function setupSearch(){
 
     const input = document.getElementById("searchAppointment");
-
     if(!input) return;
 
     input.addEventListener("input", e => {
 
         const term = e.target.value.toLowerCase();
 
-        const filtered = allAppointments.filter(a =>
-            a.customer.toLowerCase().includes(term) ||
-            a.barber.toLowerCase().includes(term) ||
-            a.service.toLowerCase().includes(term)
-        );
+        const filtered = allAppointments.filter(a => {
+
+            const name = (userCache[a.customerUid] || "").toLowerCase();
+
+            return (
+                name.includes(term) ||
+                (a.barber || "").toLowerCase().includes(term) ||
+                (a.service || "").toLowerCase().includes(term) ||
+                (a.date || "").toLowerCase().includes(term) ||
+                (a.time || "").toLowerCase().includes(term)
+            );
+
+        });
 
         renderTable(filtered);
 
