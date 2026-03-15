@@ -3,7 +3,10 @@ import {
     getCustomers,
     updateCustomer,
     deleteCustomer
-} from "../BarberShopWebsite/Collections/customers.js";
+} from "../BarbershopWebsite/Collections/customers.js";
+import {
+    getAllUsers
+} from "../BarberShopWebsite/Collections/users.js";
 
 let allCustomers = [];
 let selectedId = null;
@@ -38,38 +41,30 @@ async function initialize() {
 // Customer list
 //
 async function loadCustomers() {
-    allCustomers = await getCustomers();
-    renderTable(allCustomers);
+    const users = await getAllUsers();
+    allCustomers = users.filter(u => u.role === "customer");
+    await renderTable(allCustomers);
 }
 
-function getDisplayName(customer) {
-    if (customer.name && customer.name.trim() !== "") {
-        return customer.name;
-    }
-
-    const first = customer.firstName || "";
-    const last = customer.lastName || "";
-    return `${first} ${last}`.trim();
-}
-
-function renderTable(list) {
+async function renderTable(list) {
     const body = document.getElementById("customer-body");
     if (!body) return;
 
     body.innerHTML = "";
 
-    list.forEach(c => {
+    for (const c of list) {
         const row = document.createElement("tr");
 
         row.innerHTML = `
-            <td><input type="radio" name="selectCustomer" value="${c.id}"></td>
-            <td>${getDisplayName(c)}</td>
-            <td>${c.phone || ""}</td>
+            <td><input type="radio" name="selectCustomer" value="${c.uid}"></td>
+            <td>${c.firstName + " " + c.lastName}</td>
+            <td>${c.phone}</td>
             <td>${c.email || ""}</td>
         `;
 
         body.appendChild(row);
-    });
+
+    }
 
     document.querySelectorAll("input[name='selectCustomer']").forEach(radio => {
         radio.addEventListener("change", e => {
@@ -88,17 +83,12 @@ function setupSearch() {
     searchInput.addEventListener("input", e => {
         const term = e.target.value.toLowerCase();
 
-        const filtered = allCustomers.filter(c => {
-            const name = getDisplayName(c).toLowerCase();
-            const phone = (c.phone || "").toLowerCase();
-            const email = (c.email || "").toLowerCase();
-
-            return (
-                name.includes(term) ||
-                phone.includes(term) ||
-                email.includes(term)
-            );
-        });
+        const filtered = allCustomers.filter(c =>
+            (c.firstName || "").toLowerCase().includes(term) ||
+            (c.lastName || "").toLowerCase().includes(term) ||
+            (c.phone || "").includes(term) ||
+            (c.email || "").toLowerCase().includes(term)
+        );
 
         renderTable(filtered);
     });

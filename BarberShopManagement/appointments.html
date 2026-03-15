@@ -38,8 +38,8 @@
                 <h1>Appointments</h1>
                 <p>Manage and schedule appointments</p>
             </div>
-
-            <button id="createAppointmentBtn" class="create-buttons">
+ <!--TOOLBAR-->
+            <button type="button" id="createAppointmentBtn" class="create-buttons">
                 + New Appointment
             </button>
 
@@ -50,7 +50,7 @@
         <div class="card">
             <input
                     id="searchAppointment"
-                    placeholder="Search appointments..."
+                    placeholder="🔍 Search appointments..."
                     class="search"
             />
         </div>
@@ -100,8 +100,9 @@
         <select id="a-status">
             <option value="confirmed">Confirmed</option>
             <option value="pending">Pending</option>
+            <option value="cancelled">Cancelled</option>
         </select>
-        <div class="modal-actions">
+        <div class="modal-action-forButtons">
             <button id="saveAppointment">Save Appointment</button>
             <button id="cancelAppointment">Cancel</button>
         </div>
