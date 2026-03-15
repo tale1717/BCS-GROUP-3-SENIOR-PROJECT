@@ -55,7 +55,7 @@ async function renderTable(list) {
             <td>${customerName}</td>
             <td>${a.barber}</td>
             <td>${a.service}</td>
-            <td>${formatDate(a.date)}</td>
+            <td>${a.date}</td>
             <td>${a.time}</td>
             <td><span class="status ${a.status}">${a.status}</span></td>
             <td>
