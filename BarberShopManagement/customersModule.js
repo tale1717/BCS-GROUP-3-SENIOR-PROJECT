@@ -12,14 +12,20 @@ let allCustomers = [];
 let selectedId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Cancel button closes create modal
-    document.getElementById("cancelCreate").onclick = () => {
-        document.getElementById("createModal").style.display = "none";
-    };
-    //cancel button closes edit modal
-    document.getElementById("cancelEdit").onclick = () => {
-        document.getElementById("editModal").style.display = "none";
-    };
+    const cancelCreate = document.getElementById("cancelCreate");
+    if (cancelCreate) {
+        cancelCreate.onclick = () => {
+            document.getElementById("createModal").style.display = "none";
+        };
+    }
+
+    const cancelEdit = document.getElementById("cancelEdit");
+    if (cancelEdit) {
+        cancelEdit.onclick = () => {
+            document.getElementById("editModal").style.display = "none";
+        };
+    }
+
     initialize();
 });
 
@@ -60,7 +66,6 @@ async function renderTable(list) {
 
     }
 
-    // Handle selection
     document.querySelectorAll("input[name='selectCustomer']").forEach(radio => {
         radio.addEventListener("change", e => {
             selectedId = e.target.value;
@@ -69,7 +74,7 @@ async function renderTable(list) {
 }
 
 //
-// Search function
+// Search
 //
 function setupSearch() {
     const searchInput = document.getElementById("searchInput");
@@ -104,9 +109,9 @@ function setupCreate() {
     });
 
     saveCreate.addEventListener("click", async () => {
-        const name = document.getElementById("c-name").value;
-        const phone = document.getElementById("c-phone").value;
-        const email = document.getElementById("c-email").value;
+        const name = document.getElementById("c-name").value.trim();
+        const phone = document.getElementById("c-phone").value.trim();
+        const email = document.getElementById("c-email").value.trim();
 
         if (!name || !phone) {
             alert("Name and phone are required.");
@@ -121,16 +126,18 @@ function setupCreate() {
     });
 }
 
-
-
 function clearCreateFields() {
-    document.getElementById("c-name").value = "";
-    document.getElementById("c-phone").value = "";
-    document.getElementById("c-email").value = "";
+    const name = document.getElementById("c-name");
+    const phone = document.getElementById("c-phone");
+    const email = document.getElementById("c-email");
+
+    if (name) name.value = "";
+    if (phone) phone.value = "";
+    if (email) email.value = "";
 }
 
 //
-// edit
+// Edit
 //
 function setupEdit() {
     const editBtn = document.getElementById("editBtn");
@@ -148,17 +155,17 @@ function setupEdit() {
         const customer = allCustomers.find(c => c.id === selectedId);
         if (!customer) return;
 
-        document.getElementById("e-name").value = customer.name;
-        document.getElementById("e-phone").value = customer.phone;
+        document.getElementById("e-name").value = getDisplayName(customer);
+        document.getElementById("e-phone").value = customer.phone || "";
         document.getElementById("e-email").value = customer.email || "";
 
         editModal.style.display = "block";
     });
 
     saveEdit.addEventListener("click", async () => {
-        const name = document.getElementById("e-name").value;
-        const phone = document.getElementById("e-phone").value;
-        const email = document.getElementById("e-email").value;
+        const name = document.getElementById("e-name").value.trim();
+        const phone = document.getElementById("e-phone").value.trim();
+        const email = document.getElementById("e-email").value.trim();
 
         if (!selectedId) return;
 
@@ -171,7 +178,7 @@ function setupEdit() {
 }
 
 //
-// delete
+// Delete
 //
 function setupDelete() {
     const deleteBtn = document.getElementById("deleteBtn");
