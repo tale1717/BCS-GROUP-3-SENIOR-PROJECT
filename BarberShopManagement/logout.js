@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             await signOut(auth);
 
-            window.location.href = "../BarberShopWebsite/index.html";
+            window.location.href = "../BarberShopWebsite/";
 
         } catch (error) {
             console.error("Logout error:", error);
