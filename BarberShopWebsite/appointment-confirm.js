@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     onAuthStateChanged(auth, async (user) => {
-        // If you want confirm page to be viewable without login, remove this block.
+        // If you want to confirm page to be viewable without login, remove this block.
         if (!user) {
             detailsEl.textContent = "Please sign in to view your appointment confirmation.";
             if (viewLink) viewLink.style.display = "none";
