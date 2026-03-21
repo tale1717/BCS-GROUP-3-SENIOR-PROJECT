@@ -95,7 +95,7 @@ async function loadServices() {
     allServices.forEach(service => {
         const option = document.createElement("option");
         option.value = service.id;
-        option.textContent = `${service.serviceName} - $${service.price} - ${service.duration} min`;
+        option.textContent = `${service.serviceName} ($${service.price}, ${service.duration} min)`;
         serviceSelect.appendChild(option);
     });
 }

@@ -58,6 +58,7 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         await loadAppointments(user);
+        await loadAppointmentHistory(user);
     }
 });
 
@@ -211,3 +212,43 @@ editAppointmentBtn.addEventListener("click", async () => {
 cancelEditAppointment.addEventListener("click", async () => {
     editAptForm.style.display = "none";
 })
+
+async function loadAppointmentHistory(user) {
+    const historyTable = document.getElementById("appointment-history");
+
+    try {
+        const q = query(
+            collection(db, "appointments"),
+            where("customerUid", "==", user.uid),
+            where("status", "in", ["cancelled", "completed"])
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        historyTable.innerHTML = "";
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <tr>
+                    <td>${data.date}</td>
+                    <td>${data.barber}</td>
+                    <td>${data.service}</td>
+                    <td>
+                        <span class="status-${data.status}">
+                            ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}
+                        </span>                        
+                    </td>
+                    <td></td>
+                </tr>
+            `;
+
+            historyTable.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Error loading appointments:", error);
+    }
+}

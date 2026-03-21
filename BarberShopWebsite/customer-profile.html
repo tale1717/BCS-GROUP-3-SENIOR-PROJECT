@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="/BarberShopWebsite/isCustomerLoggedIn.js"></script>
     <script type="module" src="customer-profile.js"></script>
+    <script type="module" src="time-select.js"></script>
 
     <style>
 
@@ -148,15 +149,11 @@
                     </select>
             <br>
 
-            Service: <select id="editService">
-                        <option value="Regular">Regular ($30)</option>
-                        <option value="Fade">Fade ($30)</option>
-                        <option value="Beard Trim">Beard Trim ($20)</option>
-                        <option value="Hot Towel">Hot Towel ($25)</option>
-                    </select>
+            Service: <select id="service"></select>
             <br>
 
-            Time: <input id="editTime" type="time">
+            Time: <select id="time"></select>
+            <br>
 
             <button class="primary-btn" id="saveAptBtn">Save</button>
             <button class="primary-btn" id="cancelAptBtn">Cancel</button>
@@ -180,17 +177,11 @@
                 <th>Barber</th>
                 <th>Service</th>
                 <th>Status</th>
+                <th>Rating</th>
             </tr>
             </thead>
 
-            <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            </tbody>
+            <tbody id="appointment-history"></tbody>
 
         </table>
 
