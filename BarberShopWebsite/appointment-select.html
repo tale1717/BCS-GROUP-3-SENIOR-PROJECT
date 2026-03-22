@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="calendar.css">
     <script type="module" src="isCustomerLoggedIn.js"></script>
-    <script type="module" src="calendar.js"></script>
     <script type="module" src="appointment-select.js"></script>
     <script type="module" src="time-select.js"></script>
 </head>
@@ -83,18 +82,24 @@
                     <option>Guaman</option>
                 </select>
             </div>
+
+            <script>
+                const selectedBarber = sessionStorage.getItem("selectedBarber");
+                if (selectedBarber) {
+                    const select = document.getElementById("barber");
+                    if (select) select.value = selectedBarber;
+                }
+            </script>
+            <script type="module" src="calendar.js"></script>
+
             <div class="custom-select">
                 Time:
                 <select class="input-select" id="time"></select>
             </div>
+
             <div class="custom-select">
-                Type of Haircut:
-                <select class="input-select" id="service">
-                    <option value="Regular">Regular ($30)</option>
-                    <option value="Fade">Fade ($30)</option>
-                    <option value="Beard Trim">Beard Trim ($20)</option>
-                    <option value="Hot Towel">Hot Towel ($25)</option>
-                </select>
+                Type of Service:
+                <select class="input-select" id="service"></select>
             </div>
             <a href="appointment-confirm.html" class="btn-confirm" id="confirm-appointment">Confirm Appointment</a>
         </div>

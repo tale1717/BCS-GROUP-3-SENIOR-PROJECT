@@ -5,25 +5,23 @@
     <title>Appointments</title>
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="./appointmentsModule.js"></script>
+    <script type="module" src="logout.js"></script>
 </head>
-
 <body>
 
 <div class="app-container">
-
-    <!-- SIDEBAR -->
     <nav class="sidebar">
-
         <div class="logo">
             <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
         </div>
-
         <ul>
             <li><a href="dashboard.html">Dashboard</a></li>
             <li class="active"><a href="appointments.html">Appointments</a></li>
             <li><a href="customers.html">Customers</a></li>
             <li><a href="barbers.html">Barbers</a></li>
             <li><a href="services.html">Services</a></li>
+            <li><a href="employeeRegister.html">Register Employee</a></li>
+            <li><li><a href="#" id="logoutBtn">Logout</a></li>
         </ul>
 
     </nav>
@@ -93,7 +91,7 @@
 
         <input id="a-customer" placeholder="Customer Name">
         <input id="a-barber" placeholder="Barber Name">
-        <input id="a-service" placeholder="Service">
+        <select id="a-service"></select>
         <input type="date" id="a-date">
         <input type="time" id="a-time">
 

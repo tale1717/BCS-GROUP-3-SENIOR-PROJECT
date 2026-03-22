@@ -4,7 +4,7 @@ import { updateDoc, doc, query, where, collection, getDocs } from "https://www.g
 import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
 
-const user = auth.currentUser;
+let currentUser = null;
 
 // buttons
 const editBtn = document.getElementById("editBtn");
@@ -20,7 +20,8 @@ const editForm = document.getElementById("editForm");
 const editAptForm = document.getElementById("editAppointmentForm");
 
 // text
-const nameText = document.getElementById("nameText");
+const fnameText = document.getElementById("fnameText");
+const lnameText = document.getElementById("lnameText");
 const emailText = document.getElementById("emailText");
 const mobileText = document.getElementById("mobileText");
 const dobText = document.getElementById("dobText");
@@ -43,25 +44,29 @@ let selectedRow = null;
 // LOAD USER DATA FROM FIREBASE
 onAuthStateChanged(auth, async (user) => {
     if (user) {
+        currentUser = user;
         const userId = user.uid;
 
         const profile = await getUserProfile(userId);
 
         if (profile) {
-            nameText.textContent = profile.firstName + " " + profile.lastName;
+            fnameText.textContent = profile.firstName;
+            lnameText.textContent = profile.lastName;
             emailText.textContent = profile.email;
             mobileText.textContent = profile.phone;
             dobText.textContent = profile.dob;
         }
 
-        loadAppointments(user);
+        await loadAppointments(user);
+        await loadAppointmentHistory(user);
     }
 });
-
 
 // EDIT BUTTON
 editBtn.addEventListener("click", function(){
 
+    fnameInput.value = fnameText.textContent;
+    lnameInput.value = lnameText.textContent;
     emailInput.value = emailText.textContent;
     mobileInput.value = mobileText.textContent;
     dobInput.value = dobText.textContent;
@@ -72,9 +77,7 @@ editBtn.addEventListener("click", function(){
 
 
 // SAVE BUTTON
-saveBtn.addEventListener("click", async function(){
-
-    if (!user) return;
+saveBtn.addEventListener("click", async function(e){
 
     const updatedData = {
         firstName: fnameInput.value,
@@ -84,16 +87,24 @@ saveBtn.addEventListener("click", async function(){
         dob: dobInput.value
     };
 
-    // UPDATE FIRESTORE
-    await updateDoc(doc(db, "users", user.uid), updatedData);
+    try {
 
-    // UPDATE PAGE
-    nameText.textContent = updatedData.firstName + " " + updatedData.lastName;
-    emailText.textContent = updatedData.email;
-    mobileText.textContent = updatedData.phone;
-    dobText.textContent = updatedData.dob;
+        await updateDoc(doc(db, "users", currentUser.uid), updatedData);
 
-    editForm.style.display = "none";
+        // UPDATE PAGE
+        fnameText.textContent = updatedData.firstName;
+        lnameText.textContent = updatedData.lastName;
+        emailText.textContent = updatedData.email;
+        mobileText.textContent = updatedData.phone;
+        dobText.textContent = updatedData.dob;
+
+        editForm.style.display = "none";
+
+        console.log("Profile updated!");
+
+    } catch (error) {
+        console.error("Firestore update error:", error);
+    }
 
 });
 
@@ -201,3 +212,95 @@ editAppointmentBtn.addEventListener("click", async () => {
 cancelEditAppointment.addEventListener("click", async () => {
     editAptForm.style.display = "none";
 })
+
+async function loadAppointmentHistory(user) {
+    const historyTable = document.getElementById("appointment-history");
+
+    try {
+        const q = query(
+            collection(db, "appointments"),
+            where("customerUid", "==", user.uid),
+            where("status", "in", ["cancelled", "completed"])
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        historyTable.innerHTML = "";
+
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${data.date}</td>
+                <td>${data.barber}</td>
+                <td>${data.service}</td>
+                <td>
+                    <span class="status-${data.status}">
+                        ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}
+                    </span>                        
+                </td>       
+            `;
+
+            const ratingCell = document.createElement('td');
+
+            if (data.status === "completed") {
+                // Pass both current rating AND document ID to createStarRating
+                ratingCell.appendChild(createStarRating(data.rating || 0, docSnap.id));
+            } else {
+                ratingCell.textContent = "Unavailable";
+            }
+
+            row.appendChild(ratingCell);
+            historyTable.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Error loading appointments:", error);
+    }
+}
+
+// Updated createStarRating to accept docId
+function createStarRating(currentRating, docId) {
+    const container = document.createElement('div');
+    container.className = 'star-rating';
+    container.dataset.rating = currentRating;
+
+    for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('img');
+        star.dataset.value = i;
+        star.src = i <= currentRating ? 'comb-full.png' : 'comb.png';
+        star.style.width = '16px';  // size of your image
+        star.style.cursor = 'pointer';
+        star.style.marginRight = '4px';
+        container.appendChild(star);
+    }
+
+    const stars = container.querySelectorAll('img');
+    stars.forEach(star => {
+        star.addEventListener('mouseover', () => highlightStars(stars, star.dataset.value));
+        star.addEventListener('mouseout', () => highlightStars(stars, container.dataset.rating));
+        star.addEventListener('click', async () => {
+            const newRating = Number(star.dataset.value);
+            container.dataset.rating = newRating;
+            highlightStars(stars, newRating);
+
+            try {
+                // Use the document ID here
+                const apptRef = doc(db, "appointments", docId);
+                await updateDoc(apptRef, { rating: newRating });
+                console.log(`Saved rating ${newRating} for appointment ${docId}`);
+            } catch (err) {
+                console.error("Failed to save rating:", err);
+            }
+        });
+    });
+
+    return container;
+}
+
+function highlightStars(stars, rating) {
+    stars.forEach(star => {
+        star.src = star.dataset.value <= rating ? 'comb-full.png' : 'comb.png';
+    });
+}
