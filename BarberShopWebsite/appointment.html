@@ -30,51 +30,51 @@
     <p class="subtitle">Please choose one of the following barbers:</p>
 
     <section class="barber-grid">
-        <div class="card">
-            <a href="appointment-select.html?barber=Talero">
-                <div class="card-img bg-green"></div>
-            </a>
+        <div class="card" onclick="selectBarber('Talero')">
+            <div class="card-img bg-green"></div>
             <div class="card-content">
                 <h3>Talero</h3>
                 <p>Available Every Day</p>
-                <a href="appointment-select.html?barber=Talero" class="check-availability">Check Availability &rarr;</a>
+                <p class="check-availability">Check Availability &rarr;</p>
             </div>
         </div>
 
-        <div class="card">
-            <a href="appointment-select.html?barber=Thai">
-                <div class="card-img bg-pink"></div>
-            </a>
+        <div class="card" onclick="selectBarber('Thai')">
+            <div class="card-img bg-pink"></div>
             <div class="card-content">
                 <h3>Thai</h3>
                 <p>Available Tuesdays, Wednesdays and Fridays</p>
-                <a href="appointment-select.html?barber=Thai" class="check-availability">Check Availability &rarr;</a>
+                <p class="check-availability">Check Availability &rarr;</p>
             </div>
         </div>
 
-        <div class="card">
-            <a href="appointment-select.html?barber=Tobias">
-                <div class="card-img bg-blue"></div>
-            </a>
+        <div class="card" onclick="selectBarber('Tobias')">
+            <div class="card-img bg-blue"></div>
             <div class="card-content">
                 <h3>Tobias</h3>
                 <p>Available Mondays, Thursdays and Weekends</p>
-                <a href="appointment-select.html?barber=Tobias" class="check-availability">Check Availability &rarr;</a>
+                <p class="check-availability">Check Availability &rarr;</p>
             </div>
         </div>
 
-        <div class="card">
-            <a href="appointment-select.html?barber=Guaman">
-                <div class="card-img bg-purple"></div>
-            </a>
+        <div class="card" onclick="selectBarber('Guaman')">
+            <div class="card-img bg-purple"></div>
             <div class="card-content">
                 <h3>Guaman</h3>
                 <p>Available Weekends</p>
-                <a href="appointment-select.html?barber=Guaman" class="check-availability">Check Availability &rarr;</a>
+                <p class="check-availability">Check Availability &rarr;</p>
             </div>
         </div>
     </section>
 </section>
+
+<script>
+    function selectBarber(barberName) {
+        sessionStorage.setItem('selectedBarber', barberName);
+        window.location.href = 'appointment-select.html';
+    }
+</script>
+
 
 </body>
 </html>

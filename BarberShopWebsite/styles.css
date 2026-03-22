@@ -234,6 +234,7 @@ h1 {
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    cursor: pointer;
 }
 
 .card-img {
@@ -562,4 +563,24 @@ th, td {
 
 .todo {
     color: orange;
+}
+
+.status-cancelled { color: red; background: #ffd3d3; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; }
+
+.status-completed { color: blue; background: #add8e6; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; }
+
+.star-rating {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.star-rating span {
+    font-size: 20px;
+    color: lightgray;
+    transition: color 0.2s;
+}
+
+.star-rating span.hover,
+.star-rating span.selected {
+    color: gold;
 }

@@ -1,9 +1,11 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barber Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <script type="module" src="logout.js"></script>
 </head>
 <body>
 <div class="app-container">
@@ -12,12 +14,13 @@
             <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
         </div>
         <ul>
-            <li class="active">Dashboard</li>
+            <li><a href="dashboard.html">Dashboard</a></li>
             <li><a href="appointments.html">Appointments</a></li>
             <li><a href="customers.html">Customers</a></li>
-            <li><a href="barbers.html">Barbers</a><li>
-            <ali><a href="services.html">Services</a></ali>
+            <li class="active"><a href="barbers.html">Barbers</a></li>
+            <li><a href="services.html">Services</a></li>
             <li><a href="employeeRegister.html">Register Employee</a></li>
+            <li><li><a href="#" id="logoutBtn">Logout</a></li>
 
         </ul>
     </nav>

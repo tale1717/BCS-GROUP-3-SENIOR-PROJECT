@@ -2,6 +2,9 @@ let date = new Date();
 let year = date.getFullYear();
 let month = date.getMonth();
 
+const today = new Date();
+today.setHours(0,0,0,0);
+
 const day = document.querySelector(".calendar-dates");
 const currdate = document.querySelector(".calendar-current-date");
 const prenexIcons = document.querySelectorAll(".calendar-navigation span");
@@ -21,7 +24,7 @@ const barberSchedule = {
     Guaman: [0,6]              // Sat-Sun
 };
 
-let clickedDay = date.getDate();   // default to today
+let clickedDay = null;
 let selectedDayElement = null;
 
 function getSelectedBarber() {
@@ -49,10 +52,16 @@ const manipulate = () => {
     // Current month days
     for (let i = 1; i <= lastdate; i++) {
 
-        const dayOfWeek = new Date(year, month, i).getDay();
+        const currentDate = new Date(year, month, i);
+        currentDate.setHours(0,0,0,0);
+
+        const dayOfWeek = currentDate.getDay();
         const isAllowed = allowedDays.includes(dayOfWeek);
 
-        let disabledClass = isAllowed ? "" : "disabled-day";
+        // check if date is in the past
+        const isPast = currentDate < today;
+
+        let disabledClass = (!isAllowed || isPast) ? "disabled-day" : "";
 
         let isToday =
             (i === date.getDate()
@@ -114,8 +123,7 @@ function addClickListenersToDays() {
 
 manipulate();
 
-const todayDisplay = `${months[month]} ${clickedDay}, ${year}`;
-displayDate.textContent = todayDisplay;
+displayDate.textContent = "Select a Date"
 
 // Month navigation
 prenexIcons.forEach(icon => {
