@@ -37,6 +37,44 @@ async function loadServices() {
     populateServiceDropdown();
 }
 
+
+
+
+// Generate Appointment ID (MMDDYY0001)
+async function generateAppointmentID(){
+
+    const appointments = await getAppointments();
+
+    const today = new Date();
+
+    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const dd = String(today.getDate()).padStart(2,'0');
+    const yy = String(today.getFullYear()).slice(-2);
+
+    const prefix = mm+dd+yy;
+
+    let max = 0;
+
+    appointments.forEach(a=>{
+
+        const id = a.appointmentID || a.id;
+
+        if(id && id.startsWith(prefix)){
+
+            const num = parseInt(id.slice(6)) || 0;
+
+            if(num > max) max = num;
+
+        }
+
+    });
+
+    const next = max + 1;
+
+    return prefix + String(next).padStart(4,'0');
+
+}
+
 function populateServiceDropdown() {
     const select = document.getElementById("a-service");
     if (!select) return;
@@ -75,6 +113,7 @@ async function renderTable(list) {
         const row = document.createElement("tr");
 
         row.innerHTML = `
+            <td>${a.appointmentID || a.id}</td>
             <td>${customerName}</td>
             <td>${a.barber || ""}</td>
             <td>${a.serviceName || a.service || ""}</td>
@@ -93,6 +132,7 @@ async function renderTable(list) {
     setupActions();
 }
 
+//searching function//
 function setupSearch() {
     const input = document.getElementById("searchAppointment");
     if (!input) return;
@@ -116,6 +156,7 @@ function setupSearch() {
     });
 }
 
+//create
 function setupCreate() {
     const btn = document.getElementById("createAppointmentBtn");
     const modal = document.getElementById("appointmentModal");
@@ -133,25 +174,37 @@ function setupCreate() {
     if (!saveBtn) return;
 
     saveBtn.onclick = async () => {
+        console.log("Creating appointment..."); // safty check before save
         const selectedServiceId = document.getElementById("a-service").value;
         const selectedService = allServices.find(s => s.id === selectedServiceId);
+
 
         if (!selectedService) {
             alert("Please select a service.");
             return;
         }
+        const appointmentID =
+            await generateAppointmentID();
+        console.log("Generated:",appointmentID);
 
         await createAppointment({
-            customer: document.getElementById("a-customer").value,
-            barber: document.getElementById("a-barber").value,
-            serviceId: selectedService.id,
-            serviceName: selectedService.serviceName,
-            servicePrice: selectedService.price,
-            serviceDuration: selectedService.duration,
-            date: document.getElementById("a-date").value,
-            time: document.getElementById("a-time").value,
-            status: document.getElementById("a-status").value || "upcoming"
+
+            appointmentID:appointmentID,
+            customerID:
+            document.getElementById("a-customer").value,
+            staffID:
+            document.getElementById("a-barber").value,
+            serviceId:selectedService.id,
+            date:
+            document.getElementById("a-date").value,
+            time:
+            document.getElementById("a-time").value,
+            status:
+                document.getElementById("a-status").value || "upcoming"
+
         });
+
+
 
         modal.style.display = "none";
         loadAppointments();

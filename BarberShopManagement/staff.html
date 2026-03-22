@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Staff</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <script type="module" src="staffModule.js"></script>
+
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <nav class="sidebar">
+
+        <img src="ttt logo centered.png" width="200">
+
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="appointments.html">Appointments</a></li>
+            <li><a href="customers.html">Customers</a></li>
+            <li><a href="barbers.html">Barbers</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li class="active">Staff</a></li>
+            <li><li><a href="#" id="logoutBtn">Logout</a></li>
+        </ul>
+
+    </nav>
+
+
+    <main class="content">
+
+        <header class="page-header">
+
+            <div>
+
+                <h1>Staff</h1>
+
+                <p>Employee management</p>
+
+            </div>
+
+            <button
+                    id="createStaffBtn"
+                    class="create-buttons">
+
+                + New Staff
+
+            </button>
+
+        </header>
+
+
+        <div class="card">
+
+            <input
+                    id="searchStaff"
+                    class="search"
+                    placeholder="Search staff"
+            />
+
+        </div>
+
+
+        <div class="card">
+
+            <table>
+
+                <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Name</th>
+
+                    <th>Phone</th>
+
+                    <th>Email</th>
+
+                    <th>Role</th>
+
+                    <th>Services</th>
+
+                    <th>Working Hours</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody id="staff-body">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- CREATE STAFF -->
+
+<div id="createStaffModal"
+     class="modal">
+
+    <div class="modal-content">
+
+        <h2>Create Staff</h2>
+
+        <input id="s-name"
+               placeholder="Name">
+
+        <input id="s-phone"
+               placeholder="Phone">
+
+        <input id="s-email"
+               placeholder="Email">
+
+        <input id="s-address"
+               placeholder="Address">
+
+        <input id="s-role"
+               placeholder="Role">
+
+
+        <input id="s-salary"
+               placeholder="Salary">
+
+        <input id="s-commission"
+               placeholder="Commission %">
+
+
+        <label>Start Time</label>
+
+        <input type="time"
+               id="s-startTime">
+
+        <label>End Time</label>
+
+        <input type="time"
+               id="s-endTime">
+
+
+        <label>Start Date</label>
+
+        <input type="date"
+               id="s-startDate">
+
+        <label>End Date</label>
+
+        <input type="date"
+               id="s-endDate">
+
+
+        <input id="s-bank"
+               placeholder="Bank Account">
+
+
+        <label>Services</label>
+
+        <select id="s-services"
+                multiple></select>
+
+
+        <div class="modal-actions">
+
+            <button id="saveStaff"
+                    class="create-buttons">
+
+                Save
+
+            </button>
+
+            <button id="cancelStaff"
+                    class="cancel-buttons">
+
+                Cancel
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
