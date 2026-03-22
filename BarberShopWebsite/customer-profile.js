@@ -227,28 +227,80 @@ async function loadAppointmentHistory(user) {
 
         historyTable.innerHTML = "";
 
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
             const row = document.createElement("tr");
 
             row.innerHTML = `
-                <tr>
-                    <td>${data.date}</td>
-                    <td>${data.barber}</td>
-                    <td>${data.service}</td>
-                    <td>
-                        <span class="status-${data.status}">
-                            ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}
-                        </span>                        
-                    </td>
-                    <td></td>
-                </tr>
+                <td>${data.date}</td>
+                <td>${data.barber}</td>
+                <td>${data.service}</td>
+                <td>
+                    <span class="status-${data.status}">
+                        ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}
+                    </span>                        
+                </td>       
             `;
 
+            const ratingCell = document.createElement('td');
+
+            if (data.status === "completed") {
+                // Pass both current rating AND document ID to createStarRating
+                ratingCell.appendChild(createStarRating(data.rating || 0, docSnap.id));
+            } else {
+                ratingCell.textContent = "Unavailable";
+            }
+
+            row.appendChild(ratingCell);
             historyTable.appendChild(row);
         });
 
     } catch (error) {
         console.error("Error loading appointments:", error);
     }
+}
+
+// Updated createStarRating to accept docId
+function createStarRating(currentRating, docId) {
+    const container = document.createElement('div');
+    container.className = 'star-rating';
+    container.dataset.rating = currentRating;
+
+    for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('img');
+        star.dataset.value = i;
+        star.src = i <= currentRating ? 'comb-full.png' : 'comb.png';
+        star.style.width = '16px';  // size of your image
+        star.style.cursor = 'pointer';
+        star.style.marginRight = '4px';
+        container.appendChild(star);
+    }
+
+    const stars = container.querySelectorAll('img');
+    stars.forEach(star => {
+        star.addEventListener('mouseover', () => highlightStars(stars, star.dataset.value));
+        star.addEventListener('mouseout', () => highlightStars(stars, container.dataset.rating));
+        star.addEventListener('click', async () => {
+            const newRating = Number(star.dataset.value);
+            container.dataset.rating = newRating;
+            highlightStars(stars, newRating);
+
+            try {
+                // Use the document ID here
+                const apptRef = doc(db, "appointments", docId);
+                await updateDoc(apptRef, { rating: newRating });
+                console.log(`Saved rating ${newRating} for appointment ${docId}`);
+            } catch (err) {
+                console.error("Failed to save rating:", err);
+            }
+        });
+    });
+
+    return container;
+}
+
+function highlightStars(stars, rating) {
+    stars.forEach(star => {
+        star.src = star.dataset.value <= rating ? 'comb-full.png' : 'comb.png';
+    });
 }

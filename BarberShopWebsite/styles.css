@@ -568,3 +568,19 @@ th, td {
 .status-cancelled { color: red; background: #ffd3d3; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; }
 
 .status-completed { color: blue; background: #add8e6; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; }
+
+.star-rating {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.star-rating span {
+    font-size: 20px;
+    color: lightgray;
+    transition: color 0.2s;
+}
+
+.star-rating span.hover,
+.star-rating span.selected {
+    color: gold;
+}
