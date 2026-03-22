@@ -3,97 +3,139 @@ import {
     getCustomers,
     updateCustomer,
     deleteCustomer
-} from "../BarbershopWebsite/Collections/customers.js";
-import {
-    getAllUsers
-} from "../BarberShopWebsite/Collections/users.js";
 
-let allCustomers = [];
-let selectedId = null;
+} from "../BarberShopWebsite/Collections/customers.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-    // Cancel button closes create modal
-    document.getElementById("cancelCreate").onclick = () => {
-        document.getElementById("createModal").style.display = "none";
-    };
-    //cancel button closes edit modal
-    document.getElementById("cancelEdit").onclick = () => {
-        document.getElementById("editModal").style.display = "none";
-    };
-    initialize();
-});
+//Load Customer
+let allCustomers=[];
 
-async function initialize() {
+document.addEventListener("DOMContentLoaded",init);
+
+async function init(){
+
     await loadCustomers();
-    setupSearch();
     setupCreate();
-    setupEdit();
-    setupDelete();
+    setupSearch();
+    setupUpdate();
+    setupCancelEdit();
+
+    formatPhoneNumber(document.getElementById("c-phone"));
+    formatPhoneNumber(document.getElementById("edit-phone"));
+
+    //Take data from Firebase
+}async function loadCustomers(){
+
+    allCustomers=await getCustomers();
+
+    renderTable(allCustomers);
+
 }
 
-//
-// Customer list
-//
-async function loadCustomers() {
-    const users = await getAllUsers();
-    allCustomers = users.filter(u => u.role === "customer");
-    await renderTable(allCustomers);
-}
+//Edit  logic
+function renderTable(list){
 
-async function renderTable(list) {
-    const body = document.getElementById("customer-body");
-    if (!body) return;
+    const body=document.getElementById("customer-body");
 
-    body.innerHTML = "";
+    body.innerHTML="";
 
-    for (const c of list) {
-        const row = document.createElement("tr");
+    list.forEach(c=>{
 
-        row.innerHTML = `
-            <td><input type="radio" name="selectCustomer" value="${c.uid}"></td>
-            <td>${c.firstName + " " + c.lastName}</td>
-            <td>${c.phone}</td>
-            <td>${c.email || ""}</td>
-        `;
+        const row=document.createElement("tr");
+
+        row.innerHTML=`
+
+<td>${c.name}</td>
+<td>${c.phone}</td>
+<td>${c.email}</td>
+
+<td>
+<button class="edit" data-id="${c.id}">
+Edit
+</button>
+
+<button class="delete" data-id="${c.id}">
+Delete
+</button>
+</td>
+
+`;
 
         body.appendChild(row);
 
-    }
-
-    // Handle selection
-    document.querySelectorAll("input[name='selectCustomer']").forEach(radio => {
-        radio.addEventListener("change", e => {
-            selectedId = e.target.value;
-        });
     });
+
+    setupActions();
+    setupEdit();
+
 }
+
 
 //
 // Search function
 //
 function setupSearch() {
-    const searchInput = document.getElementById("searchInput");
+
+    const searchInput =
+        document.getElementById("searchCustomer");
+
     if (!searchInput) return;
 
     searchInput.addEventListener("input", e => {
-        const term = e.target.value.toLowerCase();
 
-        const filtered = allCustomers.filter(c =>
-            (c.firstName || "").toLowerCase().includes(term) ||
-            (c.lastName || "").toLowerCase().includes(term) ||
-            (c.phone || "").includes(term) ||
-            (c.email || "").toLowerCase().includes(term)
+        const term=e.target.value.toLowerCase();
+
+        const filtered=allCustomers.filter(c=>
+
+            (c.name || "")
+                .toLowerCase()
+                .includes(term) ||
+
+            (c.phone || "")
+                .includes(term) ||
+
+            (c.email || "")
+                .toLowerCase()
+                .includes(term)
+
         );
 
         renderTable(filtered);
+
     });
+
+}
+
+//Change format of phone number
+//
+function formatPhoneNumber(input){
+
+    input.addEventListener("input", function(){
+
+        let numbers = this.value.replace(/\D/g,'');
+
+        if(numbers.length>10){
+            numbers=numbers.substring(0,10);
+        }
+
+        if(numbers.length>6){
+            this.value=`(${numbers.substring(0,3)}) ${numbers.substring(3,6)}-${numbers.substring(6)}`;
+        }
+        else if(numbers.length>3){
+            this.value=`(${numbers.substring(0,3)}) ${numbers.substring(3)}`;
+        }
+        else if(numbers.length>0){
+            this.value=`(${numbers}`;
+        }
+
+    });
+
 }
 
 //
 // Create
 //
 function setupCreate() {
-    const createBtn = document.getElementById("createBtn");
+    const createBtn = document.getElementById("createCustomerBtn");
     const createModal = document.getElementById("createModal");
     const saveCreate = document.getElementById("saveCreate");
 
@@ -119,6 +161,14 @@ function setupCreate() {
         clearCreateFields();
         await loadCustomers();
     });
+    // Cancel button
+    cancelCreate.addEventListener("click", () => {
+
+        createModal.style.display = "none";
+
+        clearCreateFields();
+
+    });
 }
 
 
@@ -132,61 +182,91 @@ function clearCreateFields() {
 //
 // edit
 //
-function setupEdit() {
-    const editBtn = document.getElementById("editBtn");
-    const editModal = document.getElementById("editModal");
-    const saveEdit = document.getElementById("saveEdit");
+function setupEdit(){
 
-    if (!editBtn || !editModal || !saveEdit) return;
+    document.querySelectorAll(".edit").forEach(btn=>{
 
-    editBtn.addEventListener("click", () => {
-        if (!selectedId) {
-            alert("Please select a customer first.");
-            return;
-        }
+        btn.onclick=()=>{
 
-        const customer = allCustomers.find(c => c.id === selectedId);
-        if (!customer) return;
+            const customer=allCustomers.find(
+                c=>c.id===btn.dataset.id
+            );
 
-        document.getElementById("e-name").value = customer.name;
-        document.getElementById("e-phone").value = customer.phone;
-        document.getElementById("e-email").value = customer.email || "";
+            document.getElementById("edit-id").value=customer.id;
+            document.getElementById("edit-name").value=customer.name;
+            document.getElementById("edit-phone").value=customer.phone;
+            document.getElementById("edit-email").value=customer.email;
 
-        editModal.style.display = "block";
+            document.getElementById("editModal").style.display="block";
+
+        };
+
     });
 
-    saveEdit.addEventListener("click", async () => {
-        const name = document.getElementById("e-name").value;
-        const phone = document.getElementById("e-phone").value;
-        const email = document.getElementById("e-email").value;
-
-        if (!selectedId) return;
-
-        await updateCustomer(selectedId, { name, phone, email });
-
-        editModal.style.display = "none";
-        selectedId = null;
-        await loadCustomers();
-    });
 }
 
-//
+
+// update button
+function setupUpdate(){
+
+    const updateBtn=document.getElementById("updateCustomer");
+
+    if(!updateBtn) return;
+
+    updateBtn.onclick=async()=>{
+
+        await updateCustomer(
+
+            document.getElementById("edit-id").value,
+
+            {
+                name:document.getElementById("edit-name").value,
+                phone:document.getElementById("edit-phone").value,
+                email:document.getElementById("edit-email").value
+            }
+
+        );
+
+        document.getElementById("editModal").style.display="none";
+
+        loadCustomers();
+
+    };
+
+}
+
+
+// cancel edit
+function setupCancelEdit(){
+
+    const cancelBtn=document.getElementById("cancelEdit");
+
+    if(!cancelBtn) return;
+
+    cancelBtn.onclick=()=>{
+
+        document.getElementById("editModal").style.display="none";
+
+    };
+
+}
+
+
 // delete
-//
-function setupDelete() {
-    const deleteBtn = document.getElementById("deleteBtn");
-    if (!deleteBtn) return;
+function setupActions(){
 
-    deleteBtn.addEventListener("click", async () => {
-        if (!selectedId) {
-            alert("Please select a customer first.");
-            return;
-        }
+    document.querySelectorAll(".delete").forEach(btn=>{
 
-        if (!confirm("Are you sure you want to delete this customer?")) return;
+        btn.onclick=async()=>{
 
-        await deleteCustomer(selectedId);
-        selectedId = null;
-        await loadCustomers();
+            if(!confirm("Delete customer?")) return;
+
+            await deleteCustomer(btn.dataset.id);
+
+            loadCustomers();
+
+        };
+
     });
+
 }
