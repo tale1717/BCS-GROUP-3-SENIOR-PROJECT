@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const niceDate = formatDate(a.date || "");
             const niceTime = formatTime(a.time || "");
             const barber = a.barber || "your barber";
-            const service = a.service || "your service";
+            const service = a.serviceName || "service";
 
             detailsEl.textContent = `You will be meeting with ${barber} at ${niceTime} on ${niceDate} for your ${service}!`;
 

@@ -86,6 +86,19 @@ nav a {
     text-shadow: #000000 2px 2px 5px;
 }
 
+.hero-contact {
+    background-image: url("barber-about.png");
+    background-size: cover;
+    background-position: center;
+    height: 350px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    text-shadow: #000000 2px 2px 5px;
+}
+
 /* Info Section */
 .info {
     padding: 30px 0;
@@ -583,4 +596,26 @@ th, td {
 .star-rating span.hover,
 .star-rating span.selected {
     color: gold;
+}
+
+/* Contact */
+.contact-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1300px;
+    margin: auto;
+    padding: 0 20px;
+}
+
+.hero-contact h1 {
+    font-size: 64px;
+    margin: 0;
+}
+
+/* Map */
+#map {
+    height: 400px;
+    border: 1px solid #efefef;
+    border-radius: 12px;
 }
