@@ -598,6 +598,25 @@ th, td {
     color: gold;
 }
 
+.profile {
+    border-radius: 0;
+    padding: 4px 4px;
+    font-size: 16px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.button-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.profile-center {
+    align-items: center;
+}
+
 /* Contact */
 .contact-container {
     display: flex;

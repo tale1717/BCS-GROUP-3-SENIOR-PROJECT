@@ -1,8 +1,16 @@
-import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { updateDoc, doc, query, where, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { signOut, onAuthStateChanged, } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { updateDoc, doc, query, where, collection, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
+
+import {
+    loadServices,
+    populateForm,
+    getFormData,
+    getSelectedService,
+    mustGet
+} from "./appointment-form.js";
 
 let currentUser = null;
 
@@ -12,7 +20,7 @@ const saveBtn = document.getElementById("saveBtn");
 const cancelBtn = document.getElementById("cancelBtn");
 const cancelAppointmentBtn = document.getElementById("cancel-appointment-btn");
 const editAppointmentBtn = document.getElementById("edit-appointment-btn");
-const cancelEditAppointment = document.getElementById("cancelAptBtn");
+const cancelEditAppointment = document.getElementById("cancelEditAptBtn");
 const saveEditAppointment = document.getElementById("saveEditAptBtn");
 
 // form
@@ -120,7 +128,7 @@ async function loadAppointments(user) {
         const q = query(
             collection(db, "appointments"),
             where("customerUid", "==", user.uid),
-            where("status", "==", "confirmed")
+            where("status", "in", ["upcoming", "confirmed"])
         );
         const querySnapshot = await getDocs(q);
 
@@ -134,7 +142,7 @@ async function loadAppointments(user) {
                 <tr>
                     <td>${data.date}</td>
                     <td>${data.barber}</td>
-                    <td>${data.service}</td>
+                    <td>${data.serviceName}</td>
                     <td>${data.time}</td>
                 </tr>
             `;
@@ -183,11 +191,10 @@ cancelAppointmentBtn.addEventListener("click", async () => {
             status: "cancelled"
         });
 
-        // Remove the row from the table immediately
-        selectedRow.remove();
         selectedRow = null;
 
         alert("Appointment cancelled successfully.");
+        location.reload();
     } catch (error) {
         console.error("Error cancelling appointment:", error);
         alert("Failed to cancel appointment: " + error.message);
@@ -197,17 +204,53 @@ cancelAppointmentBtn.addEventListener("click", async () => {
 editAppointmentBtn.addEventListener("click", async () => {
     if (!selectedRow) {
         alert("Please select an appointment first.");
+    }
+
+    const appointmentId = selectedRow.dataset.id;
+    await loadServices();
+
+    const ref = doc(db, "appointments", appointmentId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+        alert("Appointment not found");
         return;
     }
 
-    editAptForm.style.display = "block";
+    const appointment = snap.data();
 
-    editDate.value = selectedRow.dataset.date;
-    editBarber.value = selectedRow.dataset.barber;
-    editService.value = selectedRow.dataset.service;
-    editTime.value = selectedRow.dataset.time;
+    populateForm(appointment);
 
-})
+    editAptForm.style.display = "inline";
+
+    const confirmBtn = mustGet("confirm-appointment");
+
+    confirmBtn.addEventListener("click", async (e) => {
+
+        e.preventDefault();
+
+        const { barber, date, time, serviceId } = getFormData();
+        const service = getSelectedService(serviceId);
+
+        if (!barber || !date || !time || !service) {
+            alert("Please fill out all fields.");
+            return;
+        }
+
+        await updateDoc(ref, {
+            barber,
+            date,
+            time,
+            serviceId: service.id,
+            serviceName: service.serviceName,
+            servicePrice: service.price,
+            serviceDuration: service.duration
+        });
+
+        alert("Appointment updated!");
+        location.reload();
+    });
+});
 
 cancelEditAppointment.addEventListener("click", async () => {
     editAptForm.style.display = "none";
