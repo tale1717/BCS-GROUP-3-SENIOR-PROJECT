@@ -46,6 +46,9 @@ const emailInput = document.getElementById("emailInput");
 const mobileInput = document.getElementById("mobileInput");
 const dobInput = document.getElementById("dobInput");
 
+const appointmentSection = document.getElementById("history-card");
+const reviewSection = document.getElementById("review-card");
+
 let selectedRow = null;
 
 
@@ -286,10 +289,22 @@ async function loadAppointmentHistory(user) {
             `;
 
             const ratingCell = document.createElement('td');
+            const link = document.createElement("a");
+            link.href="#";
+            link.onclick = (e) => {
+                e.preventDefault();
+
+                appointmentSection.style.display = "none";
+                reviewSection.style.display = "block";
+
+                makeReview(user, data, docSnap.id);
+            }
+            const text = document.createTextNode("View");
 
             if (data.status === "completed") {
-                // Pass both current rating AND document ID to createStarRating
-                ratingCell.appendChild(createStarRating(data.rating || 0, docSnap.id));
+                link.appendChild(text);
+                ratingCell.appendChild(link);
+
             } else {
                 ratingCell.textContent = "Unavailable";
             }
@@ -303,8 +318,56 @@ async function loadAppointmentHistory(user) {
     }
 }
 
+function makeReview(user, data, dataID) {
+
+    const details = document.getElementById("review-details");
+    const reviewText = document.getElementById("review-text");
+
+    details.innerHTML = `
+        <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
+        <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
+        <p style="font-size: 18px;"><strong>Service:</strong> ${data.service}</p>
+    `;
+
+    reviewText.value = data.review || "";
+
+    const starRating = document.getElementById("star-rating");
+    let stars = createStarRating(data.rating || 0)
+    const saveBtn = document.getElementById("save-review");
+    const cancelBtn = document.getElementById("cancel-review");
+
+    starRating.appendChild(stars);
+
+    saveBtn.onclick = async () => {
+        const review = reviewText.value;
+        const rating = Number(stars.dataset.rating);
+
+        try {
+            await updateDoc(doc(db, "appointments", dataID), {
+                review: review,
+                rating: rating
+            });
+
+            starRating.removeChild(stars);
+
+            alert("Thank you for leaving your feedback!");
+            location.reload();
+
+        } catch (error) {
+            console.error("Error saving review:", error);
+        }
+    };
+
+    cancelBtn.onclick = () => {
+        reviewSection.style.display = "none";
+        appointmentSection.style.display = "block";
+
+        starRating.removeChild(stars);
+    };
+}
+
 // Updated createStarRating to accept docId
-function createStarRating(currentRating, docId) {
+function createStarRating(currentRating) {
     const container = document.createElement('div');
     container.className = 'star-rating';
     container.dataset.rating = currentRating;
@@ -313,29 +376,22 @@ function createStarRating(currentRating, docId) {
         const star = document.createElement('img');
         star.dataset.value = i;
         star.src = i <= currentRating ? 'comb-full.png' : 'comb.png';
-        star.style.width = '16px';  // size of your image
+        star.style.width = '26px';
         star.style.cursor = 'pointer';
         star.style.marginRight = '4px';
         container.appendChild(star);
     }
 
     const stars = container.querySelectorAll('img');
+
     stars.forEach(star => {
         star.addEventListener('mouseover', () => highlightStars(stars, star.dataset.value));
         star.addEventListener('mouseout', () => highlightStars(stars, container.dataset.rating));
-        star.addEventListener('click', async () => {
+
+        star.addEventListener('click', () => {
             const newRating = Number(star.dataset.value);
             container.dataset.rating = newRating;
             highlightStars(stars, newRating);
-
-            try {
-                // Use the document ID here
-                const apptRef = doc(db, "appointments", docId);
-                await updateDoc(apptRef, { rating: newRating });
-                console.log(`Saved rating ${newRating} for appointment ${docId}`);
-            } catch (err) {
-                console.error("Failed to save rating:", err);
-            }
         });
     });
 

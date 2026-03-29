@@ -52,9 +52,9 @@
     </div>
 </header>
 
-<hr>
+<section class="hero-auth"></section>
 
-<section class="profile-container">
+<section class="profile-container" id="profile-container">
 
     <h1>My Profile</h1>
 
@@ -135,8 +135,8 @@
 
         <br>
 
-        <button class="primary-btn" id="cancel-appointment-btn">Cancel Appointment</button>
         <button class="primary-btn" id="edit-appointment-btn">Edit Appointment</button>
+        <button class="primary-btn" id="cancel-appointment-btn">Cancel Appointment</button>
 
         <div class="edit-form" id="editAppointmentForm">
             <div class="booking-interface profile-center">
@@ -207,8 +207,8 @@
                     </div>
 
                     <div class="button-row">
-                        <a class="primary-btn" id="cancelEditAptBtn">Cancel Edit</a>
                         <a class="primary-btn" id="confirm-appointment">Confirm Edit</a>
+                        <a class="primary-btn" id="cancelEditAptBtn">Cancel Edit</a>
                     </div>
 
                 </div>
@@ -219,7 +219,7 @@
     </div>
 
 
-    <div class="history-card">
+    <div class="history-card" id="history-card">
 
         <h2>Appointment History</h2>
 
@@ -231,7 +231,7 @@
                 <th>Barber</th>
                 <th>Service</th>
                 <th>Status</th>
-                <th>Rating</th>
+                <th>Review</th>
             </tr>
             </thead>
 
@@ -239,6 +239,23 @@
 
         </table>
 
+    </div>
+
+    <div class="history-card" id="review-card" style="display: none">
+        <h2>Please leave a review!</h2>
+
+        <div id="review-details"></div>
+
+        <br>
+        <div id="star-rating"></div>
+        <br>
+
+        <textarea id="review-text" placeholder="Write your review here..."></textarea>
+
+        <br><br>
+
+        <button class="primary-btn" id="save-review">Save</button>
+        <button class="primary-btn" id="cancel-review">Cancel</button>
     </div>
 
 </section>
