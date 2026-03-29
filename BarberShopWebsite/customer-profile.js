@@ -1,8 +1,16 @@
-import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { updateDoc, doc, query, where, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { signOut, onAuthStateChanged, } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { updateDoc, doc, query, where, collection, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
+
+import {
+    loadServices,
+    populateForm,
+    getFormData,
+    getSelectedService,
+    mustGet
+} from "./appointment-form.js";
 
 let currentUser = null;
 
@@ -12,7 +20,7 @@ const saveBtn = document.getElementById("saveBtn");
 const cancelBtn = document.getElementById("cancelBtn");
 const cancelAppointmentBtn = document.getElementById("cancel-appointment-btn");
 const editAppointmentBtn = document.getElementById("edit-appointment-btn");
-const cancelEditAppointment = document.getElementById("cancelAptBtn");
+const cancelEditAppointment = document.getElementById("cancelEditAptBtn");
 const saveEditAppointment = document.getElementById("saveEditAptBtn");
 
 // form
@@ -37,6 +45,9 @@ const lnameInput = document.getElementById("lnameInput");
 const emailInput = document.getElementById("emailInput");
 const mobileInput = document.getElementById("mobileInput");
 const dobInput = document.getElementById("dobInput");
+
+const appointmentSection = document.getElementById("history-card");
+const reviewSection = document.getElementById("review-card");
 
 let selectedRow = null;
 
@@ -120,7 +131,7 @@ async function loadAppointments(user) {
         const q = query(
             collection(db, "appointments"),
             where("customerUid", "==", user.uid),
-            where("status", "==", "confirmed")
+            where("status", "in", ["upcoming", "confirmed"])
         );
         const querySnapshot = await getDocs(q);
 
@@ -134,7 +145,7 @@ async function loadAppointments(user) {
                 <tr>
                     <td>${data.date}</td>
                     <td>${data.barber}</td>
-                    <td>${data.service}</td>
+                    <td>${data.serviceName}</td>
                     <td>${data.time}</td>
                 </tr>
             `;
@@ -183,11 +194,10 @@ cancelAppointmentBtn.addEventListener("click", async () => {
             status: "cancelled"
         });
 
-        // Remove the row from the table immediately
-        selectedRow.remove();
         selectedRow = null;
 
         alert("Appointment cancelled successfully.");
+        location.reload();
     } catch (error) {
         console.error("Error cancelling appointment:", error);
         alert("Failed to cancel appointment: " + error.message);
@@ -197,17 +207,53 @@ cancelAppointmentBtn.addEventListener("click", async () => {
 editAppointmentBtn.addEventListener("click", async () => {
     if (!selectedRow) {
         alert("Please select an appointment first.");
+    }
+
+    const appointmentId = selectedRow.dataset.id;
+    await loadServices();
+
+    const ref = doc(db, "appointments", appointmentId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+        alert("Appointment not found");
         return;
     }
 
-    editAptForm.style.display = "block";
+    const appointment = snap.data();
 
-    editDate.value = selectedRow.dataset.date;
-    editBarber.value = selectedRow.dataset.barber;
-    editService.value = selectedRow.dataset.service;
-    editTime.value = selectedRow.dataset.time;
+    populateForm(appointment);
 
-})
+    editAptForm.style.display = "inline";
+
+    const confirmBtn = mustGet("confirm-appointment");
+
+    confirmBtn.addEventListener("click", async (e) => {
+
+        e.preventDefault();
+
+        const { barber, date, time, serviceId } = getFormData();
+        const service = getSelectedService(serviceId);
+
+        if (!barber || !date || !time || !service) {
+            alert("Please fill out all fields.");
+            return;
+        }
+
+        await updateDoc(ref, {
+            barber,
+            date,
+            time,
+            serviceId: service.id,
+            serviceName: service.serviceName,
+            servicePrice: service.price,
+            serviceDuration: service.duration
+        });
+
+        alert("Appointment updated!");
+        location.reload();
+    });
+});
 
 cancelEditAppointment.addEventListener("click", async () => {
     editAptForm.style.display = "none";
@@ -243,10 +289,22 @@ async function loadAppointmentHistory(user) {
             `;
 
             const ratingCell = document.createElement('td');
+            const link = document.createElement("a");
+            link.href="#";
+            link.onclick = (e) => {
+                e.preventDefault();
+
+                appointmentSection.style.display = "none";
+                reviewSection.style.display = "block";
+
+                makeReview(user, data, docSnap.id);
+            }
+            const text = document.createTextNode("View");
 
             if (data.status === "completed") {
-                // Pass both current rating AND document ID to createStarRating
-                ratingCell.appendChild(createStarRating(data.rating || 0, docSnap.id));
+                link.appendChild(text);
+                ratingCell.appendChild(link);
+
             } else {
                 ratingCell.textContent = "Unavailable";
             }
@@ -260,8 +318,56 @@ async function loadAppointmentHistory(user) {
     }
 }
 
+function makeReview(user, data, dataID) {
+
+    const details = document.getElementById("review-details");
+    const reviewText = document.getElementById("review-text");
+
+    details.innerHTML = `
+        <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
+        <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
+        <p style="font-size: 18px;"><strong>Service:</strong> ${data.service}</p>
+    `;
+
+    reviewText.value = data.review || "";
+
+    const starRating = document.getElementById("star-rating");
+    let stars = createStarRating(data.rating || 0)
+    const saveBtn = document.getElementById("save-review");
+    const cancelBtn = document.getElementById("cancel-review");
+
+    starRating.appendChild(stars);
+
+    saveBtn.onclick = async () => {
+        const review = reviewText.value;
+        const rating = Number(stars.dataset.rating);
+
+        try {
+            await updateDoc(doc(db, "appointments", dataID), {
+                review: review,
+                rating: rating
+            });
+
+            starRating.removeChild(stars);
+
+            alert("Thank you for leaving your feedback!");
+            location.reload();
+
+        } catch (error) {
+            console.error("Error saving review:", error);
+        }
+    };
+
+    cancelBtn.onclick = () => {
+        reviewSection.style.display = "none";
+        appointmentSection.style.display = "block";
+
+        starRating.removeChild(stars);
+    };
+}
+
 // Updated createStarRating to accept docId
-function createStarRating(currentRating, docId) {
+function createStarRating(currentRating) {
     const container = document.createElement('div');
     container.className = 'star-rating';
     container.dataset.rating = currentRating;
@@ -270,29 +376,22 @@ function createStarRating(currentRating, docId) {
         const star = document.createElement('img');
         star.dataset.value = i;
         star.src = i <= currentRating ? 'comb-full.png' : 'comb.png';
-        star.style.width = '16px';  // size of your image
+        star.style.width = '26px';
         star.style.cursor = 'pointer';
         star.style.marginRight = '4px';
         container.appendChild(star);
     }
 
     const stars = container.querySelectorAll('img');
+
     stars.forEach(star => {
         star.addEventListener('mouseover', () => highlightStars(stars, star.dataset.value));
         star.addEventListener('mouseout', () => highlightStars(stars, container.dataset.rating));
-        star.addEventListener('click', async () => {
+
+        star.addEventListener('click', () => {
             const newRating = Number(star.dataset.value);
             container.dataset.rating = newRating;
             highlightStars(stars, newRating);
-
-            try {
-                // Use the document ID here
-                const apptRef = doc(db, "appointments", docId);
-                await updateDoc(apptRef, { rating: newRating });
-                console.log(`Saved rating ${newRating} for appointment ${docId}`);
-            } catch (err) {
-                console.error("Failed to save rating:", err);
-            }
         });
     });
 
