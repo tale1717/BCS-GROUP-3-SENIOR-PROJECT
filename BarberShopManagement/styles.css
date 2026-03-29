@@ -59,6 +59,7 @@
     border-radius: 12px;
     border: 1px solid #eee;
     width: 100%;
+    overflow-x: auto;
 }
 
 .appointment-item {
@@ -153,13 +154,14 @@ table {
 
 th{
     text-align:left;
-    padding:12px;
+    padding:10px;
     font-weight:600;
+    border-bottom: 1px solid #ddd;
 }
 
 td{
     text-align:left;
-    padding:12px;
+    padding:10px;
     border-top:1px solid #eee;
 }
 
@@ -174,6 +176,7 @@ td{
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,0.4);
+    overflow-x: auto;
 }
 
 .modal-content {
@@ -183,6 +186,7 @@ td{
     margin: 10% auto;
     padding: 20px;
     border-radius: 8px;
+    overflow-x: auto;
 }
 
 .text-field{
@@ -197,6 +201,7 @@ td{
     justify-content: center;
     gap: 15px;
     margin-top: 20px;
+    overflow-x: auto;
 }
 
 

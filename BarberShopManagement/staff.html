@@ -6,7 +6,7 @@
 
     <meta charset="UTF-8">
 
-    <title>Staff</title>
+    <title>Employee</title>
 
     <link rel="stylesheet" href="styles.css">
 
@@ -26,11 +26,11 @@
             <li><a href="dashboard.html">Dashboard</a></li>
             <li><a href="appointments.html">Appointments</a></li>
             <li><a href="customers.html">Customers</a></li>
-            <li><a href="barbers.html">Barbers</a></li>
+            <li class="active">Employee</a></li>
             <li><a href="services.html">Services</a></li>
-            <li class="active">Staff</a></li>
             <li><li><a href="#" id="logoutBtn">Logout</a></li>
         </ul>
+
 
     </nav>
 
@@ -41,7 +41,7 @@
 
             <div>
 
-                <h1>Staff</h1>
+                <h1>Employee</h1>
 
                 <p>Employee management</p>
 
@@ -70,31 +70,23 @@
 
 
         <div class="card">
-
             <table>
-
                 <thead>
-
                 <tr>
-
                     <th>ID</th>
-
                     <th>Name</th>
-
                     <th>Phone</th>
-
                     <th>Email</th>
-
-                    <th>Role</th>
-
+                    <th>Address</th>
+                    <th>Position</th>
                     <th>Services</th>
-
                     <th>Working Hours</th>
-
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Salary</th>
+                    <th>Bank Account</th>
                     <th>Actions</th>
-
                 </tr>
-
                 </thead>
 
                 <tbody id="staff-body">
@@ -118,79 +110,104 @@
     <div class="modal-content">
 
         <h2>Create Staff</h2>
+        <label>Employee's Name:</label> <br><br>
+
 
         <input id="s-name"
-               placeholder="Name">
+               placeholder="Name"> <br><br>
 
+        <label>Phone Number:</label> <br><br>
         <input id="s-phone"
-               placeholder="Phone">
+               placeholder="Phone"> <br><br>
 
+        <label>Email:</label> <br><br>
         <input id="s-email"
-               placeholder="Email">
+               placeholder="Email"> <br><br>
 
+        <label>Address:</label> <br><br>
         <input id="s-address"
-               placeholder="Address">
-
-        <input id="s-role"
-               placeholder="Role">
+               placeholder="Address"> <br><br>
 
 
+        <Label>Salary ($/hour):</Label>
         <input id="s-salary"
-               placeholder="Salary">
-
-        <input id="s-commission"
-               placeholder="Commission %">
+               placeholder="Salary"> <br><br>
 
 
-        <label>Start Time</label>
+        <Label>Position:</Label> <br><br>
+        <select id="s-position" class="text-field">
 
-        <input type="time"
-               id="s-startTime">
+            <option value="">Select position</option>
 
-        <label>End Time</label>
+            <option value="Manager">Manager</option>
 
-        <input type="time"
-               id="s-endTime">
+            <option value="Receptionist">Receptionist</option>
 
+            <option value="Barber">Barber</option>
 
-        <label>Start Date</label>
+            <option value="HR">HR</option>
 
-        <input type="date"
-               id="s-startDate">
+        </select> <br><br>
 
-        <label>End Date</label>
+        <div id="servicesSection" style="display:none">
 
-        <input type="date"
-               id="s-endDate">
+            <label>Services</label> <br><br>
 
-
-        <input id="s-bank"
-               placeholder="Bank Account">
-
-
-        <label>Services</label>
-
-        <select id="s-services"
-                multiple></select>
-
-
-        <div class="modal-actions">
-
-            <button id="saveStaff"
-                    class="create-buttons">
-
-                Save
-
-            </button>
-
-            <button id="cancelStaff"
-                    class="cancel-buttons">
-
-                Cancel
-
-            </button>
+            <select id="s-services" multiple></select> <br><br>
 
         </div>
+
+        <label>Start Date</label>
+        <input type="date" id="s-startDate"> <br><br>
+
+        <label>End Date</label>
+        <input type="date" id="s-endDate" placeholder="Optional"> <br><br>
+
+        <label>Bank Information</label>
+        <input id="s-bank"
+               placeholder="Bank Account"> <br><br>
+
+        <label>Working Days</label> <br><br>
+        <div class="checkbox-group">
+            <label>
+                <input type="checkbox" value="Monday" class="workday"> Monday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Tuesday" class="workday"> Tuesday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Wednesday" class="workday"> Wednesday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Thursday" class="workday"> Thursday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Friday" class="workday"> Friday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Saturday" class="workday"> Saturday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Sunday" class="workday"> Sunday
+            </label>
+
+        </div>
+
+
+        <div class="modal-action-forButtons">
+
+            <button id="saveStaff" class="create-buttons">Save</button>
+            <button id="cancelStaff" class="cancel-buttons">Cancel</button>
+
+        </div>
+
+
 
     </div>
 

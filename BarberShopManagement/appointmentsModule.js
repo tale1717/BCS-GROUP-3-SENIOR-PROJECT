@@ -38,42 +38,21 @@ async function loadServices() {
 }
 
 
-
-
-// Generate Appointment ID (MMDDYY0001)
 async function generateAppointmentID(){
-
     const appointments = await getAppointments();
-
-    const today = new Date();
-
-    const mm = String(today.getMonth()+1).padStart(2,'0');
-    const dd = String(today.getDate()).padStart(2,'0');
-    const yy = String(today.getFullYear()).slice(-2);
-
-    const prefix = mm+dd+yy;
-
     let max = 0;
-
-    appointments.forEach(a=>{
-
-        const id = a.appointmentID || a.id;
-
-        if(id && id.startsWith(prefix)){
-
-            const num = parseInt(id.slice(6)) || 0;
-
+    appointments.forEach(s=>{
+        if(s.appointmentID){
+            const num = parseInt(
+                s.appointmentID.substring(1)
+            );
             if(num > max) max = num;
-
         }
-
     });
-
     const next = max + 1;
-
-    return prefix + String(next).padStart(4,'0');
-
+    return "A"+String(next).padStart(5,'0');
 }
+
 
 function populateServiceDropdown() {
     const select = document.getElementById("a-service");
@@ -182,6 +161,30 @@ function setupCreate() {
         if (!selectedService) {
             alert("Please select a service.");
             return;
+
+            const staffID =
+                document.getElementById("a-barber").value;
+
+            const date =
+                document.getElementById("a-date").value;
+
+// Get staff info
+            const staff =
+                allStaff.find(s=>s.staffID===staffID);
+
+// Convert date → weekday
+            const day =
+                new Date(date)
+                    .toLocaleDateString('en-US',{weekday:'long'});
+
+// Check if barber works that day
+            if(!staff.workingDays.includes(day)){
+
+                alert("Staff not working this day");
+
+                return;
+
+            }
         }
         const appointmentID =
             await generateAppointmentID();

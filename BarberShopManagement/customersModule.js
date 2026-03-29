@@ -51,8 +51,8 @@ async function generateCustomerID() {
     });
 
     const next = max + 1;
+    return "C"+String(next).padStart(6,'0');
 
-    return String(next).padStart(6, '0');
 }
 
 //Edit  logic

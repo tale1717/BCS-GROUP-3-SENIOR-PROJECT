@@ -48,7 +48,7 @@ async function generateServiceID(){
 
     const next = max + 1;
 
-    return "A"+String(next).padStart(5,'0');
+    return "S"+String(next).padStart(5,'0');
 
 }
 
