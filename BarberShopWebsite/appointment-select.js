@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, collection, query, where, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
 import { getServices } from "/BarberShopWebsite/Collections/services.js";
@@ -47,19 +47,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 const selectedService = allServices.find(s => s.id === selectedServiceId);
 
-                if (!barber || !date || !time || !selectedService) {
+                if (!barber || barber==="Select Barber"
+                    || !date
+                    || !time || time==="Select Time"
+                    || !selectedService) {
                     alert("Please fill out barber, date, time, and service.");
                     return;
                 }
 
-                const appointmentId = `${barber}_${date}_${time}`;
-                const ref = doc(db, "appointments", appointmentId);
+                const appointmentRef = collection(db, "appointments");
 
-                const existing = await getDoc(ref);
-                if (existing.exists()) {
+                const q = query(
+                    appointmentRef,
+                    where("barber", "==", barber),
+                    where("date", "==", date),
+                    where("time", "==", time)
+                );
+
+                const existing = await getDocs(q);
+
+                if (!existing.empty) {
                     alert("This time slot is already booked.");
                     return;
                 }
+
+                const ref = doc(appointmentRef);
 
                 await setDoc(ref, {
                     customerUid: user.uid,
@@ -75,9 +87,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     createdAt: serverTimestamp()
                 });
 
-                sessionStorage.setItem("lastAppointmentId", appointmentId);
+                sessionStorage.setItem("lastAppointmentId", ref.id);
 
-                window.location.href = `appointment-confirm.html?appointmentId=${encodeURIComponent(appointmentId)}`;
+                window.location.href = `appointment-confirm.html?appointmentId=${encodeURIComponent(ref.id)}`;
             } catch (err) {
                 console.error("Failed to create appointment:", err);
                 alert("Failed to create appointment. Check console for details.");

@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="calendar.css">
     <script type="module" src="isCustomerLoggedIn.js"></script>
     <script type="module" src="appointment-select.js"></script>
+
+    <script type="module" src="calendar.js"></script>
     <script type="module" src="time-select.js"></script>
 </head>
 <body>
@@ -76,6 +78,7 @@
             <div class="custom-select">
                 Barber:
                 <select class="input-select" id="barber">
+                    <option>Select Barber</option>
                     <option>Talero</option>
                     <option>Thai</option>
                     <option>Tobias</option>
@@ -83,6 +86,7 @@
                 </select>
             </div>
 
+            <!--
             <script>
                 const selectedBarber = sessionStorage.getItem("selectedBarber");
                 if (selectedBarber) {
@@ -90,11 +94,11 @@
                     if (select) select.value = selectedBarber;
                 }
             </script>
-            <script type="module" src="calendar.js"></script>
+            -->
 
             <div class="custom-select">
                 Time:
-                <select class="input-select" id="time"></select>
+                <select class="input-select" id="time">Select a Time</select>
             </div>
 
             <div class="custom-select">

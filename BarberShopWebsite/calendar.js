@@ -114,6 +114,8 @@ function addClickListenersToDays() {
             // display readable date
             displayDate.textContent = `${months[month]} ${clickedDay}, ${year}`;
 
+            document.getElementById("date").dispatchEvent(new Event("change"));
+
             console.log("Selected date:", storedDate);
         });
 
