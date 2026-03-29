@@ -22,6 +22,7 @@ export async function createAppointment(data){
 
         {
             ...data,
+            appointmentID:data.appointmentID,
             createdAt:serverTimestamp()
         }
 

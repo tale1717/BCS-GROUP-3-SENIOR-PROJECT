@@ -5,7 +5,16 @@ import {
     getAppointments,
     updateAppointment,
     deleteAppointment
+
 } from "../BarberShopWebsite/Collections/appointments.js";
+
+import {
+    getCustomers
+} from "../BarberShopWebsite/Collections/customers.js";
+
+import {
+    getStaff
+} from "../BarberShopWebsite/Collections/staff.js";
 
 import {
     getUserProfile
@@ -18,6 +27,8 @@ import {
 let allAppointments = [];
 let allServices = [];
 let userCache = {};
+let allCustomers = [];
+let allStaff = [];
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -25,6 +36,8 @@ async function init() {
     await loadServices();
     await loadAppointments();
     setupSearch();
+    await loadCustomers();
+    await loadStaff();
     setupCreate();
 
     document.getElementById("cancelAppointment").onclick = () => {
@@ -37,20 +50,61 @@ async function loadServices() {
     populateServiceDropdown();
 }
 
-
-async function generateAppointmentID(){
-    const appointments = await getAppointments();
-    let max = 0;
-    appointments.forEach(s=>{
-        if(s.appointmentID){
-            const num = parseInt(
-                s.appointmentID.substring(1)
-            );
-            if(num > max) max = num;
-        }
+//listdown customer name
+async function loadCustomers(){
+    allCustomers = await getCustomers();
+    const select =
+        document.getElementById("a-customer");
+    select.innerHTML =
+        `<option value="">Select Customer</option>`;
+    allCustomers.forEach(c=>{
+        const option =
+            document.createElement("option");
+        option.value = c.customerID;
+        option.textContent = c.name;
+        select.appendChild(option);
     });
-    const next = max + 1;
-    return "A"+String(next).padStart(5,'0');
+
+}
+
+//list down barber name
+async function loadStaff(){
+    allStaff = await getStaff();
+    const select =
+        document.getElementById("a-barber");
+    if(!select) return;
+    select.innerHTML =
+        `<option value="">Select Barber</option>`;
+    allStaff
+        .filter(s=>s.position==="Barber")
+        .forEach(b=>{
+            const option =
+                document.createElement("option");
+            option.value = b.staffID;
+            option.textContent = b.name;
+            select.appendChild(option);
+        });
+}
+
+//genertae ID
+async function generateAppointmentID(){
+    const appointments =
+        await getAppointments();
+    let max = 0;
+    appointments.forEach(a=>{
+        const id =
+            a.appointmentID || a.id;
+        if(!id) return;
+// Only count IDs like A00001 because the prvious one has different format
+        if(!/^A\d{6}$/.test(id))
+            return;
+        const num =
+            parseInt(id.slice(1));
+        if(num > max)
+            max = num;
+    });
+    return "A"+
+        String(max + 1).padStart(6,'0');
 }
 
 
@@ -68,11 +122,13 @@ function populateServiceDropdown() {
     });
 }
 
+//load appointments
 async function loadAppointments() {
     allAppointments = await getAppointments();
     await renderTable(allAppointments);
 }
 
+//render table
 async function renderTable(list) {
     const body = document.getElementById("appointment-body");
     body.innerHTML = "";
@@ -153,64 +209,75 @@ function setupCreate() {
     if (!saveBtn) return;
 
     saveBtn.onclick = async () => {
-        console.log("Creating appointment..."); // safty check before save
-        const selectedServiceId = document.getElementById("a-service").value;
-        const selectedService = allServices.find(s => s.id === selectedServiceId);
 
+        const customerSelect =
+            document.getElementById("a-customer");
 
-        if (!selectedService) {
-            alert("Please select a service.");
+        const barberSelect =
+            document.getElementById("a-barber");
+
+        const selectedServiceId =
+            document.getElementById("a-service").value;
+
+        const selectedService =
+            allServices.find(
+                s=>s.id===selectedServiceId
+            );
+
+        if(!selectedService){
+
+            alert("Please select service");
+
             return;
 
-            const staffID =
-                document.getElementById("a-barber").value;
-
-            const date =
-                document.getElementById("a-date").value;
-
-// Get staff info
-            const staff =
-                allStaff.find(s=>s.staffID===staffID);
-
-// Convert date → weekday
-            const day =
-                new Date(date)
-                    .toLocaleDateString('en-US',{weekday:'long'});
-
-// Check if barber works that day
-            if(!staff.workingDays.includes(day)){
-
-                alert("Staff not working this day");
-
-                return;
-
-            }
         }
+
         const appointmentID =
             await generateAppointmentID();
-        console.log("Generated:",appointmentID);
 
         await createAppointment({
 
             appointmentID:appointmentID,
+
             customerID:
-            document.getElementById("a-customer").value,
+            customerSelect.value,
+
+            customer:
+            customerSelect.options[
+                customerSelect.selectedIndex
+                ].text,
+
             staffID:
-            document.getElementById("a-barber").value,
+            barberSelect.value,
+
+            barber:
+            barberSelect.options[
+                barberSelect.selectedIndex
+                ].text,
+
             serviceId:selectedService.id,
+
+            serviceName:selectedService.serviceName,
+
+            servicePrice:selectedService.price,
+
+            serviceDuration:selectedService.duration,
+
             date:
             document.getElementById("a-date").value,
+
             time:
             document.getElementById("a-time").value,
+
             status:
-                document.getElementById("a-status").value || "upcoming"
+            document.getElementById("a-status").value
 
         });
 
+        modal.style.display="none";
 
-
-        modal.style.display = "none";
         loadAppointments();
+
     };
 }
 
