@@ -10,29 +10,11 @@
     <script type="module" src="/BarberShopWebsite/isCustomerLoggedIn.js"></script>
     <script type="module" src="customer-profile.js"></script>
     <script type="module" src="time-select.js"></script>
+    <script type="module" src="updatePassword.js"></script>
 
     <style>
 
-        .edit-form{
-        display:none;
-        margin-top:15px;
-        }
 
-        .edit-form input{
-        display:block;
-        margin-bottom:10px;
-        padding:8px;
-        width:250px;
-        }
-
-        .primary-btn{
-        padding:8px 14px;
-        background:black;
-        color:white;
-        border:none;
-        cursor:pointer;
-        margin-right:10px;
-        }
 
     </style>
 
@@ -71,11 +53,11 @@
 
             <div class="button-group">
                 <button class="primary-btn" id="editBtn">Edit Profile</button>
-                <button class="primary-btn">Change Password</button>
+                <button class="primary-btn" id="pwBtn">Change Password</button>
                 <button class="primary-btn-logout" id="logout-button">Log Out</button>
             </div>
 
-            <div class="edit-form" id="editForm">
+            <div class="form" id="editForm">
 
                 <input id="fnameInput" type="text" placeholder="Enter First Name">
                 <input id="lnameInput" type="text" placeholder="Enter Last Name">
@@ -86,6 +68,15 @@
                 <button class="primary-btn" id="saveBtn">Save</button>
                 <button class="primary-btn" id="cancelBtn">Cancel</button>
 
+            </div>
+
+            <div class="form" id="passwordForm" style="display: none;">
+                <input type="password" id="currentPassword" placeholder="Current Password">
+                <input type="password" id="newPassword" placeholder="New Password">
+                <input type="password" id="confirmPassword" placeholder="Confirm Password">
+
+                <button class="primary-btn" id="savePWBtn">Save</button>
+                <button class="primary-btn" id="cancelPWBtn">Cancel</button>
             </div>
 
         </div>
@@ -242,7 +233,7 @@
     </div>
 
     <div class="history-card" id="review-card" style="display: none">
-        <h2>Please leave a review!</h2>
+        <h2>Please leave a review for your appointment!</h2>
 
         <div id="review-details"></div>
 

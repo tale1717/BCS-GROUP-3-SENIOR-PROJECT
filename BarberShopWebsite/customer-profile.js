@@ -26,6 +26,7 @@ const saveEditAppointment = document.getElementById("saveEditAptBtn");
 // form
 const editForm = document.getElementById("editForm");
 const editAptForm = document.getElementById("editAppointmentForm");
+const passwordForm = document.getElementById("passwordForm");
 
 // text
 const fnameText = document.getElementById("fnameText");
@@ -83,6 +84,7 @@ editBtn.addEventListener("click", function(){
     dobInput.value = dobText.textContent;
 
     editForm.style.display = "block";
+    passwordForm.style.display = "none";
 
 });
 
@@ -280,7 +282,7 @@ async function loadAppointmentHistory(user) {
             row.innerHTML = `
                 <td>${data.date}</td>
                 <td>${data.barber}</td>
-                <td>${data.service}</td>
+                <td>${data.serviceName}</td>
                 <td>
                     <span class="status-${data.status}">
                         ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}
@@ -326,7 +328,7 @@ function makeReview(user, data, dataID) {
     details.innerHTML = `
         <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
         <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
-        <p style="font-size: 18px;"><strong>Service:</strong> ${data.service}</p>
+        <p style="font-size: 18px;"><strong>Service:</strong> ${data.serviceName}</p>
     `;
 
     reviewText.value = data.review || "";

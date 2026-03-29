@@ -3,6 +3,7 @@ import { doc, collection, query, where, getDocs, setDoc, serverTimestamp } from 
 import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
 import { getServices } from "/BarberShopWebsite/Collections/services.js";
+import { getAppointments } from "./Collections/appointments.js";
 
 let allServices = [];
 
@@ -55,10 +56,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
 
-                const appointmentRef = collection(db, "appointments");
+                const appointmentID = await generateAppointmentID();
+                const appointmentsRef = collection(db, "appointments");
 
                 const q = query(
-                    appointmentRef,
+                    appointmentsRef,
                     where("barber", "==", barber),
                     where("date", "==", date),
                     where("time", "==", time)
@@ -71,9 +73,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
 
-                const ref = doc(appointmentRef);
+                const appointmentRef = doc(db, "appointments", appointmentID);
 
-                await setDoc(ref, {
+                await setDoc(appointmentRef, {
+                    appointmentID: appointmentID,
                     customerUid: user.uid,
                     customerEmail: user.email || "",
                     barber,
@@ -87,9 +90,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     createdAt: serverTimestamp()
                 });
 
-                sessionStorage.setItem("lastAppointmentId", ref.id);
+                sessionStorage.setItem("lastAppointmentId", appointmentID);
 
-                window.location.href = `appointment-confirm.html?appointmentId=${encodeURIComponent(ref.id)}`;
+                window.location.href = `appointment-confirm.html?appointmentId=${encodeURIComponent(appointmentID)}`;
             } catch (err) {
                 console.error("Failed to create appointment:", err);
                 alert("Failed to create appointment. Check console for details.");
@@ -97,6 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 });
+
 
 async function loadServices() {
     allServices = await getServices();
@@ -110,4 +114,24 @@ async function loadServices() {
         option.textContent = `${service.serviceName} ($${service.price}, ${service.duration} min)`;
         serviceSelect.appendChild(option);
     });
+}
+
+async function generateAppointmentID(){
+    const appointments =
+        await getAppointments();
+    let max = 0;
+    appointments.forEach(a=>{
+        const id =
+            a.appointmentID || a.id;
+        if(!id) return;
+// Only count IDs like A00001 because the prvious one has different format
+        if(!/^A\d{6}$/.test(id))
+            return;
+        const num =
+            parseInt(id.slice(1));
+        if(num > max)
+            max = num;
+    });
+    return "A"+
+        String(max + 1).padStart(6,'0');
 }
