@@ -8,16 +8,13 @@
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="servicesModule.js"></script>
     <script type="module" src="logout.js"></script>
-
 </head>
 
 <body>
 
 <div class="app-container">
 
-    <!-- SIDEBAR -->
     <nav class="sidebar">
-
         <div class="logo">
             <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
         </div>
@@ -26,44 +23,31 @@
             <li><a href="dashboard.html">Dashboard</a></li>
             <li><a href="appointments.html">Appointments</a></li>
             <li><a href="customers.html">Customers</a></li>
-            <li><a href="staff.html">Employee</a></li>
+            <li><a href="staff.html">Staff</a></li>
             <li class="active"><a href="services.html">Services</a></li>
-            <li><li><a href="#" id="logoutBtn">Logout</a></li>
+            <li><a href="#" id="logoutBtn">Logout</a></li>
         </ul>
-
     </nav>
 
-
-    <!-- RIGHT CONTENT -->
     <main class="content">
 
         <header class="page-header">
-
             <h1>Services</h1>
 
             <div class="toolbar">
-
                 <input type="text" id="searchInput" placeholder="🔍 Search services..." />
 
                 <button id="createServiceBtn" class="create-buttons">
                     + Create New Service
                 </button>
-
-
             </div>
-
         </header>
 
-
-        <!-- SERVICE TABLE -->
-
         <div class="card">
-
             <table class="service-table">
-
                 <thead>
                 <tr>
-                    <th>ServiceID</th>
+                    <th>Service ID</th>
                     <th>Service Name</th>
                     <th>Price</th>
                     <th>Estimated Time</th>
@@ -72,22 +56,16 @@
                 </thead>
 
                 <tbody id="service-body"></tbody>
-
             </table>
-
         </div>
 
     </main>
 
 </div>
 
-
 <!-- CREATE SERVICE MODAL -->
-
 <div id="serviceModal" class="modal">
-
     <div class="modal-content">
-
         <h2 class="logintitletext">Create Service</h2>
 
         <label class="text">Service Name</label><br><br>
@@ -100,22 +78,13 @@
         <input id="s-duration" class="text-field" placeholder="Duration"><br><br>
 
         <div class="modal-action-forButtons">
-
-            <button id="saveService" class="create-buttons">
-                Create
-            </button>
-
-            <button id="cancelService" class="cancel-buttons">
-                Cancel
-            </button>
-
+            <button id="saveService" class="create-buttons">Create</button>
+            <button id="cancelService" class="cancel-buttons">Cancel</button>
         </div>
-
-
     </div>
-
 </div>
 
+<!-- EDIT SERVICE MODAL -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <h2>Edit Service</h2>
@@ -132,21 +101,11 @@
         <input id="edit-duration" class="text-field"><br><br>
 
         <div class="modal-actions">
-
-            <button id="updateService" class="create-buttons">
-                Update
-            </button>
-
-            <button id="cancelEdit" class="cancel-buttons">
-                Cancel
-            </button>
-
+            <button id="updateService" class="create-buttons">Update</button>
+            <button id="cancelEdit" class="cancel-buttons">Cancel</button>
         </div>
-
     </div>
-
 </div>
-
 
 </body>
 </html>
