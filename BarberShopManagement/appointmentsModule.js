@@ -39,6 +39,8 @@ async function init() {
     await loadCustomers();
     await loadStaff();
     setupCreate();
+    setupActions();
+    setupEdit()
 
     document.getElementById("cancelAppointment").onclick = () => {
         document.getElementById("appointmentModal").style.display = "none";
@@ -157,7 +159,7 @@ async function renderTable(list) {
             <td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
             <td>
                 <button class="edit" data-id="${a.id}">Edit</button>
-                <button class="delete" data-id="${a.id}">Cancel</button>
+                <button class="delete" data-id="${a.id}">Delete</button>
             </td>
         `;
 
@@ -280,6 +282,129 @@ function setupCreate() {
 
     };
 }
+
+//Edit Appointment
+function setupEdit(){
+
+    document.querySelectorAll(".edit")
+        .forEach(btn=>{
+
+            btn.onclick = ()=>{
+                populateEditDropdowns();
+
+                const appointment =
+                    allAppointments.find(
+                        a=>a.id===btn.dataset.id
+                    );
+
+                document.getElementById("edit-id").value =
+                    appointment.id;
+                document.getElementById("edit-date").value =
+                    appointment.date;
+                document.getElementById("edit-time").value =
+                    appointment.time;
+                document.getElementById("edit-status").value =
+                    appointment.status;
+// preselect values
+                document.getElementById("edit-customer").value =
+                    appointment.customerID;
+                document.getElementById("edit-barber").value =
+                    appointment.staffID;
+                document.getElementById("edit-service").value =
+                    appointment.serviceId;
+                document.getElementById("editAppointmentModal")
+                    .style.display="block";
+            };
+        });
+
+
+}
+
+//update appointment
+document
+    .getElementById("updateAppointment")
+    .onclick = async ()=>{
+    const id =
+        document.getElementById("edit-id").value;
+    await updateAppointment(id,{
+        date:
+        document.getElementById("edit-date").value,
+        time:
+        document.getElementById("edit-time").value,
+        status:
+        document.getElementById("edit-status").value
+    });
+    document.getElementById("editAppointmentModal")
+        .style.display="none";
+    loadAppointments();
+};
+
+//list down list of customer , barber and service in edit modal
+function populateEditDropdowns(){
+// customers
+    const customerSelect =
+        document.getElementById("edit-customer");
+    customerSelect.innerHTML =
+        `<option value="">Select Customer</option>`;
+    allCustomers.forEach(c=>{
+        const option =
+            document.createElement("option");
+        option.value = c.customerID;
+        option.textContent = c.name;
+        customerSelect.appendChild(option);
+    });
+
+
+// barbers
+    const barberSelect =
+        document.getElementById("edit-barber");
+    barberSelect.innerHTML =
+        `<option value="">Select Barber</option>`;
+    allStaff
+        .filter(s=>s.position==="Barber")
+        .forEach(b=>{
+            const option =
+                document.createElement("option");
+            option.value = b.staffID;
+            option.textContent = b.name;
+            barberSelect.appendChild(option);
+        });
+
+// services
+    const serviceSelect =
+        document.getElementById("edit-service");
+    serviceSelect.innerHTML =
+        `<option value="">Select Service</option>`;
+    allServices.forEach(s=>{
+        const option =
+            document.createElement("option");
+        option.value = s.id;
+        option.textContent =
+            s.serviceName;
+        serviceSelect.appendChild(option);
+    });
+}
+
+//cancel edit
+document
+    .getElementById("cancelEditAppointment")
+    .onclick = ()=>{
+
+    document.getElementById("editAppointmentModal")
+        .style.display="none";
+
+};
+
+document
+    .getElementById("cancelEditAppointment")
+    .onclick = ()=>{
+
+    document.getElementById("editAppointmentModal")
+        .style.display="none";
+
+};
+
+
 
 function setupActions() {
     document.querySelectorAll(".delete").forEach(btn => {

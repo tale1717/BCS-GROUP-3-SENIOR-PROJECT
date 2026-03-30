@@ -122,5 +122,51 @@
 </div>
 
 
+<!-- EDIT APPOINTMENT MODAL -->
+<div id="editAppointmentModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Edit Appointment</h2>
+
+        <input type="hidden" id="edit-id">
+
+        <select id="edit-customer"></select>
+
+        <select id="edit-barber"></select>
+
+        <select id="edit-service"></select>
+
+        <input type="date" id="edit-date">
+
+        <input type="time" id="edit-time">
+
+        <select id="edit-status">
+
+            <option value="confirmed">Confirmed</option>
+
+            <option value="completed">Completed</option>
+
+            <option value="cancelled">Cancelled</option>
+
+
+        </select>
+
+        <div class="modal-actions">
+
+            <button id="updateAppointment">
+                Update
+            </button>
+
+            <button id="cancelEditAppointment">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 </body>
 </html>
