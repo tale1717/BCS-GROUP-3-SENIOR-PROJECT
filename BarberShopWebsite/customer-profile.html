@@ -6,32 +6,15 @@
     <title>Triple T&G Barbers - My Profile</title>
     <link rel="icon" href="./3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="calendar.css">
     <script type="module" src="/BarberShopWebsite/isCustomerLoggedIn.js"></script>
     <script type="module" src="customer-profile.js"></script>
     <script type="module" src="time-select.js"></script>
+    <script type="module" src="updatePassword.js"></script>
 
     <style>
 
-        .edit-form{
-        display:none;
-        margin-top:15px;
-        }
 
-        .edit-form input{
-        display:block;
-        margin-bottom:10px;
-        padding:8px;
-        width:250px;
-        }
-
-        .primary-btn{
-        padding:8px 14px;
-        background:black;
-        color:white;
-        border:none;
-        cursor:pointer;
-        margin-right:10px;
-        }
 
     </style>
 
@@ -44,16 +27,16 @@
         <a href="./"><h1 class="logo">TRIPLE T&G BARBERS</h1></a>
         <nav>
             <a href="about-us.html">About Us</a>
-            <a href="#">Contact</a>
+            <a href="contact.html">Contact</a>
             <a id="profile-login" href="customer-login.html">Sign In</a>
             <a id="book-now" href="appointment.html" class="book-now">Book Now</a>
         </nav>
     </div>
 </header>
 
-<hr>
+<section class="hero-auth"></section>
 
-<section class="profile-container">
+<section class="profile-container" id="profile-container">
 
     <h1>My Profile</h1>
 
@@ -70,11 +53,11 @@
 
             <div class="button-group">
                 <button class="primary-btn" id="editBtn">Edit Profile</button>
-                <button class="primary-btn">Change Password</button>
-                <button class="primary-btn-logout" id="logout-button">Log Out</button>
+                <button class="primary-btn" id="pwBtn">Change Password</button>
+                <button class="primary-btn logout" id="logout-button">Log Out</button>
             </div>
 
-            <div class="edit-form" id="editForm">
+            <div class="form" id="editForm">
 
                 <input id="fnameInput" type="text" placeholder="Enter First Name">
                 <input id="lnameInput" type="text" placeholder="Enter Last Name">
@@ -85,6 +68,15 @@
                 <button class="primary-btn" id="saveBtn">Save</button>
                 <button class="primary-btn" id="cancelBtn">Cancel</button>
 
+            </div>
+
+            <div class="form" id="passwordForm" style="display: none;">
+                <input type="password" id="currentPassword" placeholder="Current Password">
+                <input type="password" id="newPassword" placeholder="New Password">
+                <input type="password" id="confirmPassword" placeholder="Confirm Password">
+
+                <button class="primary-btn" id="savePWBtn">Save</button>
+                <button class="primary-btn" id="cancelPWBtn">Cancel</button>
             </div>
 
         </div>
@@ -134,38 +126,91 @@
 
         <br>
 
-        <button class="primary-btn" id="cancel-appointment-btn">Cancel Appointment</button>
         <button class="primary-btn" id="edit-appointment-btn">Edit Appointment</button>
+        <button class="primary-btn" id="cancel-appointment-btn">Cancel Appointment</button>
 
         <div class="edit-form" id="editAppointmentForm">
+            <div class="booking-interface profile-center">
+                <div class="calendar">
+                    <div class="calendar-container">
+                        <header class="calendar-header">
+                            <p class="calendar-current-date"></p>
+                            <div class="calendar-navigation">
+                <span id="calendar-prev"
+                      class="material-symbols-rounded">
+                    <
+                </span>
+                                <span id="calendar-next"
+                                      class="material-symbols-rounded">
+                    >
+                </span>
+                            </div>
+                        </header>
 
-            Date: <input id="editDate" type="date">
+                        <div class="calendar-body">
+                            <ul class="calendar-weekdays">
+                                <li>Sun</li>
+                                <li>Mon</li>
+                                <li>Tue</li>
+                                <li>Wed</li>
+                                <li>Thu</li>
+                                <li>Fri</li>
+                                <li>Sat</li>
+                            </ul>
+                            <ul class="calendar-dates"></ul>
+                        </div>
+                    </div>
+                </div>
 
-            Barber: <select id="editBarber">
-                        <option>Talero</option>
-                        <option>Thai</option>
-                        <option>Tobias</option>
-                        <option>Guaman</option>
-                    </select>
-            <br>
+                <div class="form-container">
+                    <div class="custom-select profile">
+                        Date:
+                        <p id="date-display" class="input-select profile"></p>
+                        <input type="hidden" id="date">
+                    </div>
+                    <div class="custom-select profile">
+                        Barber:
+                        <select class="input-select profile" id="barber">
+                            <option>Talero</option>
+                            <option>Thai</option>
+                            <option>Tobias</option>
+                            <option>Guaman</option>
+                        </select>
+                    </div>
 
-            Service: <select id="service"></select>
-            <br>
+                    <script>
+                        const selectedBarber = sessionStorage.getItem("selectedBarber");
+                        if (selectedBarber) {
+                            const select = document.getElementById("barber");
+                            if (select) select.value = selectedBarber;
+                        }
+                    </script>
+                    <script type="module" src="calendar.js"></script>
 
-            Time: <select id="time"></select>
-            <br>
+                    <div class="custom-select profile">
+                        Time:
+                        <select class="input-select profile" id="time"></select>
+                    </div>
 
-            <button class="primary-btn" id="saveAptBtn">Save</button>
-            <button class="primary-btn" id="cancelAptBtn">Cancel</button>
+                    <div class="custom-select profile">
+                        Type of Service:
+                        <select class="input-select profile" id="service"></select>
+                    </div>
 
-            <br> <br> <h2 class="todo">This function is in Work In Progress</h2>
+                    <div class="button-row">
+                        <a class="primary-btn" id="confirm-appointment">Confirm Edit</a>
+                        <a class="primary-btn" id="cancelEditAptBtn">Cancel Edit</a>
+                    </div>
+
+                </div>
+            </div>
 
         </div>
 
     </div>
 
 
-    <div class="history-card">
+    <div class="history-card" id="history-card">
 
         <h2>Appointment History</h2>
 
@@ -177,7 +222,7 @@
                 <th>Barber</th>
                 <th>Service</th>
                 <th>Status</th>
-                <th>Rating</th>
+                <th>Review</th>
             </tr>
             </thead>
 
@@ -185,6 +230,23 @@
 
         </table>
 
+    </div>
+
+    <div class="history-card" id="review-card" style="display: none">
+        <h2>Please leave a review for your appointment!</h2>
+
+        <div id="review-details"></div>
+
+        <br>
+        <div id="star-rating"></div>
+        <br>
+
+        <textarea id="review-text" placeholder="Write your review here..."></textarea>
+
+        <br><br>
+
+        <button class="primary-btn" id="save-review">Save</button>
+        <button class="primary-btn" id="cancel-review">Cancel</button>
     </div>
 
 </section>
