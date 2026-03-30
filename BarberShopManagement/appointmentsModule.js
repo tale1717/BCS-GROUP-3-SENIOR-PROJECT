@@ -156,6 +156,7 @@ async function renderTable(list) {
             <td>${a.serviceName || a.service || ""}</td>
             <td>${a.date || ""}</td>
             <td>${a.time || ""}</td>
+            <td>${a.notes || ""}</td>
             <td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
             <td>
                 <button class="edit" data-id="${a.id}">Edit</button>
@@ -270,6 +271,9 @@ function setupCreate() {
 
             time:
             document.getElementById("a-time").value,
+
+            notes:
+                document.getElementById("a-notes")?.value || "",
 
             status:
             document.getElementById("a-status").value
