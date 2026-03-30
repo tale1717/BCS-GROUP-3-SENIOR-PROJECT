@@ -4,6 +4,7 @@ import {
     collection,
     addDoc,
     doc,
+    setDoc,
     getDoc,
     getDocs,
     deleteDoc,
@@ -11,13 +12,26 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-export async function createAppointment(data) {
-    const ref = await addDoc(collection(db, "appointments"), {
-        ...data,
-        createdAt: serverTimestamp()
-    });
-    return ref.id;
+export async function createAppointment(data){
+
+    const appointmentID = data.appointmentID;
+
+    await setDoc(
+
+        doc(db,"appointments",appointmentID),
+
+        {
+            ...data,
+            appointmentID:data.appointmentID,
+            createdAt:serverTimestamp()
+        }
+
+    );
+
+    return data.appointmentID;
+
 }
+
 
 export async function getAppointment(appointmentId) {
     const snap = await getDoc(doc(db, "appointments", appointmentId));

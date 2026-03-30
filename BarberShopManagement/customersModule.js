@@ -31,6 +31,30 @@ async function init(){
 
 }
 
+// Generate Customer ID (000001 format)
+async function generateCustomerID() {
+
+    const customers = await getCustomers();
+
+    let max = 0;
+
+    customers.forEach(c => {
+
+        if (c.customerID) {
+
+            const num = parseInt(c.customerID);
+
+            if (num > max) max = num;
+
+        }
+
+    });
+
+    const next = max + 1;
+    return "C"+String(next).padStart(6,'0');
+
+}
+
 //Edit  logic
 function renderTable(list){
 
@@ -43,7 +67,7 @@ function renderTable(list){
         const row=document.createElement("tr");
 
         row.innerHTML=`
-
+<td>${c.customerID}</td>
 <td>${c.name}</td>
 <td>${c.phone}</td>
 <td>${c.email}</td>
@@ -155,7 +179,16 @@ function setupCreate() {
             return;
         }
 
-        await createCustomer({ name, phone, email });
+        const customerID = await generateCustomerID();
+
+        await createCustomer({
+
+            customerID:customerID,
+            name:name,
+            phone:phone,
+            email:email
+
+        });
 
         createModal.style.display = "none";
         clearCreateFields();

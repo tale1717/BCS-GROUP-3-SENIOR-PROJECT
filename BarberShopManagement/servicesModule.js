@@ -25,7 +25,34 @@ async function loadServices(){
 
 }
 
+// Generate Service ID (A00001)
+async function generateServiceID(){
 
+    const services = await getServices();
+
+    let max = 0;
+
+    services.forEach(s=>{
+
+        if(s.serviceID){
+
+            const num = parseInt(
+                s.serviceID.substring(1)
+            );
+
+            if(num > max) max = num;
+
+        }
+
+    });
+
+    const next = max + 1;
+
+    return "S"+String(next).padStart(5,'0');
+
+}
+
+//render table//
 function renderServices(list){
 
     const body = document.getElementById("service-body");
@@ -39,6 +66,7 @@ function renderServices(list){
 
 
         row.innerHTML = `
+<td>${s.serviceID}</td>
 <td>${s.serviceName}</td>
 <td>$${s.price}</td>
 <td>${s.duration}</td>
@@ -71,9 +99,10 @@ function setupCreate(){
     };
 
     document.getElementById("saveService").onclick=async()=>{
+        const serviceID = await generateServiceID();
 
         await createService({
-
+            serviceID:serviceID,
             serviceName:document.getElementById("s-name").value,
             price:document.getElementById("s-price").value,
             duration:document.getElementById("s-duration").value

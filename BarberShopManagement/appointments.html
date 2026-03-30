@@ -18,11 +18,11 @@
             <li><a href="dashboard.html">Dashboard</a></li>
             <li class="active"><a href="appointments.html">Appointments</a></li>
             <li><a href="customers.html">Customers</a></li>
-            <li><a href="barbers.html">Barbers</a></li>
+            <li><a href="staff.html">Staff</a></li>
             <li><a href="services.html">Services</a></li>
-            <li><a href="employeeRegister.html">Register Employee</a></li>
             <li><li><a href="#" id="logoutBtn">Logout</a></li>
         </ul>
+
 
     </nav>
 
@@ -61,11 +61,13 @@
 
                 <thead>
                 <tr>
+                    <th>Appointment ID</th>
                     <th>Customer</th>
                     <th>Barber</th>
                     <th>Service</th>
                     <th>Date</th>
-                    <th>Time</th></t>
+                    <th>Time</th>
+                    <th>Note</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -88,12 +90,24 @@
     <div class="modal-content">
 
         <h2>Create Appointment</h2>
+        <label>Customer Name</label> <br><br>
+        <select id="a-customer">
+            <option value="">Select Customer</option>
+        </select><br><br>
+        <label>Barber Name</label> <br><br>
+        <select id="a-barber">
+            <option value="">Select Barber</option>
+        </select><br><br>
+        <label>Service</label> <br><br>
+        <select id="a-service"></select> <br><br>
+        <label>Date</label> <br><br>
+        <input type="date" id="a-date"> <br><br>
+        <label>Time</label> <br><br>
+        <input type="time" id="a-time"> <br><br>
+        <label>Notes</label>
+        <textarea id="a-notes"
+                  placeholder="Appointment notes"></textarea>
 
-        <input id="a-customer" placeholder="Customer Name">
-        <input id="a-barber" placeholder="Barber Name">
-        <select id="a-service"></select>
-        <input type="date" id="a-date">
-        <input type="time" id="a-time">
 
         <select id="a-status">
             <option value="confirmed">Confirmed</option>
@@ -109,6 +123,52 @@
 
 </div>
 
+
+<!-- EDIT APPOINTMENT MODAL -->
+<div id="editAppointmentModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Edit Appointment</h2>
+
+        <input type="hidden" id="edit-id">
+        <label>Customer Name</label> <br><br>
+        <select id="edit-customer"></select> <br><br>
+        <label>Barber Name</label> <br><br>
+        <select id="edit-barber"></select><br><br>
+        <label>Service</label> <br><br>
+        <select id="edit-service"></select> <br><br>
+        <label>Date</label> <br><br>
+        <input type="date" id="edit-date"> <br><br>
+        <label>Time</label> <br><br>
+        <input type="time" id="edit-time"> <br><br>
+        <label>Note</label> <br><br>
+        <textarea id="edit-note"></textarea> <br><br>
+        <label>Status</label> <br><br>
+        <select id="edit-status">
+
+            <option value="confirmed">Confirmed</option>
+
+            <option value="completed">Completed</option>
+
+            <option value="cancelled">Cancelled</option>
+
+
+        </select>
+
+        <div class="modal-action-forButtons">
+
+            <button id="updateAppointment" class="edit">Update
+            </button>
+
+            <button id="cancelEditAppointment" class="cancel-buttons">Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>
