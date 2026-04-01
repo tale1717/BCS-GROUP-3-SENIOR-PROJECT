@@ -226,8 +226,8 @@ async function renderTable(list){
         <td>${a.notes || ""}</td>
 
         <td>
-        <span class="status ${a.status || "upcoming"}">
-        ${a.status || "upcoming"}
+        <span class="status ${a.status || "confirmed"}">
+        ${a.status || "confirmed"}
         </span>
         </td>
 
