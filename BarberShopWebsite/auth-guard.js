@@ -1,6 +1,8 @@
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { auth } from "/BarberShopWebsite/firebase.js";
-import {getUserProfile} from "./Collections/users";
+import {getUserProfile} from "./Collections/users.js";
+
+const appointmentContainer = document.getElementById("appointment-container");
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -16,5 +18,5 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
 
-    document.body.style.display = "block";
+    appointmentContainer.style.display = "block";
 });
