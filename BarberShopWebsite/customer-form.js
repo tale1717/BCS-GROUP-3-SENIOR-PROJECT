@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 await createCustomerProfile(cred.user.uid, {
                     firstName,
                     lastName,
+                    phone,
                     dob,
                     email
                 });
