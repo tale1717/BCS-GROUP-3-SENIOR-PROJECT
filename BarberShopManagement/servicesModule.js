@@ -72,7 +72,7 @@ function renderServices(list){
 <td>${s.duration}</td>
 
 <td>
-<button class="edit" data-id="${a.id || a.appointmentID}">
+<button class="edit" data-id="${s.id}">Edit</button>
 <button class="delete" data-id="${s.id}">Delete</button>
 </td>
 `;
