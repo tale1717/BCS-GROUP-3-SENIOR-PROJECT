@@ -224,6 +224,11 @@ editAppointmentBtn.addEventListener("click", async () => {
 
     const appointment = snap.data();
 
+    // Set calendar to appointment date
+    if (window.setCalendarDate) {
+        window.setCalendarDate(appointment.date);
+    }
+
     populateForm(appointment);
 
     editAptForm.style.display = "inline";

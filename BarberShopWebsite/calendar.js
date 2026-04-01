@@ -168,3 +168,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+
+// Allow external scripts to set calendar date
+window.setCalendarDate = function(dateString) {
+
+    const [y, m, d] = dateString.split("-").map(Number);
+    const dateObj = new Date(y, m - 1, d);
+
+    year = dateObj.getFullYear();
+    month = dateObj.getMonth();
+    clickedDay = dateObj.getDate();
+
+    manipulate();
+
+    const monthNumber = String(month + 1).padStart(2,"0");
+    const dayNumber = String(clickedDay).padStart(2,"0");
+
+    document.getElementById("date").value = `${year}-${monthNumber}-${dayNumber}`;
+    displayDate.textContent = `${months[month]} ${clickedDay}, ${year}`;
+};
