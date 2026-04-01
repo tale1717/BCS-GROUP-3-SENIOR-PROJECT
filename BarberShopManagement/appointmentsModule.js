@@ -79,7 +79,7 @@ async function loadCustomers(){
             document.createElement("option");
 
         option.value = String(c.customerID);
-        option.textContent = c.name;
+        option.textContent = c.firstName + " " + c.lastName;
 
         select.appendChild(option);
 

@@ -47,9 +47,15 @@ async function generateStaffID(){
 
 //Load staff information
 async function loadStaff(){
-    allStaff=
-        await getStaff();
+    allStaff = await getStaff();
+    allStaff.sort((a, b) => {
+        const idA = a.staffID || ""; // fallback if undefined
+        const idB = b.staffID || "";
+        return idA.localeCompare(idB);
+    });
     renderTable(allStaff);
+
+
 
 }
 

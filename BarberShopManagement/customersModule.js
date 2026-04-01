@@ -27,6 +27,12 @@ async function init(){
 async function loadCustomers(){
 
     allCustomers = await getCustomers();
+    allCustomers.sort((a, b) => {
+        const idA = a.customerID || ""; // fallback if undefined
+        const idB = b.customerID || "";
+        return idA.localeCompare(idB);
+    });
+
 
     renderTable(allCustomers);
 
@@ -124,6 +130,8 @@ function setupSearch() {
                 .includes(term)
 
         );
+
+        filtered.sort((a, b) => a.customerID.localeCompare(b.customerID));
 
         renderTable(filtered);
 
