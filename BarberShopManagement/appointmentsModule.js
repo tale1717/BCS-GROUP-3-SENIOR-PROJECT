@@ -157,7 +157,7 @@ async function renderTable(list) {
             <td>${a.date || ""}</td>
             <td>${a.time || ""}</td>
             <td>${a.notes || ""}</td>
-            <td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
+            <td><span class="status ${a.status || "confirmed"}">${a.status || "confirmed"}</span></td>
             <td>
                 <button class="edit" data-id="${a.id}">Edit</button>
                 <button class="delete" data-id="${a.id}">Delete</button>

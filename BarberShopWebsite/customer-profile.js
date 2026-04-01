@@ -103,6 +103,7 @@ saveBtn.addEventListener("click", async function(e){
     try {
 
         await updateDoc(doc(db, "users", currentUser.uid), updatedData);
+        await updateDoc(doc(db, "customers", currentUser.uid), updatedData);
 
         // UPDATE PAGE
         fnameText.textContent = updatedData.firstName;
