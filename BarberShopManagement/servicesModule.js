@@ -85,7 +85,7 @@ function renderServices(list){
 
 }
 
-
+//create
 function setupCreate(){
 
     const modal=document.getElementById("serviceModal");
@@ -117,6 +117,7 @@ function setupCreate(){
 
 }
 
+//edit
 function setupEdit(){
 
     document.querySelectorAll(".edit").forEach(btn=>{
@@ -140,6 +141,7 @@ function setupEdit(){
 
 }
 
+//delete
 function setupDelete(){
 
     document.querySelectorAll(".delete").forEach(btn=>{
