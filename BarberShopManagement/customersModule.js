@@ -1,15 +1,14 @@
 import {
-    createCustomer,
+    createCustomer  ,
     getCustomers,
     updateCustomer,
     deleteCustomer
-
 } from "../BarberShopWebsite/Collections/customers.js";
 
 //Load Customer
-let allCustomers=[];
+let allCustomers = [];
 
-document.addEventListener("DOMContentLoaded",init);
+document.addEventListener("DOMContentLoaded", init);
 
 async function init(){
 
@@ -21,15 +20,24 @@ async function init(){
 
     formatPhoneNumber(document.getElementById("c-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
+}
 
-    //Take data from Firebase
-}async function loadCustomers(){
 
-    allCustomers=await getCustomers();
+//Load customers from Firebase
+async function loadCustomers(){
+
+    allCustomers = await getCustomers();
+    allCustomers.sort((a, b) => {
+        const idA = a.customerID || ""; // fallback if undefined
+        const idB = b.customerID || "";
+        return idA.localeCompare(idB);
+    });
+
 
     renderTable(allCustomers);
 
 }
+
 
 // Generate Customer ID (000001 format)
 async function generateCustomerID() {
@@ -42,7 +50,7 @@ async function generateCustomerID() {
 
         if (c.customerID) {
 
-            const num = parseInt(c.customerID);
+            const num = parseInt(c.customerID.replace("C",""));
 
             if (num > max) max = num;
 
@@ -51,24 +59,26 @@ async function generateCustomerID() {
     });
 
     const next = max + 1;
-    return "C"+String(next).padStart(6,'0');
+
+    return "C" + String(next).padStart(6,'0');
 
 }
 
-//Edit  logic
+
+// Render table
 function renderTable(list){
 
-    const body=document.getElementById("customer-body");
+    const body = document.getElementById("customer-body");
 
-    body.innerHTML="";
+    body.innerHTML = "";
 
-    list.forEach(c=>{
+    list.forEach(c => {
 
-        const row=document.createElement("tr");
+        const row = document.createElement("tr");
 
-        row.innerHTML=`
+        row.innerHTML = `
 <td>${c.customerID}</td>
-<td>${c.name}</td>
+<td>${c.firstName} ${c.lastName}</td>
 <td>${c.phone}</td>
 <td>${c.email}</td>
 
@@ -81,7 +91,6 @@ Edit
 Delete
 </button>
 </td>
-
 `;
 
         body.appendChild(row);
@@ -90,8 +99,8 @@ Delete
 
     setupActions();
     setupEdit();
-
 }
+
 
 
 //
@@ -99,18 +108,17 @@ Delete
 //
 function setupSearch() {
 
-    const searchInput =
-        document.getElementById("searchCustomer");
+    const searchInput = document.getElementById("searchCustomer");
 
     if (!searchInput) return;
 
     searchInput.addEventListener("input", e => {
 
-        const term=e.target.value.toLowerCase();
+        const term = e.target.value.toLowerCase();
 
-        const filtered=allCustomers.filter(c=>
+        const filtered = allCustomers.filter(c =>
 
-            (c.name || "")
+            ((c.firstName || "") + " " + (c.lastName || ""))
                 .toLowerCase()
                 .includes(term) ||
 
@@ -123,78 +131,99 @@ function setupSearch() {
 
         );
 
+        filtered.sort((a, b) => a.customerID.localeCompare(b.customerID));
+
         renderTable(filtered);
 
     });
 
 }
 
-//Change format of phone number
+
+
+//
+// Phone number formatter
 //
 function formatPhoneNumber(input){
+
+    if(!input) return;
 
     input.addEventListener("input", function(){
 
         let numbers = this.value.replace(/\D/g,'');
 
-        if(numbers.length>10){
-            numbers=numbers.substring(0,10);
+        if(numbers.length > 10){
+            numbers = numbers.substring(0,10);
         }
 
-        if(numbers.length>6){
-            this.value=`(${numbers.substring(0,3)}) ${numbers.substring(3,6)}-${numbers.substring(6)}`;
+        if(numbers.length > 6){
+            this.value = `(${numbers.substring(0,3)}) ${numbers.substring(3,6)}-${numbers.substring(6)}`;
         }
-        else if(numbers.length>3){
-            this.value=`(${numbers.substring(0,3)}) ${numbers.substring(3)}`;
+        else if(numbers.length > 3){
+            this.value = `(${numbers.substring(0,3)}) ${numbers.substring(3)}`;
         }
-        else if(numbers.length>0){
-            this.value=`(${numbers}`;
+        else if(numbers.length > 0){
+            this.value = `(${numbers}`;
         }
 
     });
 
 }
 
+
+
 //
-// Create
+// Create customer
 //
 function setupCreate() {
+
     const createBtn = document.getElementById("createCustomerBtn");
     const createModal = document.getElementById("createModal");
     const saveCreate = document.getElementById("saveCreate");
+    const cancelCreate = document.getElementById("cancelCreate");
 
     if (!createBtn || !createModal || !saveCreate) return;
 
     createBtn.addEventListener("click", () => {
+
         createModal.style.display = "block";
+
     });
 
     saveCreate.addEventListener("click", async () => {
-        const name = document.getElementById("c-name").value;
+
+        const firstName = document.getElementById("c-firstName").value;
+        const lastName = document.getElementById("c-lastName").value;
         const phone = document.getElementById("c-phone").value;
         const email = document.getElementById("c-email").value;
 
-        if (!name || !phone) {
-            alert("Name and phone are required.");
+        if (!firstName || !phone) {
+
+            alert("First name and phone are required.");
             return;
+
         }
 
         const customerID = await generateCustomerID();
 
         await createCustomer({
 
-            customerID:customerID,
-            name:name,
-            phone:phone,
-            email:email
+            customerID: customerID,
+            firstName: firstName,
+            lastName: lastName,
+            phone: phone,
+            email: email
 
         });
 
         createModal.style.display = "none";
+
         clearCreateFields();
+
         await loadCustomers();
+
     });
-    // Cancel button
+
     cancelCreate.addEventListener("click", () => {
 
         createModal.style.display = "none";
@@ -202,35 +231,42 @@ function setupCreate() {
         clearCreateFields();
 
     });
+
 }
 
 
+// Clear create fields
+function clearCreateFields(){
 
-function clearCreateFields() {
-    document.getElementById("c-name").value = "";
+    document.getElementById("c-firstName").value = "";
+    document.getElementById("c-lastName").value = "";
     document.getElementById("c-phone").value = "";
     document.getElementById("c-email").value = "";
+
 }
 
+
+
 //
-// edit
+// Edit customer
 //
 function setupEdit(){
 
-    document.querySelectorAll(".edit").forEach(btn=>{
+    document.querySelectorAll(".edit").forEach(btn => {
 
-        btn.onclick=()=>{
+        btn.onclick = () => {
 
-            const customer=allCustomers.find(
-                c=>c.id===btn.dataset.id
+            const customer = allCustomers.find(
+                c => c.id === btn.dataset.id
             );
 
-            document.getElementById("edit-id").value=customer.id;
-            document.getElementById("edit-name").value=customer.name;
-            document.getElementById("edit-phone").value=customer.phone;
-            document.getElementById("edit-email").value=customer.email;
+            document.getElementById("edit-id").value = customer.id;
+            document.getElementById("edit-firstName").value = customer.firstName;
+            document.getElementById("edit-lastName").value = customer.lastName;
+            document.getElementById("edit-phone").value = customer.phone;
+            document.getElementById("edit-email").value = customer.email;
 
-            document.getElementById("editModal").style.display="block";
+            document.getElementById("editModal").style.display = "block";
 
         };
 
@@ -239,28 +275,34 @@ function setupEdit(){
 }
 
 
-// update button
+
+//
+// Update customer
+//
 function setupUpdate(){
 
-    const updateBtn=document.getElementById("updateCustomer");
+    const updateBtn = document.getElementById("updateCustomer");
 
     if(!updateBtn) return;
 
-    updateBtn.onclick=async()=>{
+    updateBtn.onclick = async () => {
 
         await updateCustomer(
 
             document.getElementById("edit-id").value,
 
             {
-                name:document.getElementById("edit-name").value,
-                phone:document.getElementById("edit-phone").value,
-                email:document.getElementById("edit-email").value
+
+                firstName: document.getElementById("edit-firstName").value,
+                lastName: document.getElementById("edit-lastName").value,
+                phone: document.getElementById("edit-phone").value,
+                email: document.getElementById("edit-email").value
+
             }
 
         );
 
-        document.getElementById("editModal").style.display="none";
+        document.getElementById("editModal").style.display = "none";
 
         loadCustomers();
 
@@ -269,28 +311,34 @@ function setupUpdate(){
 }
 
 
-// cancel edit
+
+//
+// Cancel edit
+//
 function setupCancelEdit(){
 
-    const cancelBtn=document.getElementById("cancelEdit");
+    const cancelBtn = document.getElementById("cancelEdit");
 
     if(!cancelBtn) return;
 
-    cancelBtn.onclick=()=>{
+    cancelBtn.onclick = () => {
 
-        document.getElementById("editModal").style.display="none";
+        document.getElementById("editModal").style.display = "none";
 
     };
 
 }
 
 
-// delete
+
+//
+// Delete customer
+//
 function setupActions(){
 
-    document.querySelectorAll(".delete").forEach(btn=>{
+    document.querySelectorAll(".delete").forEach(btn => {
 
-        btn.onclick=async()=>{
+        btn.onclick = async () => {
 
             if(!confirm("Delete customer?")) return;
 

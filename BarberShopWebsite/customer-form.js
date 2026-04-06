@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { auth } from "/BarberShopWebsite/firebase.js";
 import { createUserProfile, getUserProfile } from "/BarberShopWebsite/Collections/users.js";
-import { createCustomerProfile } from "/BarberShopWebsite/Collections/customers.js";
+import {createCustomerProfile, getCustomers} from "/BarberShopWebsite/Collections/customers.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, password);
+                const customerID = await generateCustomerID();
 
                 await createUserProfile(
                     cred.user,
@@ -66,11 +67,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     "customer"
                 );
 
-                await createCustomerProfile(cred.user.uid, {
+                await createCustomerProfile(customerID, {
+                    customerID,
                     firstName,
                     lastName,
+                    phone,
                     dob,
-                    email
+                    email,
+                    uid: cred.user.uid
                 });
 
                 alert("Registration successful! You can now log in.");
@@ -83,3 +87,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+async function generateCustomerID() {
+    const customers = await getCustomers();
+    let max = 0;
+    customers.forEach(c => {
+        if (c.customerID) {
+            const num = parseInt(c.customerID.replace("C",""));
+            if (num > max) max = num;
+        }
+    });
+
+    const next = max + 1;
+    return "C" + String(next).padStart(6,'0');
+}

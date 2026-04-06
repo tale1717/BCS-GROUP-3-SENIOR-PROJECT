@@ -1,348 +1,254 @@
 import {
     createStaff,
     getStaff,
-    updateStaff,
     deleteStaff
 } from "../BarberShopWebsite/Collections/staff.js";
-
 import {
     getServices
 } from "../BarberShopWebsite/Collections/services.js";
 
-let allStaff = [];
-let allServices = [];
+let allStaff=[];
+document.addEventListener(
+    "DOMContentLoaded",
+    init
+);
 
-document.addEventListener("DOMContentLoaded", init);
-
-async function init() {
-    await loadServices();
+async function init(){
     await loadStaff();
-
     setupCreate();
     setupSearch();
+    await loadServices();
     setupPositionLogic();
-    setupEditPositionLogic();
-    setupUpdateButton();
-    setupCancelButtons();
 }
 
-async function generateStaffID() {
-    const staff = await getStaff();
-    let max = 0;
 
-    staff.forEach(s => {
-        if (s.staffID) {
-            const num = parseInt(s.staffID.substring(1));
-            if (!isNaN(num) && num > max) {
-                max = num;
-            }
+
+//
+// Generate E00001
+async function generateStaffID(){
+    const staff=
+        await getStaff();
+    let max=0;
+    staff.forEach(s=>{
+        if(s.staffID){
+            const num=
+                parseInt(
+                    s.staffID.substring(1)
+                );
+            if(num>max)
+                max=num;
         }
     });
-
-    const next = max + 1;
-    return "E" + String(next).padStart(5, "0");
+    const next=max+1;
+    return "E"+
+        String(next)
+            .padStart(5,'0');
 }
 
-async function loadStaff() {
-    allStaff = await getStaff();
+//Load staff information
+async function loadStaff(){
+    allStaff=
+        await getStaff();
     renderTable(allStaff);
+
 }
 
-function renderTable(list) {
-    const body = document.getElementById("staff-body");
-    body.innerHTML = "";
+function renderTable(list){
+    const body=
+        document.getElementById("staff-body");
 
-    list.forEach(s => {
-        const row = document.createElement("tr");
 
-        row.innerHTML = `
-            <td>${s.staffID || ""}</td>
-            <td>${s.name || ""}</td>
-            <td>${s.phone || ""}</td>
-            <td>${s.email || ""}</td>
-            <td>${s.address || ""}</td>
-            <td>${s.position || ""}</td>
-            <td>${Array.isArray(s.services) ? s.services.join(", ") : ""}</td>
-            <td>$${s.salary || ""}</td>
-            <td>${Array.isArray(s.workingDays) ? s.workingDays.join(", ") : ""}</td>
-            <td>${s.startDate || ""}</td>
-            <td>${s.endDate || "Active"}</td>
-            <td>${s.bankAccount || ""}</td>
-            <td>
-                <button class="edit" data-id="${s.id}">Edit</button>
-                <button class="delete" data-id="${s.id}">Delete</button>
-            </td>
-        `;
+    body.innerHTML="";
+    list.forEach(s=>{
+        const row=
+            document.createElement("tr");
+        row.innerHTML=`
+<td>${s.staffID || ""}</td>
+<td>${s.name || ""}</td>
+<td>${s.phone || ""}</td>
+<td>${s.email || ""}</td>
+<td>${s.address || ""}</td>
+<td>${s.position || ""}</td>
+<td>${s.services?.join(", ") || ""}</td>
+<td>$${s.salary || ""}</td>
+<td>${s.workingDays?.join(", ") || ""}</td>
+<td>${s.startDate || ""}</td>
+<td>${s.endDate || "Active"}</td>
+<td>${s.bankAccount || ""}</td>
+<td>
+<button class="edit" data-id="${s.id}">Edit</button>
+<button class="delete" data-id="${s.id}">Delete</button>
 
+</td>
+
+
+`;
         body.appendChild(row);
     });
-
-    setupEdit();
     setupDelete();
+
 }
 
-function setupCreate() {
-    const modal = document.getElementById("createStaffModal");
-    const createBtn = document.getElementById("createStaffBtn");
-    const saveBtn = document.getElementById("saveStaff");
-    const cancelBtn = document.getElementById("cancelStaff");
+//create new employee//
+function setupCreate(){
+    const modal=
+        document.getElementById(
+            "createStaffModal"
+        );
+    document
+        .getElementById(
+            "createStaffBtn"
+        )
+        .onclick=()=>{
+        modal.style.display="block";
 
-    if (createBtn) {
-        createBtn.onclick = () => {
-            clearCreateForm();
-            modal.style.display = "block";
-        };
-    }
+    };
+    document
+        .getElementById(
+            "saveStaff"
+        )
+        .onclick=async()=>{
+        const id=
+            await generateStaffID();
+        await createStaff({
+            staffID:id,
+            name:
+            document.getElementById("s-name").value,
+            phone:
+            document.getElementById("s-phone").value,
+            email:
+            document.getElementById("s-email").value,
+            address:
+            document.getElementById("s-address").value,
+            position:
+                document.getElementById("s-position").value,
 
-    if (saveBtn) {
-        saveBtn.onclick = async () => {
-            const id = await generateStaffID();
+            services:
+                Array.from(
+                    document.getElementById("s-services")
+                        .selectedOptions
+                ).map(o=>o.value),
 
-            const position = document.getElementById("s-position").value;
-            const services = position === "Barber"
-                ? Array.from(document.getElementById("s-services").selectedOptions).map(o => o.value)
-                : [];
+            salary:
+            document.getElementById("s-salary").value,
 
-            await createStaff({
-                staffID: id,
-                name: document.getElementById("s-name").value,
-                phone: document.getElementById("s-phone").value,
-                email: document.getElementById("s-email").value,
-                address: document.getElementById("s-address").value,
-                position: position,
-                services: services,
-                salary: document.getElementById("s-salary").value,
-                startDate: document.getElementById("s-startDate").value,
-                endDate: document.getElementById("s-endDate").value || null,
-                workingDays: Array.from(document.querySelectorAll(".workday:checked")).map(cb => cb.value),
-                bankAccount: document.getElementById("s-bank").value
-            });
 
-            modal.style.display = "none";
-            await loadStaff();
-        };
-    }
+            startDate:
+            document.getElementById("s-startDate").value,
+            endDate:
+            document.getElementById("s-endDate").value || null,
 
-    if (cancelBtn) {
-        cancelBtn.onclick = () => {
-            modal.style.display = "none";
-        };
-    }
-}
+            workingDays:
+                Array.from(
+                    document.querySelectorAll(".workday:checked")
+                ).map(cb=>cb.value),
 
-function setupEdit() {
-    document.querySelectorAll(".edit").forEach(btn => {
-        btn.onclick = () => {
-            const staff = allStaff.find(s => s.id === btn.dataset.id);
-            if (!staff) return;
+            bankAccount:
+            document.getElementById("s-bank").value
 
-            document.getElementById("edit-id").value = staff.id;
-            document.getElementById("edit-name").value = staff.name || "";
-            document.getElementById("edit-phone").value = staff.phone || "";
-            document.getElementById("edit-email").value = staff.email || "";
-            document.getElementById("edit-address").value = staff.address || "";
-            document.getElementById("edit-salary").value = staff.salary || "";
-            document.getElementById("edit-position").value = staff.position || "";
-            document.getElementById("edit-startDate").value = staff.startDate || "";
-            document.getElementById("edit-endDate").value = staff.endDate || "";
-            document.getElementById("edit-bank").value = staff.bankAccount || "";
 
-            const selectedWorkingDays = Array.isArray(staff.workingDays) ? staff.workingDays : [];
-            document.querySelectorAll(".edit-workday").forEach(cb => {
-                cb.checked = selectedWorkingDays.includes(cb.value);
-            });
+        });
+        modal.style.display="none";
+        loadStaff();
 
-            populateEditServices(staff.services || []);
-            toggleEditServicesSection(staff.position || "");
-
-            document.getElementById("editStaffModal").style.display = "block";
-        };
-    });
-}
-
-function setupUpdateButton() {
-    const updateBtn = document.getElementById("updateStaff");
-    if (!updateBtn) return;
-
-    updateBtn.onclick = async () => {
-        const id = document.getElementById("edit-id").value;
-        const position = document.getElementById("edit-position").value;
-
-        const services = position === "Barber"
-            ? Array.from(document.getElementById("edit-services").selectedOptions).map(o => o.value)
-            : [];
-
-        try {
-            await updateStaff(id, {
-                name: document.getElementById("edit-name").value,
-                phone: document.getElementById("edit-phone").value,
-                email: document.getElementById("edit-email").value,
-                address: document.getElementById("edit-address").value,
-                position: position,
-                services: services,
-                salary: document.getElementById("edit-salary").value,
-                startDate: document.getElementById("edit-startDate").value,
-                endDate: document.getElementById("edit-endDate").value || null,
-                workingDays: Array.from(document.querySelectorAll(".edit-workday:checked")).map(cb => cb.value),
-                bankAccount: document.getElementById("edit-bank").value
-            });
-
-            document.getElementById("editStaffModal").style.display = "none";
-            await loadStaff();
-        } catch (error) {
-            console.error("Failed to update staff:", error);
-            alert("Failed to update staff.");
-        }
+    };
+    document
+        .getElementById(
+            "cancelStaff"
+        )
+        .onclick=()=>{
+        modal.style.display="none";
     };
 }
 
-function setupDelete() {
-    document.querySelectorAll(".delete").forEach(btn => {
-        btn.onclick = async () => {
-            if (!confirm("Delete staff?")) return;
+//Delete//
+function setupDelete(){
+    document.querySelectorAll(".delete")
+        .forEach(btn=>{
 
-            await deleteStaff(btn.dataset.id);
-            await loadStaff();
-        };
-    });
-}
-
-async function loadServices() {
-    allServices = await getServices();
-
-    const createSelect = document.getElementById("s-services");
-    const editSelect = document.getElementById("edit-services");
-
-    if (createSelect) {
-        createSelect.innerHTML = "";
-        allServices.forEach(service => {
-            const option = document.createElement("option");
-            option.value = service.serviceName;
-            option.textContent = service.serviceName;
-            createSelect.appendChild(option);
+            btn.onclick=async()=>{
+                if(!confirm(
+                    "Delete staff?"
+                )) return;
+                await deleteStaff(
+                    btn.dataset.id
+                );
+                loadStaff();
+            };
         });
-    }
 
-    if (editSelect) {
-        editSelect.innerHTML = "";
-        allServices.forEach(service => {
-            const option = document.createElement("option");
-            option.value = service.serviceName;
-            option.textContent = service.serviceName;
-            editSelect.appendChild(option);
-        });
-    }
 }
 
-function populateEditServices(selectedServices) {
-    const editSelect = document.getElementById("edit-services");
-    if (!editSelect) return;
-
-    Array.from(editSelect.options).forEach(option => {
-        option.selected = selectedServices.includes(option.value);
-    });
-}
-
-function setupSearch() {
-    const input = document.getElementById("searchStaff");
-    if (!input) return;
-
-    input.addEventListener("input", e => {
-        const term = e.target.value.toLowerCase();
-
-        const filtered = allStaff.filter(s =>
-            (s.name || "").toLowerCase().includes(term) ||
-            (s.phone || "").toLowerCase().includes(term) ||
-            (s.email || "").toLowerCase().includes(term) ||
-            (s.position || "").toLowerCase().includes(term)
+//load service box//
+async function loadServices(){
+    const services=
+        await getServices();
+    const select=
+        document.getElementById(
+            "s-services"
         );
 
-        renderTable(filtered);
+    services.forEach(service=>{
+        const option=
+            document.createElement("option");
+        option.value=
+            service.serviceID;
+        option.textContent=
+            service.serviceName;
+        select.appendChild(option);
     });
 }
 
-function setupPositionLogic() {
-    const positionSelect = document.getElementById("s-position");
-    if (!positionSelect) return;
-
-    positionSelect.onchange = e => {
-        toggleCreateServicesSection(e.target.value);
-    };
-}
-
-function setupEditPositionLogic() {
-    const editPositionSelect = document.getElementById("edit-position");
-    if (!editPositionSelect) return;
-
-    editPositionSelect.onchange = e => {
-        toggleEditServicesSection(e.target.value);
-    };
-}
-
-function toggleCreateServicesSection(position) {
-    const serviceBox = document.getElementById("servicesSection");
-    if (!serviceBox) return;
-
-    if (position === "Barber") {
-        serviceBox.style.display = "block";
-    } else {
-        serviceBox.style.display = "none";
-        const select = document.getElementById("s-services");
-        if (select) {
-            Array.from(select.options).forEach(option => {
-                option.selected = false;
-            });
-        }
-    }
-}
-
-function toggleEditServicesSection(position) {
-    const serviceBox = document.getElementById("editServicesSection");
-    if (!serviceBox) return;
-
-    if (position === "Barber") {
-        serviceBox.style.display = "block";
-    } else {
-        serviceBox.style.display = "none";
-        const select = document.getElementById("edit-services");
-        if (select) {
-            Array.from(select.options).forEach(option => {
-                option.selected = false;
-            });
-        }
-    }
-}
-
-function setupCancelButtons() {
-    const cancelEditBtn = document.getElementById("cancelEditStaff");
-    if (cancelEditBtn) {
-        cancelEditBtn.onclick = () => {
-            document.getElementById("editStaffModal").style.display = "none";
-        };
-    }
-}
-
-function clearCreateForm() {
-    document.getElementById("s-name").value = "";
-    document.getElementById("s-phone").value = "";
-    document.getElementById("s-email").value = "";
-    document.getElementById("s-address").value = "";
-    document.getElementById("s-salary").value = "";
-    document.getElementById("s-position").value = "";
-    document.getElementById("s-startDate").value = "";
-    document.getElementById("s-endDate").value = "";
-    document.getElementById("s-bank").value = "";
-
-    document.querySelectorAll(".workday").forEach(cb => {
-        cb.checked = false;
-    });
-
-    const servicesSelect = document.getElementById("s-services");
-    if (servicesSelect) {
-        Array.from(servicesSelect.options).forEach(option => {
-            option.selected = false;
+//search//
+function setupSearch() {
+    const input =
+        document.getElementById(
+            "searchStaff"
+        );
+    if (!input) return;
+    input.addEventListener(
+        "input",
+        e => {
+            const term =
+                e.target.value
+                    .toLowerCase();
+            const filtered =
+                allStaff.filter(s =>
+                    s.name
+                        .toLowerCase()
+                        .includes(term)
+                    ||
+                    (s.phone || "")
+                        .includes(term)
+                );
+            renderTable(filtered);
         });
+}
+    //setup position logic, when position is Barber, the service box is appeared
+    function setupPositionLogic(){
+
+        const positionSelect =
+            document.getElementById("s-position");
+
+        const serviceBox =
+            document.getElementById("servicesSection");
+
+        if(!positionSelect || !serviceBox)
+            return;
+
+        positionSelect.onchange = e => {
+
+            if(e.target.value === "Barber"){
+
+                serviceBox.style.display="block";
+
+            }else{
+
+                serviceBox.style.display="none";
+
+            }
+
+        };
+
     }
 
-    toggleCreateServicesSection("");
-}

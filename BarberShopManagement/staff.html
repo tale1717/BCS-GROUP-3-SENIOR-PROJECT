@@ -1,49 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
+
 <head>
+
     <meta charset="UTF-8">
-    <title>Staff</title>
+
+    <title>Employee</title>
+
     <link rel="stylesheet" href="styles.css">
+
     <script type="module" src="staffModule.js"></script>
-    <script type="module" src="logout.js"></script>
+
 </head>
+
 <body>
 
 <div class="app-container">
 
     <nav class="sidebar">
-        <img src="ttt logo centered.png" width="200" alt="Triple T Logo">
+
+        <img src="ttt logo centered.png" width="200">
 
         <ul>
             <li><a href="dashboard.html">Dashboard</a></li>
             <li><a href="appointments.html">Appointments</a></li>
             <li><a href="customers.html">Customers</a></li>
-            <li class="active"><a href="staff.html">Staff</a></li>
+            <li class="active">Employees</a></li>
             <li><a href="services.html">Services</a></li>
-            <li><a href="#" id="logoutBtn">Logout</a></li>
+            <li><a href="rating.html">Ratings</a></li>
+            <li><li><a href="#" id="logoutBtn">Logout</a></li>
         </ul>
+
+
     </nav>
+
 
     <main class="content">
 
         <header class="page-header">
+
             <div>
-                <h1>Staff</h1>
-                <p>Staff management</p>
+
+                <h1>Employee</h1>
+
+                <p>Employee management</p>
+
             </div>
 
-            <button id="createStaffBtn" class="create-buttons">
+            <button
+                    id="createStaffBtn"
+                    class="create-buttons">
+
                 + New Staff
+
             </button>
+
         </header>
 
+
         <div class="card">
+
             <input
                     id="searchStaff"
                     class="search"
                     placeholder="Search staff"
             />
+
         </div>
+
 
         <div class="card">
             <table>
@@ -65,70 +90,119 @@
                 </tr>
                 </thead>
 
-                <tbody id="staff-body"></tbody>
+                <tbody id="staff-body">
+
+                </tbody>
+
             </table>
+
         </div>
 
     </main>
 
 </div>
 
-<!-- CREATE STAFF MODAL -->
-<div id="createStaffModal" class="modal">
+
+<!-- CREATE STAFF -->
+
+<div id="createStaffModal"
+     class="modal">
+
     <div class="modal-content">
 
         <h2>Create Staff</h2>
-
         <label>Employee's Name:</label> <br><br>
-        <input id="s-name" placeholder="Name"> <br><br>
+
+
+        <input id="s-name"
+               placeholder="Name"> <br><br>
 
         <label>Phone Number:</label> <br><br>
-        <input id="s-phone" placeholder="Phone"> <br><br>
+        <input id="s-phone"
+               placeholder="Phone"> <br><br>
 
         <label>Email:</label> <br><br>
-        <input id="s-email" placeholder="Email"> <br><br>
+        <input id="s-email"
+               placeholder="Email"> <br><br>
 
         <label>Address:</label> <br><br>
-        <input id="s-address" placeholder="Address"> <br><br>
+        <input id="s-address"
+               placeholder="Address"> <br><br>
 
-        <label>Salary ($/hour):</label> <br><br>
-        <input id="s-salary" placeholder="Salary"> <br><br>
 
-        <label>Position:</label> <br><br>
+        <Label>Salary ($/hour):</Label>
+        <input id="s-salary"
+               placeholder="Salary"> <br><br>
+
+
+        <Label>Position:</Label> <br><br>
         <select id="s-position" class="text-field">
+
             <option value="">Select position</option>
+
             <option value="Manager">Manager</option>
+
             <option value="Receptionist">Receptionist</option>
+
             <option value="Barber">Barber</option>
+
             <option value="HR">HR</option>
+
         </select> <br><br>
 
         <div id="servicesSection" style="display:none">
+
             <label>Services</label> <br><br>
+
             <select id="s-services" multiple></select> <br><br>
+
         </div>
 
-        <label>Start Date</label> <br><br>
+        <label>Start Date</label>
         <input type="date" id="s-startDate"> <br><br>
 
-        <label>End Date</label> <br><br>
+        <label>End Date</label>
         <input type="date" id="s-endDate" placeholder="Optional"> <br><br>
 
-        <label>Bank Information</label> <br><br>
-        <input id="s-bank" placeholder="Bank Account"> <br><br>
+        <label>Bank Information</label>
+        <input id="s-bank"
+               placeholder="Bank Account"> <br><br>
 
         <label>Working Days</label> <br><br>
         <div class="checkbox-group">
-            <label><input type="checkbox" value="Monday" class="workday"> Monday</label>
-            <label><input type="checkbox" value="Tuesday" class="workday"> Tuesday</label>
-            <label><input type="checkbox" value="Wednesday" class="workday"> Wednesday</label>
-            <label><input type="checkbox" value="Thursday" class="workday"> Thursday</label>
-            <label><input type="checkbox" value="Friday" class="workday"> Friday</label>
-            <label><input type="checkbox" value="Saturday" class="workday"> Saturday</label>
-            <label><input type="checkbox" value="Sunday" class="workday"> Sunday</label>
+            <label>
+                <input type="checkbox" value="Monday" class="workday"> Monday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Tuesday" class="workday"> Tuesday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Wednesday" class="workday"> Wednesday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Thursday" class="workday"> Thursday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Friday" class="workday"> Friday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Saturday" class="workday"> Saturday
+            </label>
+
+            <label>
+                <input type="checkbox" value="Sunday" class="workday"> Sunday
+            </label>
+
         </div>
 
+
         <div class="modal-action-forButtons">
+
             <button id="saveStaff" class="create-buttons">Save</button>
             <button id="cancelStaff" class="cancel-buttons">Cancel</button>
         </div>
@@ -198,8 +272,12 @@
             <button id="cancelEditStaff" class="cancel-buttons">Cancel</button>
         </div>
 
+
+
     </div>
+
 </div>
 
 </body>
+
 </html>

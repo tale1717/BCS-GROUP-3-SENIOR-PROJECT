@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     serviceName: selectedService.serviceName,
                     servicePrice: selectedService.price,
                     serviceDuration: selectedService.duration,
-                    status: "upcoming",
+                    status: "confirmed",
                     createdAt: serverTimestamp()
                 });
 

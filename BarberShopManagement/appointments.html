@@ -18,8 +18,9 @@
             <li><a href="dashboard.html">Dashboard</a></li>
             <li class="active"><a href="appointments.html">Appointments</a></li>
             <li><a href="customers.html">Customers</a></li>
-            <li><a href="staff.html">Staff</a></li>
+            <li><a href="staff.html">Employees</a></li>
             <li><a href="services.html">Services</a></li>
+            <li><a href="rating.html">Ratings</a></li>
             <li><li><a href="#" id="logoutBtn">Logout</a></li>
         </ul>
 
@@ -111,7 +112,6 @@
 
         <select id="a-status">
             <option value="confirmed">Confirmed</option>
-            <option value="pending">Pending</option>
             <option value="cancelled">Cancelled</option>
         </select>
         <div class="modal-action-forButtons">
@@ -131,7 +131,9 @@
 
         <h2>Edit Appointment</h2>
 
-        <input type="hidden" id="edit-id">
+        <lable>Appointment ID</lable>
+        <input id= "edit-id" readonly> <br><br>
+
         <label>Customer Name</label> <br><br>
         <select id="edit-customer"></select> <br><br>
         <label>Barber Name</label> <br><br>
@@ -143,7 +145,7 @@
         <label>Time</label> <br><br>
         <input type="time" id="edit-time"> <br><br>
         <label>Note</label> <br><br>
-        <textarea id="edit-note"></textarea> <br><br>
+        <textarea id="edit-notes"></textarea> <br><br>
         <label>Status</label> <br><br>
         <select id="edit-status">
 
