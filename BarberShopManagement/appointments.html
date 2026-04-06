@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Appointments</title>
+    <title>Triple T&G Management - Appointments</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+    </style>
     <script type="module" src="./appointmentsModule.js"></script>
     <script type="module" src="logout.js"></script>
 </head>
@@ -37,22 +45,20 @@
                 <h1>Appointments</h1>
                 <p>Manage and schedule appointments</p>
             </div>
- <!--TOOLBAR-->
-            <button type="button" id="createAppointmentBtn" class="create-buttons">
-                + New Appointment
-            </button>
+
+            <div class="toolbar">
+                <input
+                        id="searchAppointment"
+                        placeholder="🔍 Search appointments..."
+                        class="search"
+                />
+                <button type="button" id="createAppointmentBtn" class="create-buttons">
+                    + New Appointment
+                </button>
+
+            </div>
 
         </header>
-
-
-        <!-- SEARCH -->
-        <div class="card">
-            <input
-                    id="searchAppointment"
-                    placeholder="🔍 Search appointments..."
-                    class="search"
-            />
-        </div>
 
 
         <!-- APPOINTMENT TABLE -->

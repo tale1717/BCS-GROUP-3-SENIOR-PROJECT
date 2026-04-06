@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Services</title>
+    <title>Triple T&G Management - Services</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+    </style>
     <script type="module" src="servicesModule.js"></script>
     <script type="module" src="logout.js"></script>
 
@@ -37,11 +45,15 @@
 
         <header class="page-header">
 
-            <h1>Services</h1>
+            <div>
+                <h1>Services</h1>
+                <p>Manage Services</p>
+            </div>
+
 
             <div class="toolbar">
 
-                <input type="text" id="searchInput" placeholder="🔍 Search services..." />
+                <input type="text" id="searchInput" class="search" placeholder="🔍 Search services..." />
 
                 <button id="createServiceBtn" class="create-buttons">
                     + Create New Service

@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barber Ratings</title>
+    <title>Triple T&G Management - Ratings</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+    </style>
     <script type="module" src="logout.js"></script>
 </head>
 <body>
@@ -29,9 +37,11 @@
 
 <div class="app-container">
     <main class="content">
-        <header>
-            <h1>Ratings & Feedback</h1>
-            <p>View customer ratings and feedback for your services.</p>
+        <header class="page-header">
+            <div>
+                <h1>Ratings & Feedback</h1>
+                <p>View customer ratings and feedback for your services.</p>
+            </div>
         </header>
 
         <section class="stats-grid">

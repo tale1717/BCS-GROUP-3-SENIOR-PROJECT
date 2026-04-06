@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Triple T&G Barbers - Employees Dashboard</title>
+    <title>Triple T&G Management - Dashboard</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+    </style>
     <script type="module" src="logout.js"></script>
 </head>
 <body>
@@ -30,9 +38,11 @@
 <div class="app-container">
 
     <main class="content">
-        <header>
-            <h1>Dashboard</h1>
-            <p>Welcome back! Here's what's happening today.</p>
+        <header class="page-header">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome back! Here's what's happening today.</p>
+            </div>
         </header>
 
         <section class="stats-grid">

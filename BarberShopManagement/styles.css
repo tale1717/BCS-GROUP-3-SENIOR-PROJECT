@@ -89,6 +89,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 40px 0;
 }
 
 
@@ -215,7 +216,7 @@ td{
     gap: 10px;
 }
 
-#searchInput {
+.search {
     padding: 8px 30px;
     border: 1px solid #ddd;
     border-radius: 6px;

@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Customer Management</title>
+    <title>Triple T&G Management - Customers</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+    </style>
     <script type="module" src="./customersModule.js"></script>
 </head>
 <body>
@@ -38,22 +46,16 @@
                 <p>Manage customers</p>
             </div>
 
-            <button id="createCustomerBtn" class="create-buttons">
-                + New Customer
-            </button>
+            <div class="toolbar">
+                <input id="searchCustomer" placeholder="🔍 Search customers..." class="search"/>
+
+                <button id="createCustomerBtn" class="create-buttons">
+                    + New Customer
+                </button>
+            </div>
+
 
         </header>
-
-
-        <div class="card">
-
-            <input
-                    id="searchCustomer"
-                    placeholder="🔍 Search customers..."
-                    class="search"
-            />
-
-        </div>
 
 <!--Customer List-->
         <div class="card">

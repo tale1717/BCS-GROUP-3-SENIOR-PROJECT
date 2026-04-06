@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Employee</title>
+    <title>Triple T&G Management - Employees</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+    </style>
     <script type="module" src="staffModule.js"></script>
 </head>
 
@@ -42,26 +50,15 @@
 
             </div>
 
-            <button
-                    id="createStaffBtn"
-                    class="create-buttons">
+            <div class="toolbar">
+                <input id="searchStaff" class="search" placeholder="🔍 Search staff..."/>
 
-                + New Staff
+                <button id="createStaffBtn" class="create-buttons">+ New Staff</button>
+            </div>
 
-            </button>
+
 
         </header>
-
-
-        <div class="card">
-
-            <input
-                    id="searchStaff"
-                    class="search"
-                    placeholder="Search staff"
-            />
-
-        </div>
 
 
         <div class="card">
