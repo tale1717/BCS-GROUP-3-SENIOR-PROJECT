@@ -1,3 +1,4 @@
+/* Employee Dashboard Styles */
 * { box-sizing: border-box; font-family: sans-serif; margin: 0; padding: 0; }
 
 .app-container {
@@ -42,7 +43,7 @@
 /* Dashboard Content */
 .content {
     flex: 1;
-    padding: 40px;
+    padding: 0 300px;
     overflow-y: auto;
 }
 
