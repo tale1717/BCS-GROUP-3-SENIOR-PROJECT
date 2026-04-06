@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <script type="module"
+            src="inventoryModule.js"></script>
+
+
+
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <nav class="sidebar">
+
+        <div class="logo">
+            <img src="ttt logo centered.png" width="200">
+        </div>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="appointments.html">Appointments</a></li>
+            <li><a href="customers.html">Customers</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="barbers.html">Staff</a></li>
+            <li class="active">
+                <a href="inventory.html">Inventory</a>
+            </li>
+        </ul>
+
+    </nav>
+
+    <main class="content">
+
+        <header class="page-header">
+            <h1>Inventory</h1>
+            <div class="toolbar">
+                <input
+                        id="searchSupply"
+                        placeholder="🔍 Search inventory"
+                        class="search">
+                <button
+                        id="createSupplyBtn"
+                        class="create-buttons">
+                    + New Item
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <div class="card">
+            <table>
+
+                <thead>
+                <tr>
+                    <th>Supply ID</th>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Expiry Date</th>
+                    <th>Supplier Name</th>
+                    <th>Supplier Phone</th>
+                    <th>Supplier Email</th>
+                    <th>Supplier Address</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="supply-body">
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- CREATE -->
+<div id="createModal"
+     class="modal">
+    <div class="modal-content">
+        <h2>Create Supply</h2>
+        <label>Item</label><br><br>
+        <input id="i-name"><br><br>
+        <label>Quantity</label><br><br>
+        <!--set up low stock alert-->
+        <input id="i-qty"><br><br>
+        <label>
+            <input type="checkbox" id="set-alert">Set Alert</label>
+
+        <div id="alert-box" style="display:none;">
+
+            <br>
+            <label>Minimum Quantity</label>
+            <br><br>
+            <input id="min-qty">
+
+        </div>
+
+        <br>
+        <label>Expiry</label><br><br>
+        <input type="date" id="i-expiry"><br><br>
+        <label>Supplier</label><br><br>
+        <input id="sup-name"><br><br>
+        <label>Supplier Phone</label><br><br>
+        <input id="sup-phone"><br><br>
+        <label>Supplier Email</label><br><br>
+        <input id="sup-email"><br><br>
+        <label>Supplier Address</label><br><br>
+        <input id="sup-address">
+
+        <div class="modal-actions">
+            <button
+                    id="saveCreate"
+                    class="create-buttons">
+                Save
+            </button>
+
+            <button
+                    id="cancelCreate"
+                    class="cancel-buttons">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- EDIT -->
+
+<div id="editModal"
+     class="modal">
+    <div class="modal-content">
+        <h2>Edit Supply</h2>
+        <input type="hidden" id="edit-id">
+        <label>Item</label><br><br>
+        <input id="edit-name"><br><br>
+        <label>Quantity</label><br><br>
+        <input id="edit-qty"><br><br>
+        <!--setup low stock alert-->
+        <label>
+            <input type="checkbox"
+                   id="edit-set-alert">
+            Set Alert
+        </label>
+
+        <div id="edit-alert-box" style="display:none;">
+            <br>
+            <label>Minimum Quantity</label>
+            <br><br>
+            <input id="edit-min-qty">
+        </div>
+        <br>
+        <label>Expiry</label><br><br>
+        <input type="date" id="edit-expiry"><br><br>
+        <label>Supplier</label><br><br>
+        <input id="edit-sup-name"><br><br>
+        <label>Supplier Phone</label><br><br>
+        <input id="edit-sup-phone"><br><br>
+        <label>Supplier Email</label><br><br>
+        <input id="edit-sup-email"><br><br>
+        <label>Supplier Address</label><br><br>
+        <input id="edit-sup-address">
+
+        <div class="modal-actions">
+            <button
+                    id="updateSupply"
+                    class="create-buttons">
+                Update
+            </button>
+
+            <button
+                    id="cancelEdit"
+                    class="cancel-buttons">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
