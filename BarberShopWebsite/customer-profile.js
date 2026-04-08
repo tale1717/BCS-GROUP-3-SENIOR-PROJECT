@@ -375,7 +375,7 @@ function makeReview(user, data, dataID) {
 }
 
 // Updated createStarRating to accept docId
-function createStarRating(currentRating) {
+export function createStarRating(currentRating) {
     const container = document.createElement('div');
     container.className = 'star-rating';
     container.dataset.rating = currentRating;

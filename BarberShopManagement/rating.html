@@ -7,6 +7,7 @@
     <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <script type=module src="ratingsModule.js"></script>
     <style>
         .card:hover {
             transform: none;
@@ -51,7 +52,7 @@
             </div>
             <div class="card">
                 Total Reviews
-                <h3>128</h3>
+                <h3 id="review-count">0</h3>
             </div>
             <div class="card">
                 5-Star Reviews
@@ -66,7 +67,7 @@
         <section class="appointments-section">
             <h2>Recent Customer Feedback</h2>
 
-            <div class="rating-list">
+            <div class="rating-list" id="rating-list">
 
                 <div class="rating-item">
                     <div class="rating-top">
