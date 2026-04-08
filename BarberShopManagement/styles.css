@@ -312,12 +312,15 @@ td{
  }
 
 .instock{
-    background:green;
+    background:#d1fae5;
+    color:#065f46;
 }
 .low{
-    background:orange;
+    background:#fef3c7;
+    color: #cd916c;
 }
 .out{
-    background:red;
+    background:#fee2e2;
+    color:#991b1b;
 }
 
