@@ -3,7 +3,7 @@
 
 .app-container {
     display: flex;
-    height: 100vh;
+    min-height: calc(100vh - 70px); /* 70px = your header height */
     background-color: #f8f9fa;
 }
 
@@ -146,7 +146,7 @@
     background:#dc2626;
     padding: 5px 12px;
     color:white;
-    border-radius:5px;
+    border-radius: 10px;
     border: none;
 }
 
