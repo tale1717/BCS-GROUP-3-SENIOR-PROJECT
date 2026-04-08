@@ -91,7 +91,7 @@ function renderTable(list) {
             </td>
         `;
 
-`;
+;
         body.appendChild(row);
     });
     setupDelete();
