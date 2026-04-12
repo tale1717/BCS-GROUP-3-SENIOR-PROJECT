@@ -14,9 +14,24 @@ let allServices = [];
 
 document.addEventListener("DOMContentLoaded", init);
 
+function setupToggleMultiSelect(selectId) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    select.addEventListener("mousedown", (e) => {
+        if (e.target.tagName.toLowerCase() !== "option") return;
+
+        e.preventDefault();
+        e.target.selected = !e.target.selected;
+    });
+}
+
 async function init() {
     await loadServices();
     await loadStaff();
+
+    setupToggleMultiSelect("s-services");
+    setupToggleMultiSelect("edit-services");
 
     setupCreate();
     setupSearch();
