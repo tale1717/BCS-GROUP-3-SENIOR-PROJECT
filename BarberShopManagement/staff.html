@@ -1,40 +1,46 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-
     <meta charset="UTF-8">
-
-    <title>Employee</title>
-
+    <title>Triple T&G Management - Employees</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
-
+    <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+        table, th, td {
+            border: 0;
+        }
+        th {
+            border-bottom: 1px solid gray;
+        }
+    </style>
     <script type="module" src="staffModule.js"></script>
-
 </head>
 
 <body>
 
+<header>
+    <div class="container nav">
+        <a href="dashboard.html">
+            <h1  class="logo">TRIPLE T&G MANAGEMENT</h1>
+        </a>
+        <nav>
+            <a href="appointments.html">Appointments</a>
+            <a href="customers.html">Customers</a>
+            <a href="staff.html">Employees</a>
+            <a href="services.html">Services</a>
+            <a href="rating.html">Ratings</a>
+            <a class="book-now" href="profile.html">Profile</a>
+        </nav>
+    </div>
+</header>
+
 <div class="app-container">
-
-    <nav class="sidebar">
-
-        <img src="ttt logo centered.png" width="200">
-
-        <ul>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="appointments.html">Appointments</a></li>
-            <li><a href="customers.html">Customers</a></li>
-            <li class="active">Employees</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="inventory.html">Inventory</a></li>
-            <li><a href="rating.html">Ratings</a></li>
-            <li><li><a href="#" id="logoutBtn">Logout</a></li>
-        </ul>
-
-
-    </nav>
 
 
     <main class="content">
@@ -43,32 +49,21 @@
 
             <div>
 
-                <h1>Employee</h1>
+                <h1>Employees</h1>
 
-                <p>Employee management</p>
+                <p>Manage employees</p>
 
             </div>
 
-            <button
-                    id="createStaffBtn"
-                    class="create-buttons">
+            <div class="toolbar">
+                <input id="searchStaff" class="search" placeholder="🔍 Search staff..."/>
 
-                + New Staff
+                <button id="createStaffBtn" class="create-buttons">+ New Staff</button>
+            </div>
 
-            </button>
+
 
         </header>
-
-
-        <div class="card">
-
-            <input
-                    id="searchStaff"
-                    class="search"
-                    placeholder="Search staff"
-            />
-
-        </div>
 
 
         <div class="card">
