@@ -1,40 +1,47 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Inventory</title>
-
-    <link rel="stylesheet" href="styles.css">
-
-    <script type="module"
-            src="inventoryModule.js"></script>
-
-
-
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <script type="module" src="inventoryModule.js"></script>
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+        table, th, td {
+            border: 0;
+        }
+        th {
+            border-bottom: 1px solid gray;
+        }
+    </style>
 </head>
 
 <body>
 
+<header>
+    <div class="container nav">
+        <a href="dashboard.html">
+            <h1 class="logo">TRIPLE T&G MANAGEMENT</h1>
+        </a>
+        <nav>
+            <a href="appointments.html">Appointments</a>
+            <a href="customers.html">Customers</a>
+            <a href="staff.html">Employees</a>
+            <a href="services.html">Services</a>
+            <a href="rating.html">Ratings</a>
+            <a href="Inventory.html">Inventory</a>
+            <a class="book-now" href="profile.html">Profile</a>
+        </nav>
+    </div>
+</header>
+
 <div class="app-container">
-
-    <nav class="sidebar">
-
-        <div class="logo">
-            <img src="ttt logo centered.png" width="200">
-        </div>
-        <ul>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="appointments.html">Appointments</a></li>
-            <li><a href="customers.html">Customers</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="barbers.html">Staff</a></li>
-            <li class="active">
-                <a href="inventory.html">Inventory</a>
-            </li>
-        </ul>
-
-    </nav>
 
     <main class="content">
 
