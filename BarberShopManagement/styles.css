@@ -301,3 +301,26 @@ td{
     color: #333;
     line-height: 1.5;
 }
+
+
+ .status{
+     padding:5px 10px;
+     border-radius:6px;
+     color:white;
+     font-weight:normal;
+     text-align:center;
+ }
+
+.instock{
+    background:#d1fae5;
+    color:#065f46;
+}
+.low{
+    background:#fef3c7;
+    color: #cd916c;
+}
+.out{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
