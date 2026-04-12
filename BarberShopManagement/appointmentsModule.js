@@ -31,11 +31,25 @@ let allStaff = [];
 
 document.addEventListener("DOMContentLoaded", init);
 
+function setupToggleMultiSelect(selectId) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    select.addEventListener("mousedown", (e) => {
+        if (e.target.tagName.toLowerCase() !== "option") return;
+
+        e.preventDefault();
+        e.target.selected = !e.target.selected;
+    });
+}
 async function init() {
     await loadCustomers();
     await loadStaff();
     await loadServices();
     await loadAppointments();
+
+    setupToggleMultiSelect("a-service");
+    setupToggleMultiSelect("edit-service");
 
     setupSearch();
     setupCreate();
@@ -191,6 +205,22 @@ function setupSearch() {
     });
 }
 
+function getSelectedServices(selectId) {
+    const select = document.getElementById(selectId);
+    if (!select) return [];
+
+    const selectedIds = Array.from(select.selectedOptions).map(option => option.value);
+
+    return allServices
+        .filter(service => selectedIds.includes(service.id))
+        .map(service => ({
+            serviceId: service.id,
+            serviceName: service.serviceName,
+            servicePrice: service.price,
+            serviceDuration: service.duration
+        }));
+}
+
 function setupCreate() {
     const btn = document.getElementById("createAppointmentBtn");
     const modal = document.getElementById("appointmentModal");
@@ -210,9 +240,7 @@ function setupCreate() {
     saveBtn.onclick = async () => {
         const customerSelect = document.getElementById("a-customer");
         const barberSelect = document.getElementById("a-barber");
-        const selectedServiceId = document.getElementById("a-service").value;
-
-        const selectedService = allServices.find(s => s.id === selectedServiceId);
+        const selectedServices = getSelectedServices("a-service");
 
         if (!customerSelect.value) {
             alert("Please select a customer.");
@@ -224,8 +252,8 @@ function setupCreate() {
             return;
         }
 
-        if (!selectedService) {
-            alert("Please select a service.");
+        if (selectedServices.length === 0) {
+            alert("Please select at least one service.");
             return;
         }
 
@@ -237,10 +265,8 @@ function setupCreate() {
             customer: customerSelect.options[customerSelect.selectedIndex]?.text || "",
             staffID: barberSelect.value,
             barber: barberSelect.options[barberSelect.selectedIndex]?.text || "",
-            serviceId: selectedService.id,
-            serviceName: selectedService.serviceName,
-            servicePrice: selectedService.price,
-            serviceDuration: selectedService.duration,
+            services: selectedServices,
+            serviceName: selectedServices.map(service => service.serviceName).join(", "),
             date: document.getElementById("a-date").value,
             time: document.getElementById("a-time").value,
             notes: document.getElementById("a-notes")?.value || "",
@@ -323,7 +349,13 @@ function setupTableEvents() {
 
             document.getElementById("edit-customer").value = appointment.customerID || "";
             document.getElementById("edit-barber").value = appointment.staffID || "";
-            document.getElementById("edit-service").value = appointment.serviceId || "";
+            const selectedServiceIds = Array.isArray(appointment.services)
+                ? appointment.services.map(service => service.serviceId)
+                : (appointment.serviceId ? [appointment.serviceId] : []);
+
+            Array.from(document.getElementById("edit-service").options).forEach(option => {
+                option.selected = selectedServiceIds.includes(option.value);
+            });
 
             document.getElementById("editAppointmentModal").style.display = "block";
         }
@@ -346,9 +378,7 @@ function setupUpdateButton() {
 
         const customerSelect = document.getElementById("edit-customer");
         const barberSelect = document.getElementById("edit-barber");
-        const serviceSelect = document.getElementById("edit-service");
-
-        const selectedService = allServices.find(s => s.id === serviceSelect.value);
+        const selectedServices = getSelectedServices("edit-service");
 
         if (!customerSelect.value) {
             alert("Please select a customer.");
@@ -360,8 +390,8 @@ function setupUpdateButton() {
             return;
         }
 
-        if (!selectedService) {
-            alert("Please select a service.");
+        if (selectedServices.length === 0) {
+            alert("Please select at least one service.");
             return;
         }
 
@@ -375,10 +405,8 @@ function setupUpdateButton() {
                 customer: customerSelect.options[customerSelect.selectedIndex]?.text || "",
                 staffID: barberSelect.value,
                 barber: barberSelect.options[barberSelect.selectedIndex]?.text || "",
-                serviceId: selectedService.id,
-                serviceName: selectedService.serviceName,
-                servicePrice: selectedService.price,
-                serviceDuration: selectedService.duration,
+                services: selectedServices,
+                serviceName: selectedServices.map(service => service.serviceName).join(", "),
                 date: document.getElementById("edit-date").value,
                 time: document.getElementById("edit-time").value,
                 notes: noteField?.value || "",
