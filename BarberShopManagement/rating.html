@@ -3,57 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barber Ratings</title>
+    <title>Triple T&G Management - Ratings</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <script type=module src="ratingsModule.js"></script>
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+    </style>
     <script type="module" src="logout.js"></script>
 </head>
 <body>
+
+<header>
+    <div class="container nav">
+        <a href="dashboard.html">
+            <h1  class="logo">TRIPLE T&G MANAGEMENT</h1>
+        </a>
+        <nav>
+            <a href="appointments.html">Appointments</a>
+            <a href="customers.html">Customers</a>
+            <a href="staff.html">Employees</a>
+            <a href="services.html">Services</a>
+            <a href="Inventory.html">Inventory</a>
+            <a href="rating.html">Ratings</a>
+            <a class="book-now" href="profile.html">Profile</a>
+        </nav>
+    </div>
+</header>
+
 <div class="app-container">
-    <nav class="sidebar">
-        <div class="logo">
-            <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
-        </div>
-        <ul>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="appointments.html">Appointments</a></li>
-            <li><a href="customers.html">Customers</a></li>
-            <li><a href="staff.html">Employees</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li class="active"><a href="rating.html">Ratings</a></li>
-
-            <li><li><a href="#" id="logoutBtn">Logout</a></li>
-        </ul>
-    </nav>
-
     <main class="content">
-        <header>
-            <h1>Ratings & Feedback</h1>
-            <p>View customer ratings and feedback for your services.</p>
+        <header class="page-header">
+            <div>
+                <h1>Ratings & Feedback</h1>
+                <p>View customer ratings and feedback for your services.</p>
+            </div>
         </header>
 
         <section class="stats-grid">
             <div class="card">
                 Average Rating
-                <h3>4.8</h3>
+                <h3 id="average-rating">0</h3>
             </div>
             <div class="card">
                 Total Reviews
-                <h3>128</h3>
+                <h3 id="review-count">0</h3>
             </div>
             <div class="card">
                 5-Star Reviews
-                <h3>94</h3>
+                <h3 id="five-stars-count">0</h3>
             </div>
-            <div class="card">
+            <!--div class="card">
                 Needs Follow-Up
                 <h3>6</h3>
-            </div>
+            </div-->
         </section>
 
         <section class="appointments-section">
             <h2>Recent Customer Feedback</h2>
 
-            <div class="rating-list">
+            <div class="rating-list" id="rating-list">
 
                 <div class="rating-item">
                     <div class="rating-top">

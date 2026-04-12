@@ -1,8 +1,9 @@
+/* Employee Dashboard Styles */
 * { box-sizing: border-box; font-family: sans-serif; margin: 0; padding: 0; }
 
 .app-container {
     display: flex;
-    height: 100vh;
+    min-height: calc(100vh - 70px); /* 70px = your header height */
     background-color: #f8f9fa;
 }
 
@@ -42,7 +43,7 @@
 /* Dashboard Content */
 .content {
     flex: 1;
-    padding: 40px;
+    padding: 0 100px;
     overflow-y: auto;
 }
 
@@ -50,7 +51,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
-    margin: 30px 0;
+    margin: 0 0 40px 0;
 }
 
 .card {
@@ -88,6 +89,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 40px 0;
+    border-bottom: none;
 }
 
 
@@ -144,7 +147,7 @@
     background:#dc2626;
     padding: 5px 12px;
     color:white;
-    border-radius:5px;
+    border-radius: 10px;
     border: none;
 }
 
@@ -214,7 +217,7 @@ td{
     gap: 10px;
 }
 
-#searchInput {
+.search {
     padding: 8px 30px;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -302,6 +305,26 @@ td{
     line-height: 1.5;
 }
 
+.hero-image {
+    height: 250px;
+    background-image: url("barber-management.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 0 55%;
+}
+
+.performance-grid {
+    display: flex;
+    gap: 30px;
+}
+
+.performance-card {
+    margin-top: 40px;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #efefef;
+}
 
  .status{
      padding:5px 10px;
