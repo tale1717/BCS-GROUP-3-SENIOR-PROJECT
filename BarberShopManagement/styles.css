@@ -90,6 +90,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 40px 0;
+    border-bottom: none;
 }
 
 
@@ -302,4 +303,25 @@ td{
     margin: 15px 0;
     color: #333;
     line-height: 1.5;
+}
+
+.hero-image {
+    height: 250px;
+    background-image: url("barber-management.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 0 55%;
+}
+
+.performance-grid {
+    display: flex;
+    gap: 30px;
+}
+
+.performance-card {
+    margin-top: 40px;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #efefef;
 }

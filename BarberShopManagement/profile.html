@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triple T&G Management - Profile</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <script type=module src="logout.js"></script>
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+        header {
+            background-color: white;
+        }
+    </style>
+    <script type="module" src="logout.js"></script>
+</head>
+<body>
+
+<header>
+    <div class="container nav">
+        <a href="dashboard.html">
+            <h1  class="logo">TRIPLE T&G MANAGEMENT</h1>
+        </a>
+        <nav>
+            <a href="appointments.html">Appointments</a>
+            <a href="customers.html">Customers</a>
+            <a href="staff.html">Employees</a>
+            <a href="services.html">Services</a>
+            <a href="rating.html">Ratings</a>
+            <a class="book-now" href="profile.html">Profile</a>
+        </nav>
+    </div>
+</header>
+
+<section class="profile-container" id="profile-container">
+
+    <h1>My Profile</h1>
+
+    <div class="profile-grid">
+
+        <div class="profile-card">
+
+            <h2>Personal Information</h2>
+
+            <p><strong>Name:</strong> <span id="fnameText">John</span> <span id="lnameText">Doe</span></p>
+            <p><strong>Email:</strong> <span id="emailText">johndoe@email.com</span></p>
+            <p><strong>Mobile Number:</strong> <span id="mobileText">777-777-7777</span></p>
+            <p><strong>Date of Birth:</strong> <span id="dobText">01-01-1970</span></p>
+
+            <div class="button-group">
+                <button class="primary-btn" id="editBtn">Edit Profile</button>
+                <button class="primary-btn" id="pwBtn">Change Password</button>
+                <button class="primary-btn logout" id="logoutBtn">Log Out</button>
+            </div>
+
+            <div class="form" id="editForm">
+
+                <input id="fnameInput" type="text" placeholder="Enter First Name">
+                <input id="lnameInput" type="text" placeholder="Enter Last Name">
+                <input id="emailInput" type="email" placeholder="Enter Email">
+                <input id="mobileInput" type="text" placeholder="Enter Mobile Number">
+                <input id="dobInput" type="date">
+
+                <button class="primary-btn" id="saveBtn">Save</button>
+                <button class="primary-btn" id="cancelBtn">Cancel</button>
+
+            </div>
+
+            <div class="form" id="passwordForm" style="display: none;">
+                <input type="password" id="currentPassword" placeholder="Current Password">
+                <input type="password" id="newPassword" placeholder="New Password">
+                <input type="password" id="confirmPassword" placeholder="Confirm Password">
+
+                <button class="primary-btn" id="savePWBtn">Save</button>
+                <button class="primary-btn" id="cancelPWBtn">Cancel</button>
+            </div>
+
+        </div>
+
+        <div class="receipt-card">
+            <h2>Bank Information</h2>
+
+            <p><strong>Routing Number:</strong> <span id="routNumText">123456789</span></p>
+            <br>
+            <p><strong>Account Number:</strong> <span id="acctNumText">1234567899</span></p>
+            <br>
+
+            <div class="button-group">
+                <button class="primary-btn" id="editBankBtn">Edit Bank Information</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="performance-card">
+        <!-- Performance reports are different for different employees.
+             Barbers will see their individual performance summary of the past month
+             Managers will see the performance of the whole barber shop of the past month
+             Receptionists will not see this tab.
+        -->
+
+        <h2>Performance Report</h2>
+
+        <div class="performance-grid">
+            <div class="card">
+                Completed Appointments
+                <h3>0</h3>
+            </div>
+
+            <div class="card">
+                Feedback Received
+                <h3>0</h3>
+            </div>
+
+            <div class="card">
+                Average Rating
+                <h3>0</h3>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div class="upcoming-card">
+        <!-- Upcoming appointments are different for different employees.
+             Barbers will only see their upcoming appointments.
+             Receptionists and managers will see ALL upcoming appointments.
+         -->
+
+        <h2>Upcoming Appointments</h2>
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Barber</th>
+                <th>Service</th>
+                <th>Time</th>
+            </tr>
+            </thead>
+
+            <tbody id="appointments-table"></tbody>
+
+        </table>
+
+    </div>
+
+
+    <div class="history-card" id="history-card">
+        <!-- Appointment history is different for different employees.
+             Barbers will only see their past appointments that are completed.
+             Receptionists and managers will see past completed appointments of all barbers.
+         -->
+
+        <h2>Appointment History</h2>
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Barber</th>
+                <th>Service</th>
+                <th>Status</th>
+                <th>Review</th>
+            </tr>
+            </thead>
+
+            <tbody id="appointment-history"></tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+</body>
+</html>
