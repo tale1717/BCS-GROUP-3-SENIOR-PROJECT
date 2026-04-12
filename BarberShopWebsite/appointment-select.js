@@ -1,8 +1,9 @@
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, collection, query, where, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
 import { getServices } from "/BarberShopWebsite/Collections/services.js";
+import { getAppointments } from "./Collections/appointments.js";
 
 let allServices = [];
 
@@ -47,21 +48,35 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 const selectedService = allServices.find(s => s.id === selectedServiceId);
 
-                if (!barber || !date || !time || !selectedService) {
+                if (!barber || barber==="Select Barber"
+                    || !date
+                    || !time || time==="Select Time"
+                    || !selectedService) {
                     alert("Please fill out barber, date, time, and service.");
                     return;
                 }
 
-                const appointmentId = `${barber}_${date}_${time}`;
-                const ref = doc(db, "appointments", appointmentId);
+                const appointmentID = await generateAppointmentID();
+                const appointmentsRef = collection(db, "appointments");
 
-                const existing = await getDoc(ref);
-                if (existing.exists()) {
+                const q = query(
+                    appointmentsRef,
+                    where("barber", "==", barber),
+                    where("date", "==", date),
+                    where("time", "==", time)
+                );
+
+                const existing = await getDocs(q);
+
+                if (!existing.empty) {
                     alert("This time slot is already booked.");
                     return;
                 }
 
-                await setDoc(ref, {
+                const appointmentRef = doc(db, "appointments", appointmentID);
+
+                await setDoc(appointmentRef, {
+                    appointmentID: appointmentID,
                     customerUid: user.uid,
                     customerEmail: user.email || "",
                     barber,
@@ -71,13 +86,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                     serviceName: selectedService.serviceName,
                     servicePrice: selectedService.price,
                     serviceDuration: selectedService.duration,
-                    status: "upcoming",
+                    status: "confirmed",
                     createdAt: serverTimestamp()
                 });
 
-                sessionStorage.setItem("lastAppointmentId", appointmentId);
+                sessionStorage.setItem("lastAppointmentId", appointmentID);
 
-                window.location.href = `appointment-confirm.html?appointmentId=${encodeURIComponent(appointmentId)}`;
+                window.location.href = `appointment-confirm.html?appointmentId=${encodeURIComponent(appointmentID)}`;
             } catch (err) {
                 console.error("Failed to create appointment:", err);
                 alert("Failed to create appointment. Check console for details.");
@@ -85,6 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 });
+
 
 async function loadServices() {
     allServices = await getServices();
@@ -95,7 +111,27 @@ async function loadServices() {
     allServices.forEach(service => {
         const option = document.createElement("option");
         option.value = service.id;
-        option.textContent = `${service.serviceName} - $${service.price} - ${service.duration} min`;
+        option.textContent = `${service.serviceName} ($${service.price}, ${service.duration} min)`;
         serviceSelect.appendChild(option);
     });
+}
+
+async function generateAppointmentID(){
+    const appointments =
+        await getAppointments();
+    let max = 0;
+    appointments.forEach(a=>{
+        const id =
+            a.appointmentID || a.id;
+        if(!id) return;
+// Only count IDs like A00001 because the previous one has different format
+        if(!/^A\d{6}$/.test(id))
+            return;
+        const num =
+            parseInt(id.slice(1));
+        if(num > max)
+            max = num;
+    });
+    return "A"+
+        String(max + 1).padStart(6,'0');
 }
