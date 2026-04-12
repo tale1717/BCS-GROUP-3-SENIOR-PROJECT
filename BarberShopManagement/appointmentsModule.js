@@ -168,11 +168,12 @@ async function renderTable(list) {
             <td>${a.date || ""}</td>
             <td>${a.time || ""}</td>
             <td>${a.notes || ""}</td>
-            <td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
-            <td>
-                <button class="edit" data-id="${a.id}">Edit</button>
-                <button class="delete" data-id="${a.id}">Delete</button>
-            </td>
+<td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
+<td>$${Number(a.totalCost || 0).toFixed(2)}</td>
+<td>
+    <button class="edit" data-id="${a.id}">Edit</button>
+    <button class="delete" data-id="${a.id}">Delete</button>
+</td>
         `;
 
         body.appendChild(row);
@@ -221,6 +222,13 @@ function getSelectedServices(selectId) {
         }));
 }
 
+function calculateTotalCost(services) {
+    return services.reduce(
+        (sum, service) => sum + Number(service.servicePrice || 0),
+        0
+    );
+}
+
 function setupCreate() {
     const btn = document.getElementById("createAppointmentBtn");
     const modal = document.getElementById("appointmentModal");
@@ -241,6 +249,7 @@ function setupCreate() {
         const customerSelect = document.getElementById("a-customer");
         const barberSelect = document.getElementById("a-barber");
         const selectedServices = getSelectedServices("a-service");
+        const totalCost = calculateTotalCost(selectedServices);
 
         if (!customerSelect.value) {
             alert("Please select a customer.");
@@ -267,6 +276,7 @@ function setupCreate() {
             barber: barberSelect.options[barberSelect.selectedIndex]?.text || "",
             services: selectedServices,
             serviceName: selectedServices.map(service => service.serviceName).join(", "),
+            totalCost: totalCost,
             date: document.getElementById("a-date").value,
             time: document.getElementById("a-time").value,
             notes: document.getElementById("a-notes")?.value || "",
@@ -379,6 +389,7 @@ function setupUpdateButton() {
         const customerSelect = document.getElementById("edit-customer");
         const barberSelect = document.getElementById("edit-barber");
         const selectedServices = getSelectedServices("edit-service");
+        const totalCost = calculateTotalCost(selectedServices);
 
         if (!customerSelect.value) {
             alert("Please select a customer.");
@@ -408,6 +419,7 @@ function setupUpdateButton() {
                 services: selectedServices,
                 serviceName: selectedServices.map(service => service.serviceName).join(", "),
                 date: document.getElementById("edit-date").value,
+                totalCost: totalCost,
                 time: document.getElementById("edit-time").value,
                 notes: noteField?.value || "",
                 status: document.getElementById("edit-status").value
