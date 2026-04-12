@@ -25,6 +25,9 @@ async function init() {
     setupStaffTableEvents()
     setupUpdateButton();
     setupCancelButtons();
+
+    formatPhoneNumber(document.getElementById("s-phone"));
+    formatPhoneNumber(document.getElementById("edit-phone"));
 }
 
 async function generateStaffID() {
@@ -87,6 +90,40 @@ function renderTable(list) {
 
 
 }
+
+//
+// Phone number formatter
+//
+function formatPhoneNumber(input){
+
+    if(!input) return;
+
+    input.addEventListener("input", function(){
+
+        let numbers = this.value.replace(/\D/g,'');
+
+        if(numbers.length > 10){
+            numbers = numbers.substring(0,10);
+        }
+
+        if(numbers.length > 6){
+            this.value =
+                numbers.substring(0,3) + "-" +
+                numbers.substring(3,6) + "-" +
+                numbers.substring(6);
+        }
+        else if(numbers.length > 3){
+            this.value =
+                numbers.substring(0,3) + "-" +
+                numbers.substring(3);
+        }
+        else{
+            this.value = numbers;
+        }
+
+    });
+}
+
 
 function setupCreate() {
     const modal = document.getElementById("createStaffModal");
