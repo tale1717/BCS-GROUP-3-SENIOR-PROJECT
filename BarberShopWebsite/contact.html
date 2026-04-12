@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Triple T&G Barbers - Contact Us</title>
+    <link rel="icon" href="./3tg-logo.png" type="image/png">
+    <link rel="stylesheet" href="/BarberShopWebsite/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script type="module" src="isCustomerLoggedIn.js"></script>
+</head>
+<body>
+
+<!-- Navigation -->
+<header>
+    <div class="container nav">
+        <a href="./">
+            <h1  class="logo">TRIPLE T&G BARBERS</h1>
+        </a>
+        <nav>
+            <a href="about-us.html">About Us</a>
+            <a href="contact.html">Contact</a>
+            <a id="profile-login" href="customer-login.html">Sign In</a>
+            <a id="book-now" href="appointment.html" class="book-now">Book Now</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero Image -->
+<section class="hero-contact">
+    <div>
+        <h1>Contact Information</h1> <br>
+    </div>
+</section>
+
+<div class="mission-title contact">
+    <h1>Need help? Here's where you can find us:</h1>
+</div>
+
+<section class="contact-container">
+    <div class="address-card">
+        <h2>Triple T&G Barbers</h2>
+        <address>
+            1255 Melville Road<br>
+            Farmingdale, NY 11735<br>
+            (516) 999-9999
+        </address>
+        <div class="action-buttons">
+            <a href="https://www.openstreetmap.org/directions?to=40.748363%2C+-73.428653#map=19/40.748363/-73.429122" class="btn btn-black">Get Directions</a>
+        </div>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script>
+        let map = L.map('map').setView([40.748363, -73.428653], 17);
+        let marker = L.marker([40.748363, -73.428653]).addTo(map);
+        marker.bindPopup("<b>Triple T&G Barbers</b>").openPopup();
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+    </script>
+
+</section>
+
+</body>
+</html>

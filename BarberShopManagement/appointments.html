@@ -2,33 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Appointments</title>
+    <title>Triple T&G Management - Appointments</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+        table, th, td {
+            border: 0;
+        }
+        th {
+            border-bottom: 1px solid gray;
+        }
+    </style>
     <script type="module" src="./appointmentsModule.js"></script>
+    <script type="module" src="logout.js"></script>
 </head>
-
 <body>
 
+<header>
+    <div class="container nav">
+        <a href="dashboard.html">
+            <h1  class="logo">TRIPLE T&G MANAGEMENT</h1>
+        </a>
+        <nav>
+            <a href="appointments.html">Appointments</a>
+            <a href="customers.html">Customers</a>
+            <a href="staff.html">Employees</a>
+            <a href="services.html">Services</a>
+            <a href="Inventory.html">Inventory</a>
+            <a href="rating.html">Ratings</a>
+            <a class="book-now" href="profile.html">Profile</a>
+        </nav>
+    </div>
+</header>
+
 <div class="app-container">
-
-    <!-- SIDEBAR -->
-    <nav class="sidebar">
-
-        <div class="logo">
-            <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
-        </div>
-
-        <ul>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li class="active"><a href="appointments.html">Appointments</a></li>
-            <li><a href="customers.html">Customers</a></li>
-            <li><a href="barbers.html">Barbers</a></li>
-            <li><a href="services.html">Services</a></li>
-        </ul>
-
-    </nav>
-
-
     <!-- MAIN CONTENT -->
     <main class="content">
 
@@ -38,22 +51,20 @@
                 <h1>Appointments</h1>
                 <p>Manage and schedule appointments</p>
             </div>
- <!--TOOLBAR-->
-            <button type="button" id="createAppointmentBtn" class="create-buttons">
-                + New Appointment
-            </button>
+
+            <div class="toolbar">
+                <input
+                        id="searchAppointment"
+                        placeholder="🔍 Search appointments..."
+                        class="search"
+                />
+                <button type="button" id="createAppointmentBtn" class="create-buttons">
+                    + New Appointment
+                </button>
+
+            </div>
 
         </header>
-
-
-        <!-- SEARCH -->
-        <div class="card">
-            <input
-                    id="searchAppointment"
-                    placeholder="🔍 Search appointments..."
-                    class="search"
-            />
-        </div>
 
 
         <!-- APPOINTMENT TABLE -->
@@ -63,11 +74,13 @@
 
                 <thead>
                 <tr>
+                    <th>Appointment ID</th>
                     <th>Customer</th>
                     <th>Barber</th>
                     <th>Service</th>
                     <th>Date</th>
-                    <th>Time</th></t>
+                    <th>Time</th>
+                    <th>Note</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -90,16 +103,27 @@
     <div class="modal-content">
 
         <h2>Create Appointment</h2>
+        <label>Customer Name</label> <br><br>
+        <select id="a-customer">
+            <option value="">Select Customer</option>
+        </select><br><br>
+        <label>Barber Name</label> <br><br>
+        <select id="a-barber">
+            <option value="">Select Barber</option>
+        </select><br><br>
+        <label>Service</label> <br><br>
+        <select id="a-service" multiple size="6"></select>
+        <label>Date</label> <br><br>
+        <input type="date" id="a-date"> <br><br>
+        <label>Time</label> <br><br>
+        <input type="time" id="a-time"> <br><br>
+        <label>Notes</label>
+        <textarea id="a-notes"
+                  placeholder="Appointment notes"></textarea>
 
-        <input id="a-customer" placeholder="Customer Name">
-        <input id="a-barber" placeholder="Barber Name">
-        <select id="a-service"></select>
-        <input type="date" id="a-date">
-        <input type="time" id="a-time">
 
         <select id="a-status">
             <option value="confirmed">Confirmed</option>
-            <option value="pending">Pending</option>
             <option value="cancelled">Cancelled</option>
         </select>
         <div class="modal-action-forButtons">
@@ -111,6 +135,54 @@
 
 </div>
 
+
+<!-- EDIT APPOINTMENT MODAL -->
+<div id="editAppointmentModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Edit Appointment</h2>
+
+        <lable>Appointment ID</lable>
+        <input id= "edit-id" readonly> <br><br>
+
+        <label>Customer Name</label> <br><br>
+        <select id="edit-customer"></select> <br><br>
+        <label>Barber Name</label> <br><br>
+        <select id="edit-barber"></select><br><br>
+        <label>Service</label> <br><br>
+        <select id="edit-service" multiple size="6"></select>
+        <label>Date</label> <br><br>
+        <input type="date" id="edit-date"> <br><br>
+        <label>Time</label> <br><br>
+        <input type="time" id="edit-time"> <br><br>
+        <label>Note</label> <br><br>
+        <textarea id="edit-notes"></textarea> <br><br>
+        <label>Status</label> <br><br>
+        <select id="edit-status">
+
+            <option value="confirmed">Confirmed</option>
+
+            <option value="completed">Completed</option>
+
+            <option value="cancelled">Cancelled</option>
+
+
+        </select>
+
+        <div class="modal-action-forButtons">
+
+            <button id="updateAppointment" class="edit">Update
+            </button>
+
+            <button id="cancelEditAppointment" class="cancel-buttons">Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>

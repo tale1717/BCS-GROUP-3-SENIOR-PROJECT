@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="calendar.css">
     <script type="module" src="isCustomerLoggedIn.js"></script>
-    <script type="module" src="calendar.js"></script>
     <script type="module" src="appointment-select.js"></script>
+
+    <script type="module" src="calendar.js"></script>
     <script type="module" src="time-select.js"></script>
 </head>
 <body>
@@ -21,7 +22,7 @@
         </a>
         <nav>
             <a href="about-us.html">About Us</a>
-            <a href="#">Contact</a>
+            <a href="contact.html">Contact</a>
             <a id="profile-login" href="customer-login.html">Sign In</a>
             <a id="book-now" href="appointment.html" class="book-now">Book Now</a>
         </nav>
@@ -77,19 +78,32 @@
             <div class="custom-select">
                 Barber:
                 <select class="input-select" id="barber">
+                    <option>Select Barber</option>
                     <option>Talero</option>
                     <option>Thai</option>
                     <option>Tobias</option>
                     <option>Guaman</option>
                 </select>
             </div>
+
+            <!--
+            <script>
+                const selectedBarber = sessionStorage.getItem("selectedBarber");
+                if (selectedBarber) {
+                    const select = document.getElementById("barber");
+                    if (select) select.value = selectedBarber;
+                }
+            </script>
+            -->
+
             <div class="custom-select">
                 Time:
-                <select class="input-select" id="time"></select>
+                <select class="input-select" id="time">Select a Time</select>
             </div>
+
             <div class="custom-select">
                 Type of Service:
-                <select id="service"></select>
+                <select class="input-select" id="service"></select>
             </div>
             <a href="appointment-confirm.html" class="btn-confirm" id="confirm-appointment">Confirm Appointment</a>
         </div>

@@ -13,8 +13,10 @@ import {
 const ref = collection(db, "customers");
 
 // CREATE generic dashboard record (random doc id)
-export async function createCustomer(data) {
-    return await addDoc(ref, data);
+export async function createCustomer(customer) {
+    const ref = doc(db, "customers", customer.customerID);
+
+    await setDoc(ref, customer);
 }
 
 // CREATE/OVERWRITE signup-linked customer profile using uid

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triple T&G Management - Ratings</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <script type=module src="ratingsModule.js"></script>
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+    </style>
+    <script type="module" src="logout.js"></script>
+</head>
+<body>
+
+<header>
+    <div class="container nav">
+        <a href="dashboard.html">
+            <h1  class="logo">TRIPLE T&G MANAGEMENT</h1>
+        </a>
+        <nav>
+            <a href="appointments.html">Appointments</a>
+            <a href="customers.html">Customers</a>
+            <a href="staff.html">Employees</a>
+            <a href="services.html">Services</a>
+            <a href="Inventory.html">Inventory</a>
+            <a href="rating.html">Ratings</a>
+            <a class="book-now" href="profile.html">Profile</a>
+        </nav>
+    </div>
+</header>
+
+<div class="app-container">
+    <main class="content">
+        <header class="page-header">
+            <div>
+                <h1>Ratings & Feedback</h1>
+                <p>View customer ratings and feedback for your services.</p>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="card">
+                Average Rating
+                <h3 id="average-rating">0</h3>
+            </div>
+            <div class="card">
+                Total Reviews
+                <h3 id="review-count">0</h3>
+            </div>
+            <div class="card">
+                5-Star Reviews
+                <h3 id="five-stars-count">0</h3>
+            </div>
+            <!--div class="card">
+                Needs Follow-Up
+                <h3>6</h3>
+            </div-->
+        </section>
+
+        <section class="appointments-section">
+            <h2>Recent Customer Feedback</h2>
+
+            <div class="rating-list" id="rating-list">
+
+                <div class="rating-item">
+                    <div class="rating-top">
+                        <div>
+                            <strong>John Smith</strong>
+                            <p class="service-text">Service: Haircut</p>
+                        </div>
+                        <span class="rating-badge">★★★★★ 5.0</span>
+                    </div>
+
+                    <p class="feedback-text">
+                        Great service. Very professional and paid attention to detail.
+                    </p>
+                </div>
+
+                <div class="rating-item">
+                    <div class="rating-top">
+                        <div>
+                            <strong>Michael Brown</strong>
+                            <p class="service-text">Service: Beard Trim</p>
+                        </div>
+                        <span class="rating-badge">★★★★☆ 4.0</span>
+                    </div>
+
+                    <p class="feedback-text">
+                        Good cut overall, but the wait time was a little longer than expected.
+                    </p>
+                </div>
+
+                <div class="rating-item">
+                    <div class="rating-top">
+                        <div>
+                            <strong>David Lee</strong>
+                            <p class="service-text">Service: Haircut & Beard</p>
+                        </div>
+                        <span class="rating-badge">★★★★★ 5.0</span>
+                    </div>
+
+                    <p class="feedback-text">
+                        Excellent experience. Clean fade and great customer service.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

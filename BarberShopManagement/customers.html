@@ -2,68 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Customer Management</title>
+    <title>Triple T&G Management - Customers</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+        table, th, td {
+            border: 0;
+        }
+        th {
+            border-bottom: 1px solid gray;
+        }
+    </style>
     <script type="module" src="./customersModule.js"></script>
 </head>
-
 <body>
+
+<header>
+    <div class="container nav">
+        <a href="dashboard.html">
+            <h1  class="logo">TRIPLE T&G MANAGEMENT</h1>
+        </a>
+        <nav>
+            <a href="appointments.html">Appointments</a>
+            <a href="customers.html">Customers</a>
+            <a href="staff.html">Employees</a>
+            <a href="services.html">Services</a>
+            <a href="Inventory.html">Inventory</a>
+            <a href="rating.html">Ratings</a>
+            <a class="book-now" href="profile.html">Profile</a>
+        </nav>
+    </div>
+</header>
+
 <div class="app-container">
-
-    <!-- SIDEBAR -->
-    <nav class="sidebar">
-        <div class="logo">
-            <img src="ttt logo centered.png" alt="Triple T Logo" width="200">
-        </div>
-
-        <ul>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="appointments.html">Appointments</a></li>
-            <li class="active"><a href="customers.html">Customers</a></li>
-            <li><a href="barbers.html">Barbers</a><li>
-            <ali><a href="services.html">Services</a></ali>
-        </ul>
-
-        <a href="dashboard.html"><li>back</li></a>
-
-    </nav>
 
     <!-- RIGHT CONTENT -->
     <main class="content">
 
         <header class="page-header">
-            <h1>Customer Management</h1>
+
+            <div>
+                <h1>Customers</h1>
+                <p>Manage customers</p>
+            </div>
 
             <div class="toolbar">
+                <input id="searchCustomer" placeholder="🔍 Search customers..." class="search"/>
 
-                <!-- search function -->
-                <input type="text" id="searchInput" placeholder="🔍 Search customers..." />
-
-                <!-- action button -->
-                <button id="createBtn" class="create-buttons">+ Create</button>
-                <button id="editBtn" class="edit-button">Edit</button>
-                <button id="deleteBtn" class="danger">Delete</button>
-
+                <button id="createCustomerBtn" class="create-buttons">
+                    + New Customer
+                </button>
             </div>
+
+
         </header>
 
-        <!-- customer list area-->
+<!--Customer List-->
         <div class="card">
-            <table id="customer-table">
+
+            <table>
+
                 <thead>
+
                 <tr>
-                    <th></th>
+                    <th>Customer ID</th>
                     <th>Name</th>
                     <th>Phone</th>
                     <th>Email</th>
+                    <th>Actions</th>
+
                 </tr>
+
                 </thead>
+
                 <tbody id="customer-body"></tbody>
+
             </table>
+
         </div>
 
     </main>
-</div>
+
+
 
 <!-- ================= MODALS ================= -->
 
@@ -71,8 +97,10 @@
 <div id="createModal" class="modal">
     <div class="modal-content">
         <h2>Create Customer</h2><br><br>
-        <label class="text">Customer Name</label>
-        <input id="c-name" class="text-field" placeholder="Full Name" /> <br><br>
+        <label class="text">Customer First Name</label>
+        <input id="c-firstName" class="text-field" placeholder="First Name" /> <br><br>
+        <label class="text">Customer Last Name</label>
+        <input id="c-lastName" class="text-field" placeholder="Last Name" /> <br><br>
         <label class="text">Customer Phone</label>
         <input id="c-phone" class="text-field" placeholder="Phone" /> <br><br>
         <label class="text">Customer Email</label>
@@ -85,22 +113,34 @@
 </div>
 
 <!-- edit customer -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <h2>Edit Customer</h2> <br><br>
-        <label class="text">Customer Name</label>
-        <input id="e-name" class="text-field" placeholder="Name" /> <br><br>
-        <label class="text">Customer Phone</label>
-        <input id="e-phone"class="text-field" placeholder="Phone" /> <br><br>
-        <label class="text">Customer Email</label>
-        <input id="e-email" class="text-field" placeholder="Email" /> <br><br>
-        <div class="modal-action-forButtons">
-            <button id="saveEdit" class="edit-button">Update</button>
-            <button id="cancelEdit" class="cancel-buttons">Cancel</button>
+    <div id="editModal" class="modal">
+
+        <div class="modal-content">
+
+            <h2>Edit Customer</h2>
+
+            <input type="hidden" id="edit-id">
+            <label class="text">Customer First Name</label>
+            <input id="edit-firstName" class="text-field"> <br><br>
+            <label class="text">Customer Last Name</label>
+            <input id="edit-lastName" class="text-field"> <br><br>
+            <label class="text">Customer Phone</label>
+            <input id="edit-phone" class="text-field"> <br><br>
+            <label class="text">Customer Email</label>
+            <input id="edit-email" class="text-field"> <br><br>
+
+            <div class="modal-action-forButtons">
+                <button id="updateCustomer" class="create-buttons">Update</button>
+                <button id="cancelEdit" class="cancel-buttons">Cancel</button>
+
+            </div>
+
         </div>
 
     </div>
+
 </div>
+
 
 </body>
 </html>
