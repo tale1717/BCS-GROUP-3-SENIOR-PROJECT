@@ -5,7 +5,6 @@ import {
     getAppointments,
     updateAppointment,
     deleteAppointment
-
 } from "../BarberShopWebsite/Collections/appointments.js";
 
 import {
@@ -32,548 +31,409 @@ let allStaff = [];
 
 document.addEventListener("DOMContentLoaded", init);
 
-async function init() {
+function setupToggleMultiSelect(selectId) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
 
+    select.addEventListener("mousedown", (e) => {
+        if (e.target.tagName.toLowerCase() !== "option") return;
+
+        e.preventDefault();
+        e.target.selected = !e.target.selected;
+    });
+}
+async function init() {
+    await loadCustomers();
+    await loadStaff();
     await loadServices();
     await loadAppointments();
 
+    setupToggleMultiSelect("a-service");
+    setupToggleMultiSelect("edit-service");
+
     setupSearch();
-
-    await loadCustomers();
-    await loadStaff();
-
     setupCreate();
-    setupActions();
-    setupEdit();
-
-    document.getElementById("cancelAppointment").onclick = ()=>{
-        document.getElementById("appointmentModal").style.display="none";
-    };
-
-    document.getElementById("cancelEditAppointment").onclick = ()=>{
-        document.getElementById("editAppointmentModal").style.display="none";
-    };
-
+    setupTableEvents()
+    setupUpdateButton();
+    setupCancelButtons();
 }
 
-//load service
-async function loadServices(){
+async function loadServices() {
     allServices = await getServices();
     populateServiceDropdown();
 }
 
-//load customer
-async function loadCustomers(){
-
+async function loadCustomers() {
     allCustomers = await getCustomers();
 
-    const select =
-        document.getElementById("a-customer");
+    const select = document.getElementById("a-customer");
+    if (!select) return;
 
-    select.innerHTML =
-        `<option value="">Select Customer</option>`;
+    select.innerHTML = `<option value="">Select Customer</option>`;
 
-    allCustomers.forEach(c=>{
+    allCustomers.forEach(c => {
+        const option = document.createElement("option");
+        option.value = c.id;
 
-        const option =
-            document.createElement("option");
+        const displayName =
+            c.name ||
+            [c.firstName, c.lastName].filter(Boolean).join(" ").trim() ||
+            c.customerName ||
+            "Unknown Customer";
 
-        option.value = String(c.customerID);
-        option.textContent = c.firstName + " " + c.lastName;
-
+        option.textContent = displayName;
         select.appendChild(option);
-
     });
-
 }
 
-//load staff
-async function loadStaff(){
-
+async function loadStaff() {
     allStaff = await getStaff();
 
-    const select =
-        document.getElementById("a-barber");
+    const select = document.getElementById("a-barber");
+    if (!select) return;
 
-    if(!select) return;
-
-    select.innerHTML =
-        `<option value="">Select Barber</option>`;
+    select.innerHTML = `<option value="">Select Barber</option>`;
 
     allStaff
-        .filter(s=>s.position==="Barber")
-        .forEach(b=>{
-
-            const option =
-                document.createElement("option");
-
-            option.value = String(b.staffID);
-            option.textContent = b.name;
-
+        .filter(s => s.position === "Barber")
+        .forEach(b => {
+            const option = document.createElement("option");
+            option.value = b.id;
+            option.textContent = b.name || "Unnamed Barber";
             select.appendChild(option);
-
         });
-
 }
 
-//generate ID with format A######
-async function generateAppointmentID(){
-
-    const appointments =
-        await getAppointments();
-
+async function generateAppointmentID() {
+    const appointments = await getAppointments();
     let max = 0;
 
-    appointments.forEach(a=>{
+    appointments.forEach(a => {
+        const id = a.appointmentID || a.id;
+        if (!id) return;
 
-        const id =
-            a.appointmentID || a.id;
+        if (!/^A\d{6}$/.test(id)) return;
 
-        if(!id) return;
-
-        if(!/^A\d{6}$/.test(id))
-            return;
-
-        const num =
-            parseInt(id.slice(1));
-
-        if(num > max)
-            max = num;
-
+        const num = parseInt(id.slice(1));
+        if (num > max) max = num;
     });
 
-    return "A"+
-        String(max+1).padStart(6,'0');
-
+    return "A" + String(max + 1).padStart(6, "0");
 }
 
-//service dropdown
-function populateServiceDropdown(){
+function populateServiceDropdown() {
+    const select = document.getElementById("a-service");
+    if (!select) return;
 
-    const select =
-        document.getElementById("a-service");
+    select.innerHTML = `<option value="">Select a service</option>`;
 
-    if(!select) return;
-
-    select.innerHTML =
-        `<option value="">Select a service</option>`;
-
-    allServices.forEach(service=>{
-
-        const option =
-            document.createElement("option");
-
+    allServices.forEach(service => {
+        const option = document.createElement("option");
         option.value = service.id;
-
-        option.textContent =
-            `${service.serviceName} - $${service.price} - ${service.duration} min`;
-
+        option.textContent = `${service.serviceName} - $${service.price} - ${service.duration} min`;
         select.appendChild(option);
-
     });
-
 }
 
-
-//load Appointment
-async function loadAppointments(){
-
-    allAppointments =
-        await getAppointments();
-
-    renderTable(allAppointments);
-
+async function loadAppointments() {
+    allAppointments = await getAppointments();
+    await renderTable(allAppointments);
 }
 
-//render table
-async function renderTable(list){
+async function renderTable(list) {
+    const body = document.getElementById("appointment-body");
+    if (!body) return;
 
-    const body =
-        document.getElementById("appointment-body");
+    body.innerHTML = "";
 
-    body.innerHTML="";
-
-    for(const a of list){
-
-        if(a.customerUid && !userCache[a.customerUid]){
-
-            const user =
-                await getUserProfile(a.customerUid);
-
-            userCache[a.customerUid] =
-                user ?
-                    user.firstName+" "+user.lastName :
-                    "Unknown";
-
+    for (const a of list) {
+        if (a.customerUid && !userCache[a.customerUid]) {
+            const user = await getUserProfile(a.customerUid);
+            userCache[a.customerUid] = user
+                ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+                : "Unknown";
         }
 
-        const customerName =
-            a.customerUid ?
-                userCache[a.customerUid] :
-                (a.customer || "Unknown");
+        const customerName = a.customerUid
+            ? userCache[a.customerUid]
+            : (a.customer || "Unknown");
 
-        const row =
-            document.createElement("tr");
+        const row = document.createElement("tr");
 
-        row.innerHTML=`
-
-        <td>${a.appointmentID || a.id}</td>
-        <td>${customerName}</td>
-        <td>${a.barber || ""}</td>
-        <td>${a.serviceName || ""}</td>
-        <td>${a.date || ""}</td>
-        <td>${a.time || ""}</td>
-        <td>${a.notes || ""}</td>
-
-        <td>
-        <span class="status ${a.status || "confirmed"}">
-        ${a.status || "confirmed"}
-        </span>
-        </td>
-
-        <td>
-        <button class="edit" data-id="${a.id}">
-        Edit
-        </button>
-
-        <button class="delete" data-id="${a.id}">
-        Delete
-        </button>
-        </td>
-
+        row.innerHTML = `
+            <td>${a.appointmentID || a.id}</td>
+            <td>${customerName}</td>
+            <td>${a.barber || ""}</td>
+            <td>${a.serviceName || a.service || ""}</td>
+            <td>${a.date || ""}</td>
+            <td>${a.time || ""}</td>
+            <td>${a.notes || ""}</td>
+            <td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
+            <td>
+                <button class="edit" data-id="${a.id}">Edit</button>
+                <button class="delete" data-id="${a.id}">Delete</button>
+            </td>
         `;
 
         body.appendChild(row);
-
     }
 
-    setupActions();
-    setupEdit();
-
+    setupTableEvents()
 }
 
-//search function
-function setupSearch(){
+function setupSearch() {
+    const input = document.getElementById("searchAppointment");
+    if (!input) return;
 
-    const input =
-        document.getElementById("searchAppointment");
+    input.addEventListener("input", e => {
+        const term = e.target.value.toLowerCase();
 
-    if(!input) return;
+        const filtered = allAppointments.filter(a => {
+            const name = (userCache[a.customerUid] || a.customer || "").toLowerCase();
 
-    input.addEventListener("input",e=>{
-
-        const term =
-            e.target.value.toLowerCase();
-
-        const filtered =
-            allAppointments.filter(a=>{
-
-                const name =
-                    (a.customer || "")
-                        .toLowerCase();
-
-                return(
-                    name.includes(term) ||
-                    (a.barber||"").toLowerCase().includes(term) ||
-                    (a.serviceName||"").toLowerCase().includes(term) ||
-                    (a.date||"").includes(term) ||
-                    (a.time||"").includes(term)
-                );
-
-            });
+            return (
+                name.includes(term) ||
+                (a.barber || "").toLowerCase().includes(term) ||
+                (a.serviceName || a.service || "").toLowerCase().includes(term) ||
+                (a.date || "").toLowerCase().includes(term) ||
+                (a.time || "").toLowerCase().includes(term) ||
+                (a.notes || "").toLowerCase().includes(term)
+            );
+        });
 
         renderTable(filtered);
-
     });
-
 }
 
+function getSelectedServices(selectId) {
+    const select = document.getElementById(selectId);
+    if (!select) return [];
 
-//create new appointment
-function setupCreate(){
+    const selectedIds = Array.from(select.selectedOptions).map(option => option.value);
 
-    const btn =
-        document.getElementById("createAppointmentBtn");
+    return allServices
+        .filter(service => selectedIds.includes(service.id))
+        .map(service => ({
+            serviceId: service.id,
+            serviceName: service.serviceName,
+            servicePrice: service.price,
+            serviceDuration: service.duration
+        }));
+}
 
-    const modal =
-        document.getElementById("appointmentModal");
+function setupCreate() {
+    const btn = document.getElementById("createAppointmentBtn");
+    const modal = document.getElementById("appointmentModal");
 
-    if(!btn || !modal) return;
+    if (!btn || !modal) {
+        console.error("Create button or modal not found");
+        return;
+    }
 
-    btn.onclick = ()=>{
-        modal.style.display="block";
+    btn.onclick = () => {
+        modal.style.display = "block";
     };
 
-    document.getElementById("saveAppointment")
-        .onclick = async ()=>{
+    const saveBtn = document.getElementById("saveAppointment");
+    if (!saveBtn) return;
 
-        const customerSelect =
-            document.getElementById("a-customer");
+    saveBtn.onclick = async () => {
+        const customerSelect = document.getElementById("a-customer");
+        const barberSelect = document.getElementById("a-barber");
+        const selectedServices = getSelectedServices("a-service");
 
-        const barberSelect =
-            document.getElementById("a-barber");
-
-        const serviceId =
-            document.getElementById("a-service").value;
-
-        const service =
-            allServices.find(
-                s=>s.id===serviceId
-            );
-
-        if(!service){
-            alert("Select service");
+        if (!customerSelect.value) {
+            alert("Please select a customer.");
             return;
         }
 
-        const appointmentID =
-            await generateAppointmentID();
+        if (!barberSelect.value) {
+            alert("Please select a barber.");
+            return;
+        }
+
+        if (selectedServices.length === 0) {
+            alert("Please select at least one service.");
+            return;
+        }
+
+        const appointmentID = await generateAppointmentID();
 
         await createAppointment({
-
-            appointmentID,
-
-            customerID:
-            customerSelect.value,
-
-            customer:
-            customerSelect.options[
-                customerSelect.selectedIndex
-                ].text,
-
-            staffID:
-            barberSelect.value,
-
-            barber:
-            barberSelect.options[
-                barberSelect.selectedIndex
-                ].text,
-
-            serviceId:service.id,
-            serviceName:service.serviceName,
-            servicePrice:service.price,
-            serviceDuration:service.duration,
-
-            date:
-            document.getElementById("a-date").value,
-
-            time:
-            document.getElementById("a-time").value,
-
-            notes:
-                document.getElementById("a-notes")?.value || "",
-
-            status:
-            document.getElementById("a-status").value
-
+            appointmentID: appointmentID,
+            customerID: customerSelect.value,
+            customer: customerSelect.options[customerSelect.selectedIndex]?.text || "",
+            staffID: barberSelect.value,
+            barber: barberSelect.options[barberSelect.selectedIndex]?.text || "",
+            services: selectedServices,
+            serviceName: selectedServices.map(service => service.serviceName).join(", "),
+            date: document.getElementById("a-date").value,
+            time: document.getElementById("a-time").value,
+            notes: document.getElementById("a-notes")?.value || "",
+            status: document.getElementById("a-status").value || "upcoming"
         });
 
-        modal.style.display="none";
-
-        loadAppointments();
-
+        modal.style.display = "none";
+        await loadAppointments();
     };
-
 }
 
-//edit appointment
-function setupEdit(){
+function populateEditDropdowns() {
+    const customerSelect = document.getElementById("edit-customer");
+    if (customerSelect) {
+        customerSelect.innerHTML = `<option value="">Select Customer</option>`;
 
-    document
-        .querySelectorAll(".edit")
-        .forEach(btn=>{
+        allCustomers.forEach(c => {
+            const option = document.createElement("option");
+            option.value = c.id;
 
-            btn.onclick=()=>{
+            const displayName =
+                c.name ||
+                [c.firstName, c.lastName].filter(Boolean).join(" ").trim() ||
+                c.customerName ||
+                "Unknown Customer";
 
-                const appointment =
-                    allAppointments.find(
-                        a=>a.id===btn.dataset.id
-                    );
-
-                if(!appointment){
-                    console.error("Appointment not found");
-                    return;
-                }
-
-                populateEditDropdowns(appointment);
-
-                document.getElementById("edit-id").value =
-                    appointment.id;
-
-                document.getElementById("edit-date").value =
-                    appointment.date || "";
-
-                document.getElementById("edit-time").value =
-                    appointment.time || "";
-
-                document.getElementById("edit-status").value =
-                    appointment.status || "";
-
-                document.getElementById("edit-notes").value =
-                    appointment.notes || "";
-
-                document.getElementById("editAppointmentModal")
-                    .style.display="block";
-
-            };
-
+            option.textContent = displayName;
+            customerSelect.appendChild(option);
         });
+    }
 
+    const barberSelect = document.getElementById("edit-barber");
+    if (barberSelect) {
+        barberSelect.innerHTML = `<option value="">Select Barber</option>`;
+
+        allStaff
+            .filter(s => s.position === "Barber")
+            .forEach(b => {
+                const option = document.createElement("option");
+                option.value = b.id;
+                option.textContent = b.name || "Unnamed Barber";
+                barberSelect.appendChild(option);
+            });
+    }
+
+    const serviceSelect = document.getElementById("edit-service");
+    if (serviceSelect) {
+        serviceSelect.innerHTML = `<option value="">Select Service</option>`;
+
+        allServices.forEach(s => {
+            const option = document.createElement("option");
+            option.value = s.id;
+            option.textContent = s.serviceName;
+            serviceSelect.appendChild(option);
+        });
+    }
 }
 
-//dropdown function in edit
-function populateEditDropdowns(appointment){
+function setupTableEvents() {
+    const body = document.getElementById("appointment-body");
 
-    const customerSelect =
-        document.getElementById("edit-customer");
+    body.onclick = async (e) => {
 
-    customerSelect.innerHTML =
-        `<option value="">Select Customer</option>`;
+        const editBtn = e.target.closest(".edit");
+        const deleteBtn = e.target.closest(".delete");
 
-    allCustomers.forEach(c=>{
+        if (editBtn) {
+            const appointment = allAppointments.find(
+                a => a.id === editBtn.dataset.id
+            );
 
-        const option =
-            document.createElement("option");
+            if (!appointment) return;
 
-        option.value = String(c.customerID);
-        option.textContent = c.name;
+            populateEditDropdowns();
 
-        customerSelect.appendChild(option);
+            document.getElementById("edit-id").value = appointment.id;
+            document.getElementById("edit-date").value = appointment.date || "";
+            document.getElementById("edit-time").value = appointment.time || "";
+            document.getElementById("edit-status").value = appointment.status || "upcoming";
 
-    });
+            document.getElementById("edit-customer").value = appointment.customerID || "";
+            document.getElementById("edit-barber").value = appointment.staffID || "";
+            const selectedServiceIds = Array.isArray(appointment.services)
+                ? appointment.services.map(service => service.serviceId)
+                : (appointment.serviceId ? [appointment.serviceId] : []);
 
-    const barberSelect =
-        document.getElementById("edit-barber");
+            Array.from(document.getElementById("edit-service").options).forEach(option => {
+                option.selected = selectedServiceIds.includes(option.value);
+            });
 
-    barberSelect.innerHTML =
-        `<option value="">Select Barber</option>`;
+            document.getElementById("editAppointmentModal").style.display = "block";
+        }
 
-    allStaff
-        .filter(s=>s.position==="Barber")
-        .forEach(b=>{
+        if (deleteBtn) {
+            if (!confirm("Delete this appointment?")) return;
 
-            const option =
-                document.createElement("option");
-
-            option.value = String(b.staffID);
-            option.textContent = b.name;
-
-            barberSelect.appendChild(option);
-
-        });
-
-    const serviceSelect =
-        document.getElementById("edit-service");
-
-    serviceSelect.innerHTML =
-        `<option value="">Select Service</option>`;
-
-    allServices.forEach(s=>{
-
-        const option =
-            document.createElement("option");
-
-        option.value = s.id;
-        option.textContent =
-            s.serviceName;
-
-        serviceSelect.appendChild(option);
-
-    });
-
-    customerSelect.value =
-        String(appointment.customerID || "");
-
-    barberSelect.value =
-        String(appointment.staffID || "");
-
-    serviceSelect.value =
-        String(appointment.serviceId || "");
-
+            await deleteAppointment(deleteBtn.dataset.id);
+            await loadAppointments();
+        }
+    };
 }
 
-document.getElementById("updateAppointment")
-    .onclick = async ()=>{
+function setupUpdateButton() {
+    const updateBtn = document.getElementById("updateAppointment");
+    if (!updateBtn) return;
 
-    const id =
-        document.getElementById("edit-id").value;
+    updateBtn.onclick = async () => {
+        const id = document.getElementById("edit-id").value;
 
-    const customerSelect =
-        document.getElementById("edit-customer");
+        const customerSelect = document.getElementById("edit-customer");
+        const barberSelect = document.getElementById("edit-barber");
+        const selectedServices = getSelectedServices("edit-service");
 
-    const barberSelect =
-        document.getElementById("edit-barber");
+        if (!customerSelect.value) {
+            alert("Please select a customer.");
+            return;
+        }
 
-    const serviceSelect =
-        document.getElementById("edit-service");
+        if (!barberSelect.value) {
+            alert("Please select a barber.");
+            return;
+        }
 
-    const service =
-        allServices.find(
-            s=>s.id===serviceSelect.value
-        );
+        if (selectedServices.length === 0) {
+            alert("Please select at least one service.");
+            return;
+        }
 
-    await updateAppointment(id,{
+        const noteField =
+            document.getElementById("edit-note") ||
+            document.getElementById("edit-notes");
 
-        customerID:customerSelect.value,
+        try {
+            await updateAppointment(id, {
+                customerID: customerSelect.value,
+                customer: customerSelect.options[customerSelect.selectedIndex]?.text || "",
+                staffID: barberSelect.value,
+                barber: barberSelect.options[barberSelect.selectedIndex]?.text || "",
+                services: selectedServices,
+                serviceName: selectedServices.map(service => service.serviceName).join(", "),
+                date: document.getElementById("edit-date").value,
+                time: document.getElementById("edit-time").value,
+                notes: noteField?.value || "",
+                status: document.getElementById("edit-status").value
+            });
 
-        customer:
-            customerSelect.selectedIndex>=0 ?
-                customerSelect.options[customerSelect.selectedIndex].text :
-                "",
+            document.getElementById("editAppointmentModal").style.display = "none";
+            await loadAppointments();
+        } catch (error) {
+            console.error("Failed to update appointment:", error);
+            alert("Failed to update appointment.");
+        }
+    };
+}
 
-        staffID:barberSelect.value,
+function setupCancelButtons() {
+    const cancelCreateBtn = document.getElementById("cancelAppointment");
+    if (cancelCreateBtn) {
+        cancelCreateBtn.onclick = () => {
+            document.getElementById("appointmentModal").style.display = "none";
+        };
+    }
 
-        barber:
-            barberSelect.selectedIndex>=0 ?
-                barberSelect.options[barberSelect.selectedIndex].text :
-                "",
-
-        serviceId:serviceSelect.value,
-
-        serviceName:service?.serviceName||"",
-        servicePrice:service?.price||0,
-        serviceDuration:service?.duration||0,
-
-        date:
-        document.getElementById("edit-date").value,
-
-        time:
-        document.getElementById("edit-time").value,
-
-        notes:
-            document.getElementById("edit-notes")?.value||"",
-
-        status:
-        document.getElementById("edit-status").value
-
-    });
-
-    document.getElementById("editAppointmentModal")
-        .style.display="none";
-
-    loadAppointments();
-
-};
-
-function setupActions(){
-
-    document
-        .querySelectorAll(".delete")
-        .forEach(btn=>{
-
-            btn.onclick = async ()=>{
-
-                if(!confirm("Cancel appointment?"))
-                    return;
-
-                await deleteAppointment(
-                    btn.dataset.id
-                );
-
-                loadAppointments();
-
-            };
-
-        });
-
+    const cancelEditBtn = document.getElementById("cancelEditAppointment");
+    if (cancelEditBtn) {
+        cancelEditBtn.onclick = () => {
+            document.getElementById("editAppointmentModal").style.display = "none";
+        };
+    }
 }

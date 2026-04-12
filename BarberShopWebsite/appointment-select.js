@@ -124,7 +124,7 @@ async function generateAppointmentID(){
         const id =
             a.appointmentID || a.id;
         if(!id) return;
-// Only count IDs like A00001 because the prvious one has different format
+// Only count IDs like A00001 because the previous one has different format
         if(!/^A\d{6}$/.test(id))
             return;
         const num =

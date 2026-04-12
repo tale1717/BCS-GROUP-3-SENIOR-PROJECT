@@ -201,7 +201,71 @@
 
             <button id="saveStaff" class="create-buttons">Save</button>
             <button id="cancelStaff" class="cancel-buttons">Cancel</button>
+        </div>
 
+    </div>
+</div>
+
+<!-- EDIT STAFF MODAL -->
+<div id="editStaffModal" class="modal">
+    <div class="modal-content">
+
+        <h2>Edit Staff</h2>
+
+        <input type="hidden" id="edit-id">
+
+        <label>Employee's Name:</label> <br><br>
+        <input id="edit-name" placeholder="Name"> <br><br>
+
+        <label>Phone Number:</label> <br><br>
+        <input id="edit-phone" placeholder="Phone"> <br><br>
+
+        <label>Email:</label> <br><br>
+        <input id="edit-email" placeholder="Email"> <br><br>
+
+        <label>Address:</label> <br><br>
+        <input id="edit-address" placeholder="Address"> <br><br>
+
+        <label>Salary ($/hour):</label> <br><br>
+        <input id="edit-salary" placeholder="Salary"> <br><br>
+
+        <label>Position:</label> <br><br>
+        <select id="edit-position" class="text-field">
+            <option value="">Select position</option>
+            <option value="Manager">Manager</option>
+            <option value="Receptionist">Receptionist</option>
+            <option value="Barber">Barber</option>
+            <option value="HR">HR</option>
+        </select> <br><br>
+
+        <div id="editServicesSection" style="display:none">
+            <label>Services</label> <br><br>
+            <select id="edit-services" multiple></select> <br><br>
+        </div>
+
+        <label>Start Date</label> <br><br>
+        <input type="date" id="edit-startDate"> <br><br>
+
+        <label>End Date</label> <br><br>
+        <input type="date" id="edit-endDate"> <br><br>
+
+        <label>Bank Information</label> <br><br>
+        <input id="edit-bank" placeholder="Bank Account"> <br><br>
+
+        <label>Working Days</label> <br><br>
+        <div class="checkbox-group">
+            <label><input type="checkbox" value="Monday" class="edit-workday"> Monday</label>
+            <label><input type="checkbox" value="Tuesday" class="edit-workday"> Tuesday</label>
+            <label><input type="checkbox" value="Wednesday" class="edit-workday"> Wednesday</label>
+            <label><input type="checkbox" value="Thursday" class="edit-workday"> Thursday</label>
+            <label><input type="checkbox" value="Friday" class="edit-workday"> Friday</label>
+            <label><input type="checkbox" value="Saturday" class="edit-workday"> Saturday</label>
+            <label><input type="checkbox" value="Sunday" class="edit-workday"> Sunday</label>
+        </div>
+
+        <div class="modal-action-forButtons">
+            <button id="updateStaff" class="edit">Update</button>
+            <button id="cancelEditStaff" class="cancel-buttons">Cancel</button>
         </div>
 
 
