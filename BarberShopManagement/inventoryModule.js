@@ -73,6 +73,8 @@ function renderTable(list){
 <td>${s.supplyID}</td>
 <td>${s.itemName}</td>
 <td>${s.quantity}</td>
+<td>${s.unit || ""}</td>
+
 <td>
 <div class="status ${statusClass}">
 ${status}
@@ -186,6 +188,8 @@ function setupCreate(){
                         document.getElementById("min-qty").value
                     )||0,
 
+                unit: document.getElementById("i-unit").value,
+
                 expiryDate:
                 document.getElementById("i-expiry").value,
 
@@ -237,6 +241,8 @@ function setupEdit(){
 
                 document.getElementById("edit-qty").value=
                     item.quantity;
+
+                document.getElementById("edit-unit").value = item.unit || "";
 
                 document.getElementById("edit-expiry").value=
                     item.expiryDate;
@@ -329,6 +335,8 @@ function setupUpdate(){
                     parseInt(
                         document.getElementById("edit-min-qty").value
                     )||0,
+
+                unit: document.getElementById("edit-unit").value,
 
                 expiryDate:
                 document.getElementById("edit-expiry").value,

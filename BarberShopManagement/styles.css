@@ -258,6 +258,11 @@ td{
     color: #cd916c;
 }
 
+.status.in-process{
+    background: #eace7b;
+    color:#92400e;
+}
+
 .status.cancelled{
     background:#fee2e2;
     color:#991b1b;

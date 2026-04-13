@@ -23,13 +23,21 @@ import {
     getServices
 } from "../BarberShopWebsite/Collections/services.js";
 
+import {
+    getSupplies,
+    updateSupply
+} from "../BarberShopWebsite/Collections/inventory.js";
+
 let allAppointments = [];
 let allServices = [];
 let userCache = {};
 let allCustomers = [];
 let allStaff = [];
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", () => {
+    init();
+});
+
 
 function setupToggleMultiSelect(selectId) {
     const select = document.getElementById(selectId);
@@ -56,7 +64,12 @@ async function init() {
     setupTableEvents()
     setupUpdateButton();
     setupCancelButtons();
+
+    // hookup history
+    hookCreateHistory();
+    hookUpdateHistory();
 }
+
 
 async function loadServices() {
     allServices = await getServices();
@@ -168,6 +181,7 @@ async function renderTable(list) {
             <td>${a.date || ""}</td>
             <td>${a.time || ""}</td>
             <td>${a.notes || ""}</td>
+            <td>${a.suppliesUsed || ""}</td>
             <td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
             <td>
                 <button class="edit" data-id="${a.id}">Edit</button>
@@ -278,7 +292,7 @@ function setupCreate() {
     };
 }
 
-function populateEditDropdowns() {
+async function populateEditDropdowns() {
     const customerSelect = document.getElementById("edit-customer");
     if (customerSelect) {
         customerSelect.innerHTML = `<option value="">Select Customer</option>`;
@@ -312,6 +326,7 @@ function populateEditDropdowns() {
             });
     }
 
+
     const serviceSelect = document.getElementById("edit-service");
     if (serviceSelect) {
         serviceSelect.innerHTML = `<option value="">Select Service</option>`;
@@ -334,6 +349,9 @@ function setupTableEvents() {
         const deleteBtn = e.target.closest(".delete");
 
         if (editBtn) {
+
+
+
             const appointment = allAppointments.find(
                 a => a.id === editBtn.dataset.id
             );
@@ -346,7 +364,40 @@ function setupTableEvents() {
             document.getElementById("edit-date").value = appointment.date || "";
             document.getElementById("edit-time").value = appointment.time || "";
             document.getElementById("edit-status").value = appointment.status || "upcoming";
+            //AUTO SHOW IF ALREADY "in process"
+            if(appointment.status === "in-process"){
+                const section = document.getElementById("supply-section");
+                if(section){
+                    section.style.display = "block";
+                    await loadSuppliesForAppointment();
+                }
+            }
 
+            document.getElementById("editAppointmentModal").style.display = "block";
+
+            // FORCE BIND AFTER MODAL OPENS
+            const statusSelect = document.getElementById("edit-status");
+
+            if(statusSelect){
+                statusSelect.onchange = async function(){
+
+                    console.log("STATUS CHANGED:", this.value);
+
+                    const section = document.getElementById("supply-section");
+
+                    if(!section){
+                        console.error("NO supply-section");
+                        return;
+                    }
+
+                    if(this.value === "in-process"){
+                        section.style.display = "block";
+                        await loadSuppliesForAppointment();
+                    } else {
+                        section.style.display = "none";
+                    }
+                };
+            }
             document.getElementById("edit-customer").value = appointment.customerID || "";
             document.getElementById("edit-barber").value = appointment.staffID || "";
             const selectedServiceIds = Array.isArray(appointment.services)
@@ -399,6 +450,34 @@ function setupUpdateButton() {
             document.getElementById("edit-note") ||
             document.getElementById("edit-notes");
 
+        //supply list appear when status changes to in process
+        const status = document.getElementById("edit-status").value;
+
+        if(status === "in-process"){
+
+            const selectedSupplies = getSelectedSupplies();
+
+            for(const s of selectedSupplies){
+
+                const item = allSupplies.find(i => i.id === s.id);
+                if(!item) continue;
+
+                const newQty = (item.quantity || 0) - s.quantity;
+
+                if(newQty < 0){
+                    alert("Not enough stock for " + item.itemName);
+                    continue;
+                }
+
+                await updateSupply(s.id, {
+                    ...item,
+                    quantity: newQty
+                });
+            }
+
+            await loadSuppliesForAppointment();
+        }
+
         try {
             await updateAppointment(id, {
                 customerID: customerSelect.value,
@@ -436,4 +515,139 @@ function setupCancelButtons() {
             document.getElementById("editAppointmentModal").style.display = "none";
         };
     }
+}
+
+//add note to customer module
+
+async function addNoteToCustomer(customerId, entry){
+    const customers = await getCustomers();
+    const customer = customers.find(c => c.id === customerId);
+    if(!customer) return;
+
+    const history = customer.history || [];
+    history.push(entry);
+
+    const { updateCustomer } = await import("../BarberShopWebsite/Collections/customers.js");
+
+    await updateCustomer(customerId, {
+        ...customer,
+        history: history
+    });
+}
+
+function hookCreateHistory(){
+    setTimeout(()=>{
+        const btn = document.getElementById("saveAppointment");
+        if(!btn) return;
+
+        const original = btn.onclick;
+
+        btn.onclick = async function(){
+            if(original){
+                await original.apply(this, arguments);
+            }
+
+            const customerSelect = document.getElementById("a-customer");
+            const barberSelect = document.getElementById("a-barber");
+            const note = document.getElementById("a-notes")?.value || "";
+
+            if(note){
+                await addNoteToCustomer(customerSelect.value,{
+                    date: document.getElementById("a-date").value,
+                    note: note,
+                    staff: barberSelect.options[barberSelect.selectedIndex]?.text || ""
+                });
+            }
+        };
+    },300);
+}
+
+function hookUpdateHistory(){
+    setTimeout(()=>{
+        const btn = document.getElementById("updateAppointment");
+        if(!btn) return;
+
+        const original = btn.onclick;
+
+        btn.onclick = async function(){
+            if(original){
+                await original.apply(this, arguments);
+            }
+
+            const customerSelect = document.getElementById("edit-customer");
+            const barberSelect = document.getElementById("edit-barber");
+
+            const noteField =
+                document.getElementById("edit-note") ||
+                document.getElementById("edit-notes");
+
+            const note = noteField?.value || "";
+
+            if(note){
+                await addNoteToCustomer(customerSelect.value,{
+                    date: document.getElementById("edit-date").value,
+                    note: note,
+                    staff: barberSelect.options[barberSelect.selectedIndex]?.text || ""
+                });
+            }
+        };
+    },300);
+}
+
+
+//load supplies
+let allSupplies = [];
+
+async function loadSuppliesForAppointment(){
+
+    allSupplies = await getSupplies();
+    console.log("SUPPLIES DATA:", allSupplies);
+
+    const container = document.getElementById("supply-list");
+    if(!container) return;
+
+    container.innerHTML = "";
+
+    allSupplies.forEach(item => {
+
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            <label>
+                <input type="checkbox" class="supply-check" value="${item.id}">
+                ${item.itemName} (${item.quantity} ${item.unit || ""})
+            </label>
+            <input type="number" min="1" placeholder="Qty" class="supply-qty" data-id="${item.id}">
+            <br>
+        `;
+
+        container.appendChild(div);
+    });
+
+}
+
+
+
+function getSelectedSupplies() {
+
+    const result = [];
+
+    document.querySelectorAll(".supply-check:checked").forEach(check => {
+
+        const id = check.value;
+
+        const qtyInput = document.querySelector(`.supply-qty[data-id="${id}"]`);
+        const qty = parseInt(qtyInput?.value || "0");
+
+        if (qty > 0) {
+            result.push({
+                id,
+                quantity: qty
+            });
+        }
+
+    });
+
+    return result;
+
 }

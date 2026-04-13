@@ -75,6 +75,7 @@
                     <th>Name</th>
                     <th>Phone</th>
                     <th>Email</th>
+                    <th>History</th>
                     <th>Actions</th>
 
                 </tr>
@@ -105,6 +106,7 @@
         <input id="c-phone" class="text-field" placeholder="Phone" /> <br><br>
         <label class="text">Customer Email</label>
         <input id="c-email" class="text-field" placeholder="Email" /> <br><br>
+
         <div class="modal-action-forButtons">
             <button id="saveCreate" class="create-buttons">Save</button>
             <button id="cancelCreate" class="cancel-buttons">Cancel</button>
@@ -128,6 +130,9 @@
             <input id="edit-phone" class="text-field"> <br><br>
             <label class="text">Customer Email</label>
             <input id="edit-email" class="text-field"> <br><br>
+            <label class="text">History</label><br><br>
+           <input id="history-input" class="text-field">
+          <br><br>
 
             <div class="modal-action-forButtons">
                 <button id="updateCustomer" class="create-buttons">Update</button>
@@ -141,6 +146,21 @@
 
 </div>
 
+<!--History pop up-->
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <h3>Customer History</h3>
+
+        <div id="history-list" style="max-height:200px; overflow:auto;"></div>
+
+        <br>
+        <input id="new-history-note" class="text-field" placeholder="Add note">
+        <br><br>
+
+        <button id="saveHistoryNote" class="create-buttons">Add</button>
+        <button id="closeHistoryModal" class="cancel-buttons">Close</button>
+    </div>
+</div>
 
 </body>
 </html>

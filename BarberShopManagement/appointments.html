@@ -81,6 +81,7 @@
                     <th>Date</th>
                     <th>Time</th>
                     <th>Note</th>
+                    <th>Supplies Used</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -124,6 +125,7 @@
 
         <select id="a-status">
             <option value="confirmed">Confirmed</option>
+
             <option value="cancelled">Cancelled</option>
         </select>
         <div class="modal-action-forButtons">
@@ -165,10 +167,16 @@
 
             <option value="completed">Completed</option>
 
+            <option value="in-process">In Process</option>
+
+
             <option value="cancelled">Cancelled</option>
 
-
         </select>
+        <div id="supply-section" style="display:none;">
+            <h4>Supplies Used</h4>
+            <div id="supply-list"></div>
+        </div>
 
         <div class="modal-action-forButtons">
 

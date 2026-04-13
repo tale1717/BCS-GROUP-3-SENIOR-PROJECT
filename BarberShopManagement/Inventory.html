@@ -71,6 +71,7 @@
                     <th>Supply ID</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
+                    <th>Unit</th>
                     <th>Status</th>
                     <th>Expiry Date</th>
                     <th>Supplier Name</th>
@@ -113,6 +114,16 @@
         </div>
 
         <br>
+        <label>Unit</label>
+        <select id="i-unit">
+            <option value="">Select Unit</option>
+            <option value="box">Box</option>
+            <option value="tube">Tube</option>
+            <option value="gallon">Gallon</option>
+            <option value="bottle">Bottle</option>
+            <option value="piece">Piece</option>
+        </select>
+        <br><br>
         <label>Expiry</label><br><br>
         <input type="date" id="i-expiry"><br><br>
         <label>Supplier</label><br><br>
@@ -166,6 +177,16 @@
             <input id="edit-min-qty">
         </div>
         <br>
+        <label>Unit</label>
+        <select id="edit-unit">
+            <option value="">Select Unit</option>
+            <option value="box">Box</option>
+            <option value="tube">Tube</option>
+            <option value="gallon">Gallon</option>
+            <option value="bottle">Bottle</option>
+            <option value="piece">Piece</option>
+        </select>
+        <br><br>
         <label>Expiry</label><br><br>
         <input type="date" id="edit-expiry"><br><br>
         <label>Supplier</label><br><br>
