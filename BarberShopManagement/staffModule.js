@@ -175,18 +175,18 @@ function setupCreate() {
                 salary: document.getElementById("s-salary").value,
                 startDate: document.getElementById("s-startDate").value,
                 endDate: document.getElementById("s-endDate").value || null,
-                workingDays: Array.from(document.querySelectorAll(".workday:checked")).map(cb => cb.value),
+                workingDays: Array.from(document.querySelectorAll('#createStaffModal input[name="days"]:checked')).map(cb => cb.value),
                 bankAccount: document.getElementById("s-bank").value
             });
 
-            modal.style.display = "none";
+            closeModal("createStaffModal");
             await loadStaff();
         };
     }
 
     if (cancelBtn) {
         cancelBtn.onclick = () => {
-            modal.style.display = "none";
+            closeModal("createStaffModal");
         };
     }
 }
@@ -273,11 +273,11 @@ function setupUpdateButton() {
                 salary: document.getElementById("edit-salary").value,
                 startDate: document.getElementById("edit-startDate").value,
                 endDate: document.getElementById("edit-endDate").value || null,
-                workingDays: Array.from(document.querySelectorAll(".edit-workday:checked")).map(cb => cb.value),
+                workingDays: Array.from(document.querySelectorAll('#editStaffModal input[name="days"]:checked')).map(cb => cb.value),
                 bankAccount: document.getElementById("edit-bank").value
             });
 
-            document.getElementById("editStaffModal").style.display = "none";
+            closeModal("editStaffModal");
             await loadStaff();
         } catch (error) {
             console.error("Failed to update staff:", error);
@@ -402,7 +402,7 @@ function setupCancelButtons() {
     const cancelEditBtn = document.getElementById("cancelEditStaff");
     if (cancelEditBtn) {
         cancelEditBtn.onclick = () => {
-            document.getElementById("editStaffModal").style.display = "none";
+            closeModal("editStaffModal");
         };
     }
 }
@@ -529,4 +529,15 @@ function setupSorting() {
             renderTable(sorted);
         });
     });
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+
+    modal.classList.add("fade-out");
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("fade-out");
+    }, 150);
 }

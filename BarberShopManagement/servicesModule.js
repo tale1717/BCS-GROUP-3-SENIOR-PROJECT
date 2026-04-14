@@ -151,7 +151,7 @@ function setupUpdateButton() {
                 duration: duration
             });
 
-            document.getElementById("editModal").style.display = "none";
+            closeModal("editModal");
             await loadServices();
         } catch (error) {
             console.error("Failed to update service:", error);
@@ -197,7 +197,7 @@ function setupCancelButtons() {
     const cancelEditBtn = document.getElementById("cancelEdit");
     if (cancelEditBtn) {
         cancelEditBtn.onclick = () => {
-            document.getElementById("editModal").style.display = "none";
+            closeModal("editModal");
         };
     }
 }
@@ -277,4 +277,15 @@ function setupSorting() {
             renderServices(sorted);
         });
     });
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+
+    modal.classList.add("fade-out");
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("fade-out");
+    }, 150);
 }

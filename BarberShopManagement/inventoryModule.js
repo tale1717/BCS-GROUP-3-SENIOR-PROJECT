@@ -154,7 +154,7 @@ function setupCreate(){
         .getElementById("cancelCreate")
         .onclick=
 
-        ()=>modal.style.display="none";
+        ()=> closeModal("createModal");
 
     document
         .getElementById("saveCreate")
@@ -206,7 +206,7 @@ function setupCreate(){
             });
 
 
-            modal.style.display="none";
+            closeModal(modal);
 
             loadSupplies();
 
@@ -349,9 +349,7 @@ function setupUpdate(){
 
             });
 
-            document
-                .getElementById("editModal")
-                .style.display="none";
+            closeModal("editModal");
 
 
             loadSupplies();
@@ -370,9 +368,7 @@ function setupCancelEdit(){
 
         ()=>{
 
-            document
-                .getElementById("editModal")
-                .style.display="none";
+            closeModal("editModal");
 
         };
 
@@ -534,4 +530,15 @@ function setupSorting() {
             renderTable(sorted);
         });
     });
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+
+    modal.classList.add("fade-out");
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("fade-out");
+    }, 150);
 }

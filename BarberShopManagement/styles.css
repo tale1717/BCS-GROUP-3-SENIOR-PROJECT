@@ -188,7 +188,7 @@ td{
 
 .modal-content {
     background: white;
-    width: 30%;
+    width: 600px;
     margin: 10% auto;
     padding: 20px;
     border-radius: 8px;
@@ -201,6 +201,15 @@ td{
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.modal.fade-out {
+    animation: fadeOut 150ms ease-in-out forwards;
 }
 
 .service-content {
@@ -362,7 +371,7 @@ td{
 
 .window-grid {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
 }
 
@@ -382,7 +391,7 @@ label {
 }
 
 select, textarea, .text-style {
-    width: 200px;
+    width: 100%;
     font-size: 16px;
     background: white;
     border: 1px solid #000;

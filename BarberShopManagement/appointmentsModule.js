@@ -280,7 +280,7 @@ function setupCreate() {
             status: document.getElementById("a-status").value || "upcoming"
         });
 
-        modal.style.display = "none";
+        closeModal(modal);
         await loadAppointments();
     };
 }
@@ -420,7 +420,7 @@ function setupUpdateButton() {
                 status: document.getElementById("edit-status").value
             });
 
-            document.getElementById("editAppointmentModal").style.display = "none";
+            closeModal("editAppointmentModal");
             await loadAppointments();
         } catch (error) {
             console.error("Failed to update appointment:", error);
@@ -433,14 +433,14 @@ function setupCancelButtons() {
     const cancelCreateBtn = document.getElementById("cancelAppointment");
     if (cancelCreateBtn) {
         cancelCreateBtn.onclick = () => {
-            document.getElementById("appointmentModal").style.display = "none";
+            cancelCreateBtn.onclick = () => closeModal("appointmentModal");
         };
     }
 
     const cancelEditBtn = document.getElementById("cancelEditAppointment");
     if (cancelEditBtn) {
         cancelEditBtn.onclick = () => {
-            document.getElementById("editAppointmentModal").style.display = "none";
+            cancelEditBtn.onclick = () => ("editAppointmentModal");
         };
     }
 }
@@ -540,4 +540,15 @@ function getCurrentFilteredList() {
             (a.notes || "").toLowerCase().includes(term)
         );
     });
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+
+    modal.classList.add("fade-out");
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("fade-out");
+    }, 150);
 }

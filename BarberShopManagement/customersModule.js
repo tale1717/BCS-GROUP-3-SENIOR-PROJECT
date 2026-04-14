@@ -234,7 +234,7 @@ function setupCreate() {
 
     cancelCreate.addEventListener("click", () => {
 
-        createModal.style.display = "none";
+        closeModal("createModal");
 
         clearCreateFields();
 
@@ -310,7 +310,7 @@ function setupUpdate(){
 
         );
 
-        document.getElementById("editModal").style.display = "none";
+        closeModal("editModal");
 
         loadCustomers();
 
@@ -331,7 +331,7 @@ function setupCancelEdit(){
 
     cancelBtn.onclick = () => {
 
-        document.getElementById("editModal").style.display = "none";
+        closeModal("editModal");
 
     };
 
@@ -435,4 +435,15 @@ function setupSorting() {
             renderTable(sorted);
         });
     });
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+
+    modal.classList.add("fade-out");
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("fade-out");
+    }, 150);
 }
