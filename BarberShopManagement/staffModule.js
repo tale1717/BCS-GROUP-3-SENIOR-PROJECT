@@ -11,6 +11,7 @@ import {
 
 let allStaff = [];
 let allServices = [];
+let sortState = { column: null, direction: "asc" }
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -40,6 +41,7 @@ async function init() {
     setupStaffTableEvents()
     setupUpdateButton();
     setupCancelButtons();
+    setupSorting();
 
     formatPhoneNumber(document.getElementById("s-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
@@ -334,7 +336,13 @@ function setupSearch() {
             (s.position || "").toLowerCase().includes(term)
         );
 
-        renderTable(filtered);
+        const sorted = sortState.column
+            ? sortStaff(filtered, sortState.column, sortState.direction)
+            : filtered;
+
+        renderTable(sorted);
+
+        // renderTable(filtered);
     });
 }
 
@@ -422,4 +430,103 @@ function clearCreateForm() {
     }
 
     toggleCreateServicesSection("");
+}
+
+function sortStaff(list, column, direction) {
+    return [...list].sort((a, b) => {
+        let valA = "";
+        let valB = "";
+
+        switch (column) {
+            case "id":
+                valA = a.staffID || "";
+                valB = b.staffID || "";
+                break;
+            case "name":
+                valA = a.name || "";
+                valB = b.name || "";
+                break;
+            case "phone":
+                valA = a.phone || "";
+                valB = b.phone || "";
+                break;
+            case "email":
+                valA = a.email || "";
+                valB = b.email || "";
+                break;
+            case "address":
+                valA = a.address || "";
+                valB = b.address || "";
+                break;
+            case "position":
+                valA = a.position || "";
+                valB = b.position || "";
+                break;
+            case "salary":
+                // Numeric sort for salary
+                return direction === "asc"
+                    ? (parseFloat(a.salary) || 0) - (parseFloat(b.salary) || 0)
+                    : (parseFloat(b.salary) || 0) - (parseFloat(a.salary) || 0);
+            case "startDate":
+                valA = a.startDate || "";
+                valB = b.startDate || "";
+                break;
+            case "endDate":
+                valA = a.endDate || "";
+                valB = b.endDate || "";
+                break;
+            default:
+                return 0;
+        }
+
+        return direction === "asc"
+            ? valA.localeCompare(valB)
+            : valB.localeCompare(valA);
+    });
+}
+
+function getCurrentFilteredList() {
+    const input = document.getElementById("searchStaff");
+    const term = input?.value.toLowerCase() || "";
+
+    if (!term) return allStaff;
+
+    return allStaff.filter(s =>
+        (s.name || "").toLowerCase().includes(term) ||
+        (s.phone || "").toLowerCase().includes(term) ||
+        (s.email || "").toLowerCase().includes(term) ||
+        (s.position || "").toLowerCase().includes(term)
+    );
+}
+
+function setupSorting() {
+    const headers = document.querySelectorAll("th[data-sort]");
+
+    headers.forEach(th => {
+        th.style.cursor = "pointer";
+
+        th.addEventListener("click", () => {
+            const column = th.dataset.sort;
+
+            if (sortState.column === column) {
+                sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+            } else {
+                sortState.column = column;
+                sortState.direction = "asc";
+            }
+
+            headers.forEach(h => {
+                const arrow = h.querySelector(".sort-arrow");
+                if (arrow) arrow.textContent = "";
+            });
+
+            const activeArrow = th.querySelector(".sort-arrow");
+            if (activeArrow) {
+                activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
+            }
+
+            const sorted = sortStaff(getCurrentFilteredList(), sortState.column, sortState.direction);
+            renderTable(sorted);
+        });
+    });
 }

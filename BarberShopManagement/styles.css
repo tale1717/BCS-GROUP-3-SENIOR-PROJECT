@@ -434,3 +434,11 @@ textarea {
     color: white;
     border-color: #1a73e8;
 }
+
+.sort-arrow {
+    display: inline-block;
+    width: 12px;   /* adjust as needed */
+    height: 12px;  /* adjust as needed */
+    line-height: 12px;
+    vertical-align: middle;
+}

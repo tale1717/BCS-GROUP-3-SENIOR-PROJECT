@@ -6,6 +6,7 @@ import {
 } from "../BarberShopWebsite/Collections/services.js";
 
 let allServices = [];
+let sortState = { column: null, direction: "asc" };
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -16,6 +17,8 @@ async function init() {
     setupSearch();
     setupUpdateButton();
     setupCancelButtons();
+    setupSorting();
+
 }
 
 async function loadServices() {
@@ -182,7 +185,11 @@ function setupSearch() {
             String(s.duration || "").toLowerCase().includes(term)
         );
 
-        renderServices(filtered);
+        const sorted = sortState.column
+            ? sortServices(filtered, sortState.column, sortState.direction)
+            : filtered;
+
+        renderServices(sorted);
     });
 }
 
@@ -199,4 +206,75 @@ function clearCreateForm() {
     document.getElementById("s-name").value = "";
     document.getElementById("s-price").value = "";
     document.getElementById("s-duration").value = "";
+}
+
+function sortServices(list, column, direction) {
+    return [...list].sort((a, b) => {
+        switch (column) {
+            case "id":
+                return direction === "asc"
+                    ? (a.serviceID || "").localeCompare(b.serviceID || "")
+                    : (b.serviceID || "").localeCompare(a.serviceID || "");
+            case "name":
+                return direction === "asc"
+                    ? (a.serviceName || "").localeCompare(b.serviceName || "")
+                    : (b.serviceName || "").localeCompare(a.serviceName || "");
+            case "price":
+                return direction === "asc"
+                    ? (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0)
+                    : (parseFloat(b.price) || 0) - (parseFloat(a.price) || 0);
+            case "duration":
+                return direction === "asc"
+                    ? (parseFloat(a.duration) || 0) - (parseFloat(b.duration) || 0)
+                    : (parseFloat(b.duration) || 0) - (parseFloat(a.duration) || 0);
+            default:
+                return 0;
+        }
+    });
+}
+
+function getCurrentFilteredList() {
+    const input = document.getElementById("searchInput");
+    const term = input?.value.toLowerCase() || "";
+
+    if (!term) return allServices;
+
+    return allServices.filter(s =>
+        (s.serviceID || "").toLowerCase().includes(term) ||
+        (s.serviceName || "").toLowerCase().includes(term) ||
+        String(s.price || "").toLowerCase().includes(term) ||
+        String(s.duration || "").toLowerCase().includes(term)
+    );
+}
+
+function setupSorting() {
+    const headers = document.querySelectorAll("th[data-sort]");
+
+    headers.forEach(th => {
+        th.style.cursor = "pointer";
+
+        th.addEventListener("click", () => {
+            const column = th.dataset.sort;
+
+            if (sortState.column === column) {
+                sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+            } else {
+                sortState.column = column;
+                sortState.direction = "asc";
+            }
+
+            headers.forEach(h => {
+                const arrow = h.querySelector(".sort-arrow");
+                if (arrow) arrow.textContent = "";
+            });
+
+            const activeArrow = th.querySelector(".sort-arrow");
+            if (activeArrow) {
+                activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
+            }
+
+            const sorted = sortServices(getCurrentFilteredList(), sortState.column, sortState.direction);
+            renderServices(sorted);
+        });
+    });
 }

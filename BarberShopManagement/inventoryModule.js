@@ -10,6 +10,7 @@ import {
 
 
 let allSupplies=[];
+let sortState = { column: null, direction: "asc" }
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -25,6 +26,7 @@ async function init(){
     setupUpdate();
     setupCancelEdit();
     setupAlertEdit();
+    setupSorting();
 
 }
 
@@ -431,8 +433,105 @@ function setupSearch(){
 
                 );
 
-            renderTable(filtered);
+            const sorted = sortState.column
+                ? sortSupplies(filtered, sortState.column, sortState.direction)
+                : filtered;
+
+            renderTable(sorted);
+
+            // renderTable(filtered);
 
         });
 
+}
+
+function sortSupplies(list, column, direction) {
+    return [...list].sort((a, b) => {
+        let valA = "";
+        let valB = "";
+
+        switch (column) {
+            case "id":
+                valA = a.supplyID || "";
+                valB = b.supplyID || "";
+                break;
+            case "name":
+                valA = a.itemName || "";
+                valB = b.itemName || "";
+                break;
+            case "quantity":
+                // Numeric sort
+                return direction === "asc"
+                    ? (a.quantity || 0) - (b.quantity || 0)
+                    : (b.quantity || 0) - (a.quantity || 0);
+            case "status":
+                valA = getStatus(a);
+                valB = getStatus(b);
+                break;
+            case "expiry":
+                valA = a.expiryDate || "";
+                valB = b.expiryDate || "";
+                break;
+            case "supplierName":
+                valA = a.supplierName || "";
+                valB = b.supplierName || "";
+                break;
+            default:
+                return 0;
+        }
+
+        return direction === "asc"
+            ? valA.localeCompare(valB)
+            : valB.localeCompare(valA);
+    });
+}
+
+// Helper to get the status label so status column sorts consistently
+function getStatus(s) {
+    if (s.quantity == 0) return "Out of Stock";
+    if (s.alertEnabled && s.quantity <= s.minQuantity) return "Low Stock";
+    return "In Stock";
+}
+
+function getCurrentFilteredList() {
+    const input = document.getElementById("searchSupply");
+    const term = input?.value.toLowerCase() || "";
+
+    if (!term) return allSupplies;
+
+    return allSupplies.filter(s =>
+        (s.itemName || "").toLowerCase().includes(term)
+    );
+}
+
+function setupSorting() {
+    const headers = document.querySelectorAll("th[data-sort]");
+
+    headers.forEach(th => {
+        th.style.cursor = "pointer";
+
+        th.addEventListener("click", () => {
+            const column = th.dataset.sort;
+
+            if (sortState.column === column) {
+                sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+            } else {
+                sortState.column = column;
+                sortState.direction = "asc";
+            }
+
+            headers.forEach(h => {
+                const arrow = h.querySelector(".sort-arrow");
+                if (arrow) arrow.textContent = "";
+            });
+
+            const activeArrow = th.querySelector(".sort-arrow");
+            if (activeArrow) {
+                activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
+            }
+
+            const sorted = sortSupplies(getCurrentFilteredList(), sortState.column, sortState.direction);
+            renderTable(sorted);
+        });
+    });
 }
