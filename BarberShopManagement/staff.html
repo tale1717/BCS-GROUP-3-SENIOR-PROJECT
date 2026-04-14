@@ -45,27 +45,16 @@
 
 
     <main class="content">
-
         <header class="page-header">
-
             <div>
-
                 <h1>Employees</h1>
-
                 <p>Manage employees</p>
-
             </div>
-
             <div class="toolbar">
                 <input id="searchStaff" class="search" placeholder="🔍 Search staff..."/>
-
                 <button id="createStaffBtn" class="create-buttons">+ New Staff</button>
             </div>
-
-
-
         </header>
-
 
         <div class="card">
             <table>
@@ -102,105 +91,101 @@
 
 <!-- CREATE STAFF -->
 
-<div id="createStaffModal"
-     class="modal">
+<div id="createStaffModal" class="modal">
 
     <div class="modal-content">
 
-        <h2>Create Staff</h2>
-        <label>Employee's Name:</label> <br><br>
+        <h2>Create Staff</h2> <br>
 
+        <div class="window-grid">
 
-        <input id="s-name"
-               placeholder="Name"> <br><br>
+            <div>
+                <label>Employee's Name:</label> <br>
+                <input id="s-name" placeholder="Name" class="text-style">
+            </div>
 
-        <label>Phone Number:</label> <br><br>
-        <input id="s-phone"
-               placeholder="Phone"> <br><br>
+            <div>
+                <label>Phone Number:</label> <br>
+                <input id="s-phone" placeholder="Phone" class="text-style">
+            </div>
 
-        <label>Email:</label> <br><br>
-        <input id="s-email"
-               placeholder="Email"> <br><br>
+            <div>
+                <label>Email:</label> <br>
+                <input id="s-email" placeholder="Email" class="text-style">
+            </div>
 
-        <label>Address:</label> <br><br>
-        <input id="s-address"
-               placeholder="Address"> <br><br>
+            <div>
+                <label>Address:</label> <br>
+                <input id="s-address" placeholder="Address" class="text-style">
+            </div>
 
+            <div>
+                <label>Salary ($/hour):</label> <br>
+                <input id="s-salary" placeholder="Salary" class="text-style">
+            </div>
 
-        <Label>Salary ($/hour):</Label>
-        <input id="s-salary"
-               placeholder="Salary"> <br><br>
+            <div>
+                <label>Position:</label> <br>
+                <select id="s-position" class="text-style">
+                    <option value="">Select position</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Receptionist">Receptionist</option>
+                    <option value="Barber">Barber</option>
+                    <option value="HR">HR</option>
+                </select>
 
+                <div id="servicesSection" style="display:none">
+                    <br>
+                    <label>Services</label> <br>
+                    <select id="s-services" multiple></select>
+                </div>
+            </div>
 
-        <Label>Position:</Label> <br><br>
-        <select id="s-position" class="text-field">
+            <div>
+                <label>Start Date</label> <br>
+                <input type="date" id="s-startDate" placeholder="Start Date" class="text-style">
+            </div>
 
-            <option value="">Select position</option>
+            <div>
+                <label>End Date</label> <br>
+                <input type="date" id="s-endDate" placeholder="Optional Date" class="text-style">
+            </div>
 
-            <option value="Manager">Manager</option>
+            <div>
+                <label>Bank Information</label> <br>
+                <input id="s-bank" placeholder="Bank Account" class="text-style">
+            </div>
 
-            <option value="Receptionist">Receptionist</option>
+            <div style="grid-column: span 2;">
+                <label>Working Days</label> <br>
+                <div class="day-picker">
+                    <input type="checkbox" id="create-sun" name="days" value="sunday">
+                    <label for="create-sun">Sun</label>
 
-            <option value="Barber">Barber</option>
+                    <input type="checkbox" id="create-mon" name="days" value="monday">
+                    <label for="create-mon">Mon</label>
 
-            <option value="HR">HR</option>
+                    <input type="checkbox" id="create-tue" name="days" value="tuesday">
+                    <label for="create-tue">Tue</label>
 
-        </select> <br><br>
+                    <input type="checkbox" id="create-wed" name="days" value="wednesday">
+                    <label for="create-wed">Wed</label>
 
-        <div id="servicesSection" style="display:none">
+                    <input type="checkbox" id="create-thu" name="days" value="thursday">
+                    <label for="create-thu">Thu</label>
 
-            <label>Services</label> <br><br>
+                    <input type="checkbox" id="create-fri" name="days" value="friday">
+                    <label for="create-fri">Fri</label>
 
-            <select id="s-services" multiple></select> <br><br>
+                    <input type="checkbox" id="create-sat" name="days" value="saturday">
+                    <label for="create-sat">Sat</label>
+                </div>
+            </div>
 
         </div>
-
-        <label>Start Date</label>
-        <input type="date" id="s-startDate"> <br><br>
-
-        <label>End Date</label>
-        <input type="date" id="s-endDate" placeholder="Optional"> <br><br>
-
-        <label>Bank Information</label>
-        <input id="s-bank"
-               placeholder="Bank Account"> <br><br>
-
-        <label>Working Days</label> <br><br>
-        <div class="checkbox-group">
-            <label>
-                <input type="checkbox" value="Monday" class="workday"> Monday
-            </label>
-
-            <label>
-                <input type="checkbox" value="Tuesday" class="workday"> Tuesday
-            </label>
-
-            <label>
-                <input type="checkbox" value="Wednesday" class="workday"> Wednesday
-            </label>
-
-            <label>
-                <input type="checkbox" value="Thursday" class="workday"> Thursday
-            </label>
-
-            <label>
-                <input type="checkbox" value="Friday" class="workday"> Friday
-            </label>
-
-            <label>
-                <input type="checkbox" value="Saturday" class="workday"> Saturday
-            </label>
-
-            <label>
-                <input type="checkbox" value="Sunday" class="workday"> Sunday
-            </label>
-
-        </div>
-
 
         <div class="modal-action-forButtons">
-
-            <button id="saveStaff" class="create-buttons">Save</button>
+            <button id="saveStaff" class="edit">Save</button>
             <button id="cancelStaff" class="cancel-buttons">Cancel</button>
         </div>
 
@@ -211,66 +196,87 @@
 <div id="editStaffModal" class="modal">
     <div class="modal-content">
 
-        <h2>Edit Staff</h2>
+        <h2>Edit Staff</h2> <br>
 
-        <input type="hidden" id="edit-id">
+        <label>Staff ID: </label>
+        <input id="edit-id" readonly> <br><br>
 
-        <label>Employee's Name:</label> <br><br>
-        <input id="edit-name" placeholder="Name"> <br><br>
+        <div class="window-grid">
+            <div>
+                <label>Employee's Name:</label> <br>
+                <input id="edit-name" placeholder="Name" class="text-style">
+            </div>
+            <div>
+                <label>Phone Number:</label> <br>
+                <input id="edit-phone" placeholder="Phone" class="text-style">
+            </div>
+            <div>
+                <label>Email:</label> <br>
+                <input id="edit-email" placeholder="Email" class="text-style">
+            </div>
+            <div>
+                <label>Address:</label> <br>
+                <input id="edit-address" placeholder="Address" class="text-style">
+            </div>
+            <div>
+                <label>Salary ($/hour):</label> <br>
+                <input id="edit-salary" placeholder="Salary" class="text-style">
+            </div>
 
-        <label>Phone Number:</label> <br><br>
-        <input id="edit-phone" placeholder="Phone"> <br><br>
+            <div>
+                <label>Position:</label> <br>
+                <select id="edit-position" class="text-field text-style">
+                    <option value="">Select position</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Receptionist">Receptionist</option>
+                    <option value="Barber">Barber</option>
+                    <option value="HR">HR</option>
+                </select>
 
-        <label>Email:</label> <br><br>
-        <input id="edit-email" placeholder="Email"> <br><br>
+                <div id="editServicesSection" style="display:none">
+                    <br>
+                    <label>Services</label> <br>
+                    <select id="edit-services" multiple class="text-style"></select>
+                </div>
+            </div>
 
-        <label>Address:</label> <br><br>
-        <input id="edit-address" placeholder="Address"> <br><br>
-
-        <label>Salary ($/hour):</label> <br><br>
-        <input id="edit-salary" placeholder="Salary"> <br><br>
-
-        <label>Position:</label> <br><br>
-        <select id="edit-position" class="text-field">
-            <option value="">Select position</option>
-            <option value="Manager">Manager</option>
-            <option value="Receptionist">Receptionist</option>
-            <option value="Barber">Barber</option>
-            <option value="HR">HR</option>
-        </select> <br><br>
-
-        <div id="editServicesSection" style="display:none">
-            <label>Services</label> <br><br>
-            <select id="edit-services" multiple></select> <br><br>
-        </div>
-
-        <label>Start Date</label> <br><br>
-        <input type="date" id="edit-startDate"> <br><br>
-
-        <label>End Date</label> <br><br>
-        <input type="date" id="edit-endDate"> <br><br>
-
-        <label>Bank Information</label> <br><br>
-        <input id="edit-bank" placeholder="Bank Account"> <br><br>
-
-        <label>Working Days</label> <br><br>
-        <div class="checkbox-group">
-            <label><input type="checkbox" value="Monday" class="edit-workday"> Monday</label>
-            <label><input type="checkbox" value="Tuesday" class="edit-workday"> Tuesday</label>
-            <label><input type="checkbox" value="Wednesday" class="edit-workday"> Wednesday</label>
-            <label><input type="checkbox" value="Thursday" class="edit-workday"> Thursday</label>
-            <label><input type="checkbox" value="Friday" class="edit-workday"> Friday</label>
-            <label><input type="checkbox" value="Saturday" class="edit-workday"> Saturday</label>
-            <label><input type="checkbox" value="Sunday" class="edit-workday"> Sunday</label>
+            <div>
+                <label>Start Date</label> <br>
+                <input type="date" id="edit-startDate" class="text-style">
+            </div>
+            <div>
+                <label>End Date</label> <br>
+                <input type="date" id="edit-endDate" class="text-style">
+            </div>
+            <div>
+                <label>Bank Information</label> <br>
+                <input id="edit-bank" placeholder="Bank Account" class="text-style">
+            </div>
+            <div style="grid-column: span 2;">
+                <label>Working Days</label> <br>
+                <div class="day-picker">
+                    <input type="checkbox" id="sun" name="days" value="sunday">
+                    <label for="sun">Sun</label>
+                    <input type="checkbox" id="mon" name="days" value="monday">
+                    <label for="mon">Mon</label>
+                    <input type="checkbox" id="tue" name="days" value="tuesday">
+                    <label for="tue">Tue</label>
+                    <input type="checkbox" id="wed" name="days" value="wednesday">
+                    <label for="wed">Wed</label>
+                    <input type="checkbox" id="thu" name="days" value="thursday">
+                    <label for="thu">Thu</label>
+                    <input type="checkbox" id="fri" name="days" value="friday">
+                    <label for="fri">Fri</label>
+                    <input type="checkbox" id="sat" name="days" value="saturday">
+                    <label for="sat">Sat</label>
+                </div>
+            </div>
         </div>
 
         <div class="modal-action-forButtons">
             <button id="updateStaff" class="edit">Update</button>
             <button id="cancelEditStaff" class="cancel-buttons">Cancel</button>
         </div>
-
-
-
     </div>
 
 </div>
