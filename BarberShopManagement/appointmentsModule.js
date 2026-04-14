@@ -280,7 +280,7 @@ function setupCreate() {
             status: document.getElementById("a-status").value || "upcoming"
         });
 
-        closeModal(modal);
+        closeModal("appointmentModal");
         await loadAppointments();
     };
 }
@@ -440,7 +440,7 @@ function setupCancelButtons() {
     const cancelEditBtn = document.getElementById("cancelEditAppointment");
     if (cancelEditBtn) {
         cancelEditBtn.onclick = () => {
-            cancelEditBtn.onclick = () => ("editAppointmentModal");
+            cancelEditBtn.onclick = () => closeModal("editAppointmentModal");
         };
     }
 }
