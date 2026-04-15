@@ -163,7 +163,8 @@ function setupCreate(){
             lastName: document.getElementById("c-lastName").value,
             phone: document.getElementById("c-phone").value,
             email: document.getElementById("c-email").value,
-            history: []
+            history: [],
+            createdAt: new Date().toISOString()
         });
 
         closeModal("createModal");
