@@ -70,11 +70,12 @@
 
                 <thead>
 
-                <tr>
+                <tr>         
                     <th data-sort="id">ID <span class="sort-arrow"></span></th>
                     <th data-sort="name">Name <span class="sort-arrow"></span></th>
                     <th data-sort="phone">Phone <span class="sort-arrow"></span></th>
                     <th data-sort="email">Email <span class="sort-arrow"></span></th>
+                    <th>History</th>
                     <th>Actions</th>
                 </tr>
 
@@ -160,6 +161,18 @@
             </div>
 
 
+            <input type="hidden" id="edit-id">
+            <label class="text">Customer First Name</label>
+            <input id="edit-firstName" class="text-field"> <br><br>
+            <label class="text">Customer Last Name</label>
+            <input id="edit-lastName" class="text-field"> <br><br>
+            <label class="text">Customer Phone</label>
+            <input id="edit-phone" class="text-field"> <br><br>
+            <label class="text">Customer Email</label>
+            <input id="edit-email" class="text-field"> <br><br>
+            <label class="text">History</label><br><br>
+           <input id="history-input" class="text-field">
+          <br><br>
 
             <div class="modal-action-forButtons">
                 <button id="updateCustomer" class="edit">Update</button>
@@ -173,6 +186,21 @@
 
 </div>
 
+<!--History pop up-->
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <h3>Customer History</h3>
+
+        <div id="history-list" style="max-height:200px; overflow:auto;"></div>
+
+        <br>
+        <input id="new-history-note" class="text-field" placeholder="Add note">
+        <br><br>
+
+        <button id="saveHistoryNote" class="create-buttons">Add</button>
+        <button id="closeHistoryModal" class="cancel-buttons">Close</button>
+    </div>
+</div>
 
 </body>
 </html>

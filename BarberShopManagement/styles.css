@@ -280,6 +280,11 @@ td{
     color: #cd916c;
 }
 
+.status.in-process{
+    background: #eace7b;
+    color:#92400e;
+}
+
 .status.cancelled{
     background:#fee2e2;
     color:#991b1b;
@@ -369,6 +374,25 @@ td{
     color:#991b1b;
 }
 
+/*for suggestion list on appointment module- */
+.suggestions-box {
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    background: white;
+    width: 200px;
+    z-index: 1000;
+}
+
+.suggestion-item {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background: #eee;
+}
 .window-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
