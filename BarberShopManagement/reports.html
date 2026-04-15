@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <script type="module" src="reportModule.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+        table, th, td {
+            border: 0;
+        }
+        th {
+            border-bottom: 1px solid gray;
+        }
+    </style>
+    <script type="module" src="logout.js"></script>
+</head>
+
+<body>
+
+<header>
+    <div class="container nav">
+        <a href="dashboard.html">
+            <h1  class="logo">TRIPLE T&G MANAGEMENT</h1>
+        </a>
+        <nav>
+            <a href="appointments.html">Appointments</a>
+            <a href="customers.html">Customers</a>
+            <a href="staff.html">Employees</a>
+            <a href="services.html">Services</a>
+            <a href="Inventory.html">Inventory</a>
+            <a href="rating.html">Ratings</a>
+            <a href="reports.html">Reports</a>
+            <a class="book-now" href="profile.html">Profile</a>
+        </nav>
+    </div>
+</header>
+
+<div class="app-container">
+
+    <main class="content">
+
+    <label>Appointment Report</label><br><br>
+    <button onclick="exportAppointmentsReport('today')">Today's Appointments</button>
+    <button onclick="exportAppointmentsReport('week')">This Week</button>
+    <button onclick="exportAppointmentsReport('year')">This Year</button><br><br>
+
+
+        <label>Invenroty Reports</label><br><br>
+<button onclick="exportSuppliesReport()">Supplies Report</button> <br><br>
+
+        <label>Employess Reports</label><br><br>
+        <button onclick="exportBarberReport()">Barber Performance</button><br><br>
+
+        <label>Customer Reports</label><br><br>
+        <label>Customer visit Report</label><br><br>
+        <button onclick="exportCustomerReport('today','visit')">Today's Visits</button>
+        <button onclick="exportCustomerReport('week','visit')">This Week Visits</button>
+        <button onclick="exportCustomerReport('month','visit')">This Month Visits</button><br><br>
+
+        <label>Customer Report</label><br><br>
+        <button onclick="exportCustomerReport('today','new')">New Customers Today</button>
+        <button onclick="exportCustomerReport('week','new')">New Customers This Week</button>
+        <button onclick="exportCustomerReport('month','new')">New Customers This Month</button>
+
+
+    </main>
+</div>
+</body>
+</html>
