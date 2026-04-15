@@ -570,9 +570,34 @@ function setupTableActions() {
 }
 
 function openEditModal(item) {
+
     document.getElementById("edit-id").value = item.id;
+
     document.getElementById("edit-name").value = item.itemName;
-    // ...rest of your field assignments
+
+    document.getElementById("edit-qty").value = item.quantity;
+
+    document.getElementById("edit-unit").value = item.unit || "";
+
+    document.getElementById("edit-expiry").value = item.expiryDate || "";
+
+    document.getElementById("edit-sup-name").value = item.supplierName || "";
+
+    document.getElementById("edit-sup-phone").value = item.supplierPhone || "";
+
+    document.getElementById("edit-sup-email").value = item.supplierEmail || "";
+
+    document.getElementById("edit-sup-address").value = item.supplierAddress || "";
+
+    document.getElementById("edit-set-alert").checked =
+        item.alertEnabled || false;
+
+    document.getElementById("edit-min-qty").value =
+        item.minQuantity || "";
+
+    document.getElementById("edit-alert-box").style.display =
+        item.alertEnabled ? "block" : "none";
+
     document.getElementById("editModal").style.display = "block";
 }
 
