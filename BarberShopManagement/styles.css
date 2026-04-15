@@ -476,3 +476,9 @@ textarea {
     line-height: 12px;
     vertical-align: middle;
 }
+
+.action {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+}

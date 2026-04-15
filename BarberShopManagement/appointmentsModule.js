@@ -226,8 +226,10 @@ async function renderTable(list) {
             
             <td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
             <td>
-                <button class="edit" data-id="${a.id}">Edit</button>
-                <button class="delete" data-id="${a.id}">Delete</button>
+                <div class="action">
+                <button class="edit" data-id="${a.id}">&#9998;</button>
+                <button class="delete" data-id="${a.id}">&#10006;</button>
+                </div>
             </td>
         `;
 

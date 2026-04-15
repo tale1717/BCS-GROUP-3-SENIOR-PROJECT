@@ -56,8 +56,10 @@ function renderServices(list) {
             <td>$${s.price || ""}</td>
             <td>${s.duration || ""}</td>
             <td>
-                <button class="edit" data-id="${s.id}">Edit</button>
-                <button class="delete" data-id="${s.id}">Delete</button>
+                <div class="action">
+                <button class="edit" data-id="${s.id}">&#9998;</button>
+                <button class="delete" data-id="${s.id}">&#10006;</button>
+                </div>
             </td>
         `;
 

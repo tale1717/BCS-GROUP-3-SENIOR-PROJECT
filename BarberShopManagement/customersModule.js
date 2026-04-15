@@ -73,8 +73,10 @@ function renderTable(list){
 <td>${c.email}</td>
 <td>${formatHistory(c.history)}</td>
 <td>
-<button class="edit" data-id="${c.id}">Edit</button>
-<button class="delete" data-id="${c.id}">Delete</button>
+<div class="action">
+<button class="edit" data-id="${c.id}">&#9998;</button>
+<button class="delete" data-id="${c.id}">&#10006;</button>
+</div>
 </td>
 `;
 
