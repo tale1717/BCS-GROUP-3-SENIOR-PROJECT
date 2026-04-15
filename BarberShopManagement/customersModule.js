@@ -7,6 +7,7 @@ import {
 
 //Load Customer
 let allCustomers = [];
+let sortState = { column: null, direction: "asc" }
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -16,6 +17,7 @@ async function init(){
     setupSearch();
     setupUpdate();
     setupCancelEdit();
+    setupSorting();
 
     formatPhoneNumber(document.getElementById("c-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
@@ -105,7 +107,16 @@ function setupSearch(){
             || (c.email || "").toLowerCase().includes(term)
         );
 
-        renderTable(filtered);
+        filtered.sort((a, b) => a.customerID.localeCompare(b.customerID));
+
+        const sorted = sortState.column
+            ? sortCustomers(filtered, sortState.column, sortState.direction)
+            : filtered;
+
+        renderTable(sorted);
+
+        // renderTable(filtered);
+
     });
 }
 
@@ -200,6 +211,7 @@ function setupUpdate(){
 
             document.getElementById("history-input").value = "";
         }
+        closeModal("createModal");
 
         await updateCustomer(id, {
             ...customer,
@@ -283,6 +295,9 @@ function renderHistoryPopup(customer){
 
     (customer.history || []).forEach(h=>{
         const div = document.createElement("div");
+        closeModal("editModal");
+
+        loadCustomers();
 
         div.innerHTML = `
 <strong>${h.date}</strong> - ${h.staff}<br>
@@ -311,6 +326,7 @@ document.getElementById("saveHistoryNote")?.addEventListener("click", async ()=>
         note,
         staff: "Manual"
     });
+        closeModal("editModal");
 
     await updateCustomer(currentCustomerId, customer);
 
@@ -348,3 +364,92 @@ async function addNoteToCustomer(customerId, entry){
 }
 
 window.addNoteToCustomer = addNoteToCustomer;
+}
+
+function sortCustomers(list, column, direction) {
+    return [...list].sort((a, b) => {
+        let valA = "";
+        let valB = "";
+
+        switch (column) {
+            case "id":
+                valA = a.customerID || "";
+                valB = b.customerID || "";
+                break;
+            case "name":
+                valA = `${a.firstName || ""} ${a.lastName || ""}`.trim();
+                valB = `${b.firstName || ""} ${b.lastName || ""}`.trim();
+                break;
+            case "phone":
+                valA = a.phone || "";
+                valB = b.phone || "";
+                break;
+            case "email":
+                valA = a.email || "";
+                valB = b.email || "";
+                break;
+            default:
+                return 0;
+        }
+
+        return direction === "asc"
+            ? valA.localeCompare(valB)
+            : valB.localeCompare(valA);
+    });
+}
+
+function getCurrentFilteredList() {
+    const input = document.getElementById("searchCustomer");
+    const term = input?.value.toLowerCase() || "";
+
+    if (!term) return allCustomers;
+
+    return allCustomers.filter(c =>
+        ((c.firstName || "") + " " + (c.lastName || "")).toLowerCase().includes(term) ||
+        (c.phone || "").includes(term) ||
+        (c.email || "").toLowerCase().includes(term)
+    );
+}
+
+function setupSorting() {
+    const headers = document.querySelectorAll("th[data-sort]");
+
+    headers.forEach(th => {
+        th.style.cursor = "pointer";
+
+        th.addEventListener("click", () => {
+            const column = th.dataset.sort;
+
+            if (sortState.column === column) {
+                sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+            } else {
+                sortState.column = column;
+                sortState.direction = "asc";
+            }
+
+            headers.forEach(h => {
+                const arrow = h.querySelector(".sort-arrow");
+                if (arrow) arrow.textContent = "";
+            });
+
+            const activeArrow = th.querySelector(".sort-arrow");
+            if (activeArrow) {
+                activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
+            }
+
+            const sorted = sortCustomers(getCurrentFilteredList(), sortState.column, sortState.direction);
+            renderTable(sorted);
+        });
+    });
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+
+    modal.classList.add("fade-out");
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("fade-out");
+    }, 150);
+}

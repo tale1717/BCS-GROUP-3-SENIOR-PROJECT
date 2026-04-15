@@ -46,7 +46,12 @@
     <main class="content">
 
         <header class="page-header">
-            <h1>Inventory</h1>
+
+            <div>
+                <h1>Inventory</h1>
+                <p>Manage supplies</p>
+            </div>
+
             <div class="toolbar">
                 <input
                         id="searchSupply"
@@ -68,13 +73,12 @@
 
                 <thead>
                 <tr>
-                    <th>Supply ID</th>
-                    <th>Item Name</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Status</th>
-                    <th>Expiry Date</th>
-                    <th>Supplier Name</th>
+                    <th data-sort="id">ID <span class="sort-arrow"></span></th>
+                    <th data-sort="name">Item Name <span class="sort-arrow"></span></th>
+                    <th data-sort="quantity">Quantity <span class="sort-arrow"></span></th>
+                    <th data-sort="status">Status <span class="sort-arrow"></span></th>
+                    <th data-sort="expiry">Expiry Date <span class="sort-arrow"></span></th>
+                    <th data-sort="supplierName">Supplier Name <span class="sort-arrow"></span></th>
                     <th>Supplier Phone</th>
                     <th>Supplier Email</th>
                     <th>Supplier Address</th>
@@ -95,50 +99,60 @@
 <div id="createModal"
      class="modal">
     <div class="modal-content">
-        <h2>Create Supply</h2>
-        <label>Item</label><br><br>
-        <input id="i-name"><br><br>
-        <label>Quantity</label><br><br>
-        <!--set up low stock alert-->
-        <input id="i-qty"><br><br>
-        <label>
-            <input type="checkbox" id="set-alert">Set Alert</label>
+        <h2>Create Supply</h2> <br>
 
-        <div id="alert-box" style="display:none;">
+        <div class="window-grid">
 
-            <br>
-            <label>Minimum Quantity</label>
-            <br><br>
-            <input id="min-qty">
+            <div>
+                <label>Item</label><br>
+                <input id="i-name" class="text-style">
+            </div>
 
+            <div>
+                <label>Quantity</label><br>
+                <input id="i-qty" class="text-style">
+            </div>
+
+            <div>
+                <label> <input type="checkbox" id="set-alert">Set Alert</label>
+
+                <div id="alert-box" style="display:none;">
+                    <br>
+                    <label>Minimum Quantity</label><br>
+                    <input id="min-qty" class="text-style">
+                </div>
+            </div>
+
+            <div>
+                <label>Expiry</label><br>
+                <input type="date" id="i-expiry" class="text-style">
+            </div>
+
+            <div>
+                <label>Supplier</label><br>
+                <input id="sup-name" class="text-style">
+            </div>
+
+            <div>
+                <label>Supplier Phone</label><br>
+                <input id="sup-phone" class="text-style">
+            </div>
+
+            <div>
+                <label>Supplier Email</label><br>
+                <input id="sup-email" class="text-style"><br>
+            </div>
+
+            <div>
+                <label>Supplier Address</label><br>
+                <input id="sup-address" class="text-style">
+            </div>
         </div>
 
-        <br>
-        <label>Unit</label>
-        <select id="i-unit">
-            <option value="">Select Unit</option>
-            <option value="box">Box</option>
-            <option value="tube">Tube</option>
-            <option value="gallon">Gallon</option>
-            <option value="bottle">Bottle</option>
-            <option value="piece">Piece</option>
-        </select>
-        <br><br>
-        <label>Expiry</label><br><br>
-        <input type="date" id="i-expiry"><br><br>
-        <label>Supplier</label><br><br>
-        <input id="sup-name"><br><br>
-        <label>Supplier Phone</label><br><br>
-        <input id="sup-phone"><br><br>
-        <label>Supplier Email</label><br><br>
-        <input id="sup-email"><br><br>
-        <label>Supplier Address</label><br><br>
-        <input id="sup-address">
-
-        <div class="modal-actions">
+        <div class="modal-action-forButtons">
             <button
                     id="saveCreate"
-                    class="create-buttons">
+                    class="edit">
                 Save
             </button>
 
@@ -157,60 +171,61 @@
 <div id="editModal"
      class="modal">
     <div class="modal-content">
-        <h2>Edit Supply</h2>
-        <input type="hidden" id="edit-id">
-        <label>Item</label><br><br>
-        <input id="edit-name"><br><br>
-        <label>Quantity</label><br><br>
-        <input id="edit-qty"><br><br>
-        <!--setup low stock alert-->
-        <label>
-            <input type="checkbox"
-                   id="edit-set-alert">
-            Set Alert
-        </label>
+        <h2>Edit Supply</h2> <br>
 
-        <div id="edit-alert-box" style="display:none;">
-            <br>
-            <label>Minimum Quantity</label>
-            <br><br>
-            <input id="edit-min-qty">
+        <label>Inventory ID: </label>
+        <input id="edit-id" readonly> <br><br>
+
+        <div class="window-grid">
+            <div>
+                <label>Item</label><br>
+                <input id="edit-name" class="text-style">
+            </div>
+
+            <div>
+                <label>Quantity</label><br>
+                <input id="edit-qty" class="text-style">
+            </div>
+
+            <div>
+                <label> <input type="checkbox" id="edit-set-alert">Set Alert</label>
+
+                <div id="edit-alert-box" style="display:none;">
+                    <br>
+                    <label>Minimum Quantity</label><br>
+                    <input id="edit-min-qty" class="text-style">
+                </div>
+            </div>
+
+            <div>
+                <label>Expiry</label><br>
+                <input type="date" id="edit-expiry" class="text-style">
+            </div>
+
+            <div>
+                <label>Supplier</label><br>
+                <input id="edit-sup-name" class="text-style">
+            </div>
+
+            <div>
+                <label>Supplier Phone</label><br>
+                <input id="edit-sup-phone" class="text-style">
+            </div>
+
+            <div>
+                <label>Supplier Email</label><br>
+                <input id="edit-sup-email" class="text-style">
+            </div>
+
+            <div>
+                <label>Supplier Address</label><br>
+                <input id="edit-sup-address" class="text-style">
+            </div>
         </div>
-        <br>
-        <label>Unit</label>
-        <select id="edit-unit">
-            <option value="">Select Unit</option>
-            <option value="box">Box</option>
-            <option value="tube">Tube</option>
-            <option value="gallon">Gallon</option>
-            <option value="bottle">Bottle</option>
-            <option value="piece">Piece</option>
-        </select>
-        <br><br>
-        <label>Expiry</label><br><br>
-        <input type="date" id="edit-expiry"><br><br>
-        <label>Supplier</label><br><br>
-        <input id="edit-sup-name"><br><br>
-        <label>Supplier Phone</label><br><br>
-        <input id="edit-sup-phone"><br><br>
-        <label>Supplier Email</label><br><br>
-        <input id="edit-sup-email"><br><br>
-        <label>Supplier Address</label><br><br>
-        <input id="edit-sup-address">
 
-        <div class="modal-actions">
-            <button
-                    id="updateSupply"
-                    class="create-buttons">
-                Update
-            </button>
-
-            <button
-                    id="cancelEdit"
-                    class="cancel-buttons">
-                Cancel
-            </button>
-
+        <div class="modal-action-forButtons">
+            <button id="updateSupply" class="edit">Update</button>
+            <button id="cancelEdit" class="cancel-buttons">Cancel</button>
         </div>
 
     </div>

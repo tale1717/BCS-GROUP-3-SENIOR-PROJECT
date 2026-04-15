@@ -126,6 +126,7 @@
     color: white;
     padding:10px 12px;
     border-radius: 10px;
+    border: none;
 }
 
 .edit-button {
@@ -182,16 +183,37 @@ td{
     height: 100%;
     background: rgba(0,0,0,0.4);
     overflow-x: auto;
+    animation: fadeIn 150ms ease-in-out;
 }
 
 .modal-content {
-
     background: white;
-    width: 30%;
+    width: 600px;
     margin: 10% auto;
     padding: 20px;
     border-radius: 8px;
     overflow-x: auto;
+    position: sticky;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    animation: fadeIn 150ms ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.modal.fade-out {
+    animation: fadeOut 150ms ease-in-out forwards;
+}
+
+.service-content {
+    width: 40%;
 }
 
 .text-field{
@@ -370,4 +392,86 @@ td{
 
 .suggestion-item:hover {
     background: #eee;
+}
+.window-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.service-grid {
+    grid-template-columns: auto auto auto;
+}
+
+.confirmed { color: green; background: #e6ffed; padding: 4px 8px; border-radius: 5px; }
+
+.cancelled { color: red; background: #ffd3d3; padding: 4px 8px; border-radius: 5px; }
+
+.completed { color: blue; background: #add8e6; padding: 4px 8px; border-radius: 5px; }
+
+label {
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+select, textarea, .text-style {
+    width: 100%;
+    font-size: 16px;
+    background: white;
+    border: 1px solid #000;
+    border-radius: 4px;
+}
+
+.text-style {
+    padding: 5px;
+}
+
+.datetime {
+    width: auto;
+}
+
+textarea {
+    resize: vertical;
+}
+
+#edit-id {
+    border: none;
+    font-size: 16px;
+}
+
+.day-picker {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.day-picker input {
+    display: none;
+}
+
+.day-picker label {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #d0d0d0;
+    background: #f5f5f5;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.day-picker label:hover {
+    background: #eaeaea;
+}
+
+.day-picker input:checked + label {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+}
+
+.sort-arrow {
+    display: inline-block;
+    width: 12px;   /* adjust as needed */
+    height: 12px;  /* adjust as needed */
+    line-height: 12px;
+    vertical-align: middle;
 }

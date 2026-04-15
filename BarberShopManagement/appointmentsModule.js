@@ -33,6 +33,7 @@ let allServices = [];
 let userCache = {};
 let allCustomers = [];
 let allStaff = [];
+let sortState = { column: null, direction: "asc" };
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
@@ -68,6 +69,7 @@ async function init() {
     // hookup history
     hookCreateHistory();
     hookUpdateHistory();
+    setupSorting();
 }
 
 // customer autocomplete (for create/edit appointment)
@@ -255,7 +257,12 @@ function setupSearch() {
             );
         });
 
-        renderTable(filtered);
+        const sorted = sortState.column
+            ? sortAppointments(filtered, sortState.column, sortState.direction)
+            : filtered;
+        renderTable(sorted);
+
+        // renderTable(filtered);
     });
 }
 
@@ -330,6 +337,7 @@ function setupCreate() {
             status: document.getElementById("a-status").value || "upcoming"
         });
 
+        closeModal("appointmentModal");
         await loadAppointments();
 
         //close window when click save and alert
@@ -597,7 +605,7 @@ function setupUpdateButton() {
                 status: document.getElementById("edit-status").value
             });
 
-            document.getElementById("editAppointmentModal").style.display = "none";
+            closeModal("editAppointmentModal");
             await loadAppointments();
         } catch (error) {
             console.error("Failed to update appointment:", error);
@@ -610,14 +618,14 @@ function setupCancelButtons() {
     const cancelCreateBtn = document.getElementById("cancelAppointment");
     if (cancelCreateBtn) {
         cancelCreateBtn.onclick = () => {
-            document.getElementById("appointmentModal").style.display = "none";
+            cancelCreateBtn.onclick = () => closeModal("appointmentModal");
         };
     }
 
     const cancelEditBtn = document.getElementById("cancelEditAppointment");
     if (cancelEditBtn) {
         cancelEditBtn.onclick = () => {
-            document.getElementById("editAppointmentModal").style.display = "none";
+            cancelEditBtn.onclick = () => closeModal("editAppointmentModal");
         };
     }
 }
@@ -762,4 +770,110 @@ function getSelectedSupplies() {
     console.log("selectedSupplies:", selectedSupplies);
 
 
+function sortAppointments(list, column, direction) {
+    return [...list].sort((a, b) => {
+        let valA = "";
+        let valB = "";
+
+        switch (column) {
+            case "id":
+                valA = a.appointmentID || a.id || "";
+                valB = b.appointmentID || b.id || "";
+                break;
+            case "customer":
+                valA = userCache[a.customerUid] || a.customer || "";
+                valB = userCache[b.customerUid] || b.customer || "";
+                break;
+            case "barber":
+                valA = a.barber || "";
+                valB = b.barber || "";
+                break;
+            case "service":
+                valA = a.serviceName || a.serviceID || "";
+                valB = b.serviceName || b.serviceID || "";
+                break;
+            case "date":
+                valA = a.date || "";
+                valB = b.date || "";
+                break;
+            case "time":
+                valA = a.time || "";
+                valB = b.time || "";
+                break;
+            case "status":
+                valA = a.status || "";
+                valB = b.status || "";
+                break;
+            default:
+                return 0;
+        }
+
+        return direction === "asc"
+            ? valA.localeCompare(valB)
+            : valB.localeCompare(valA);
+    });
+}
+
+function setupSorting() {
+    const headers = document.querySelectorAll("th[data-sort]");
+
+    headers.forEach(th => {
+        th.style.cursor = "pointer";
+
+        th.addEventListener("click", () => {
+            const column = th.dataset.sort;
+
+            if (sortState.column === column) {
+                sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+            } else {
+                sortState.column = column;
+                sortState.direction = "asc";
+            }
+
+            // Update arrow indicators on all headers
+            headers.forEach(h => {
+                const arrow = h.querySelector(".sort-arrow");
+                if (arrow) arrow.textContent = "";
+            });
+
+            const activeArrow = th.querySelector(".sort-arrow");
+            if (activeArrow) {
+                activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
+            }
+
+            const currentList = getCurrentFilteredList();
+            const sorted = sortAppointments(currentList, sortState.column, sortState.direction);
+            renderTable(sorted);
+        });
+    });
+}
+
+function getCurrentFilteredList() {
+    const input = document.getElementById("searchAppointment");
+    const term = input?.value.toLowerCase() || "";
+
+    if (!term) return allAppointments;
+
+    return allAppointments.filter(a => {
+        const name = (userCache[a.customerUid] || a.customer || "").toLowerCase();
+        return (
+            name.includes(term) ||
+            (a.barber || "").toLowerCase().includes(term) ||
+            (a.serviceName || a.service || "").toLowerCase().includes(term) ||
+            (a.date || "").toLowerCase().includes(term) ||
+            (a.time || "").toLowerCase().includes(term) ||
+            (a.notes || "").toLowerCase().includes(term)
+        );
+    });
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+
+    modal.classList.add("fade-out");
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("fade-out");
+    }, 150);
 }
