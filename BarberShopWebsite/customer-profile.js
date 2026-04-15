@@ -49,6 +49,7 @@ const dobInput = document.getElementById("dobInput");
 
 const appointmentSection = document.getElementById("history-card");
 const reviewSection = document.getElementById("review-card");
+const receiptSection = document.getElementById("receipt-card");
 
 let selectedRow = null;
 
@@ -317,7 +318,26 @@ async function loadAppointmentHistory(user) {
                 ratingCell.textContent = "Unavailable";
             }
 
+            //receipt cell
+            const receiptCell = document.createElement("td");
+
+            if (data.status === "completed") {
+                const receiptLink = document.createElement("a");
+                receiptLink.href = "#";
+                receiptLink.textContent = "View";
+
+                receiptLink.onclick = (e) => {
+                    e.preventDefault();
+                    showReceipt(data);
+                };
+
+                receiptCell.appendChild(receiptLink);
+            } else {
+                receiptCell.textContent = "Unavailable";
+            }
+
             row.appendChild(ratingCell);
+            row.appendChild(receiptCell);
             historyTable.appendChild(row);
         });
 
@@ -410,4 +430,28 @@ function highlightStars(stars, rating) {
     stars.forEach(star => {
         star.src = star.dataset.value <= rating ? 'comb-full.png' : 'comb.png';
     });
+}
+
+//receipt
+function showReceipt(data) {
+    const receiptDetails = document.getElementById("receipt-details");
+    const receiptSection = document.getElementById("receipt-card");
+
+    receiptDetails.innerHTML = `
+        <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
+        <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
+        <p style="font-size: 18px;"><strong>Service:</strong> ${data.serviceName}</p>
+        <p style="font-size: 18px;"><strong>Time:</strong> ${data.time}</p>
+        <p style="font-size: 18px;"><strong>Duration:</strong> ${data.serviceDuration} min</p>
+        <p style="font-size: 18px;"><strong>Price:</strong> $${data.servicePrice}</p>
+    `;
+
+    appointmentSection.style.display = "none";
+    reviewSection.style.display = "none";
+    receiptSection.style.display = "block";
+
+    document.getElementById("close-receipt").onclick = () => {
+        receiptSection.style.display = "none";
+        appointmentSection.style.display = "block";
+    };
 }
