@@ -482,3 +482,18 @@ textarea {
     align-items: stretch;
     gap: 6px;
 }
+
+.report-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+}
