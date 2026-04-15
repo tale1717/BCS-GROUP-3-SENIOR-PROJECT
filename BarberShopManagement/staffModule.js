@@ -87,7 +87,7 @@ function renderTable(list) {
             <td>${s.staffID || ""}</td>
             <td>${s.name || ""}</td>
             <td>${s.phone || ""}</td>
-            <td>${s.email || ""}</td>
+            <td style="overflow-wrap: break-word;">${s.email || ""}</td>
             <td>${s.address || ""}</td>
             <td>${s.position || ""}</td>
             <td>${Array.isArray(s.services) ? s.services.join(", ") : ""}</td>
@@ -97,8 +97,10 @@ function renderTable(list) {
             <td>${s.endDate || "Active"}</td>
             <td>${s.bankAccount || ""}</td>
             <td>
-                <button class="edit" data-id="${s.id}">Edit</button>
-                <button class="delete" data-id="${s.id}">Delete</button>
+                <div class="action">
+                <button class="edit" data-id="${s.id}">&#9998;</button>
+                <button class="delete" data-id="${s.id}">&#10006;</button>
+                </div>
             </td>
         `;
 

@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { doc, collection, query, where, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, collection, query, where, getDocs, setDoc,addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
 import { getServices } from "/BarberShopWebsite/Collections/services.js";
@@ -90,9 +90,26 @@ document.addEventListener("DOMContentLoaded", async () => {
                     createdAt: serverTimestamp()
                 });
 
-                sessionStorage.setItem("lastAppointmentId", appointmentID);
+                // SEND EMAIL so when user clicks confirm button it sends the email!
+                try {
+                    await emailjs.send("service_4siyc8o", "template_noefnqt", {
+                        barber: barber,
+                        date: date,
+                        time: time,
+                        service: selectedService.serviceName,
+                        to_email: user.email
+                    });
 
+                    console.log("Email sent!");
+                } catch (error) {
+                    console.error("Email failed:", error);
+                    alert("Appointment was saved, but the email could not be sent.");
+                }
+
+                sessionStorage.setItem("lastAppointmentId", appointmentID);
                 window.location.href = `appointment-confirm.html?appointmentId=${encodeURIComponent(appointmentID)}`;
+
+
             } catch (err) {
                 console.error("Failed to create appointment:", err);
                 alert("Failed to create appointment. Check console for details.");

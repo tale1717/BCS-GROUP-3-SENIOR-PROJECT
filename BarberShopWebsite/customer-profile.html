@@ -81,26 +81,7 @@
 
         </div>
 
-        <div class="receipt-card">
-            <h2>Receipts</h2>
 
-            <table>
-                <thead>
-                <tr>
-                    <th>Invoice Date</th>
-                    <th>Amount</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr>
-                    <td>None</td>
-                    <td></td>
-                </tr>
-                </tbody>
-
-            </table>
-        </div>
 
     </div>
 
@@ -223,6 +204,7 @@
                 <th>Service</th>
                 <th>Status</th>
                 <th>Review</th>
+                <th>Receipts</th>
             </tr>
             </thead>
 
@@ -247,6 +229,16 @@
 
         <button class="primary-btn" id="save-review">Save</button>
         <button class="primary-btn" id="cancel-review">Cancel</button>
+    </div>
+
+    <div class="history-card" id="receipt-card" style="display: none;">
+        <h2>Appointment Receipt</h2>
+
+        <div id="receipt-details"></div>
+
+        <br><br>
+
+        <button class="primary-btn" id="close-receipt">Close</button>
     </div>
 
 </section>

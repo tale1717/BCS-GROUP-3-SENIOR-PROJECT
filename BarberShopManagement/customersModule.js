@@ -16,7 +16,7 @@ async function init(){
     setupCreate();
     setupSearch();
     setupUpdate();
-    setupCancelEdit();
+    setupCancelButtons();
     setupSorting();
 
     formatPhoneNumber(document.getElementById("c-phone"));
@@ -73,8 +73,10 @@ function renderTable(list){
 <td>${c.email}</td>
 <td>${formatHistory(c.history)}</td>
 <td>
-<button class="edit" data-id="${c.id}">Edit</button>
-<button class="delete" data-id="${c.id}">Delete</button>
+<div class="action">
+<button class="edit" data-id="${c.id}">&#9998;</button>
+<button class="delete" data-id="${c.id}">&#10006;</button>
+</div>
 </td>
 `;
 
@@ -165,7 +167,7 @@ function setupCreate(){
             createdAt: new Date().toISOString()
         });
 
-        modal.style.display = "none";
+        closeModal("createModal");
         loadCustomers();
     };
 }
@@ -212,7 +214,6 @@ function setupUpdate(){
 
             document.getElementById("history-input").value = "";
         }
-        closeModal("createModal");
 
         await updateCustomer(id, {
             ...customer,
@@ -223,7 +224,7 @@ function setupUpdate(){
             history: customer.history
         });
 
-        document.getElementById("editModal").style.display = "none";
+        closeModal("editModal");
 
         loadCustomers();
     };
@@ -231,10 +232,13 @@ function setupUpdate(){
 
 
 // Cancel
-function setupCancelEdit(){
-    document.getElementById("cancelEdit").onclick = () => {
-        document.getElementById("editModal").style.display = "none";
+function setupCancelButtons(){
+    document.getElementById("cancelCreate").onclick = () => {
+        closeModal("createModal");
     };
+    document.getElementById("cancelEdit").onclick = () => {
+        closeModal("editModal");
+    }
 }
 
 
@@ -296,7 +300,6 @@ function renderHistoryPopup(customer){
 
     (customer.history || []).forEach(h=>{
         const div = document.createElement("div");
-        closeModal("editModal");
 
         loadCustomers();
 
@@ -327,7 +330,6 @@ document.getElementById("saveHistoryNote")?.addEventListener("click", async ()=>
         note,
         staff: "Manual"
     });
-        closeModal("editModal");
 
     await updateCustomer(currentCustomerId, customer);
 
@@ -342,7 +344,7 @@ const closeBtn = document.getElementById("closeHistoryModal");
 
 if(closeBtn){
     closeBtn.onclick = ()=>{
-        document.getElementById("historyModal").style.display = "none";
+        closeModal("historyModal");
     };
 }
 
@@ -362,9 +364,8 @@ async function addNoteToCustomer(customerId, entry){
         ...customer,
         history
     });
-}
 
-window.addNoteToCustomer = addNoteToCustomer;
+    window.addNoteToCustomer = addNoteToCustomer;
 }
 
 function sortCustomers(list, column, direction) {

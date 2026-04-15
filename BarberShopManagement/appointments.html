@@ -82,9 +82,9 @@
                     <th data-sort="date">Date <span class="sort-arrow"></span></th>
                     <th data-sort="time">Time <span class="sort-arrow"></span></th>
                     <th>Notes</th>
-                    <th data-sort="status">Status <span class="sort-arrow"></span></th>
                     <th>Supplies Used</th>
-                    <th>Status</th>
+                    <th data-sort="status">Status <span class="sort-arrow"></span></th>
+                    <th data-sort="total cost">Total Cost <span class="sort-arrow"></span><th/>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -105,38 +105,13 @@
 
     <div class="modal-content">
 
-        <h2>Create Appointment</h2>
-        <label>Customer Name</label> <br><br>
-        <input id="a-customer" placeholder="Type customer name">
-        <div id="customer-suggestions" class="suggestions-box"></div><br><br>
-        <label>Barber Name</label> <br><br>
-        <select id="a-barber">
-            <option value="">Select Barber</option>
-        </select><br><br>
-        <label>Service</label> <br><br>
-        <select id="a-service" multiple size="6"></select>
-        <label>Date</label> <br><br>
-        <input type="date" id="a-date"> <br><br>
-        <label>Time</label> <br><br>
-        <input type="time" id="a-time"> <br><br>
-        <label>Notes</label>
-        <textarea id="a-notes"
-                  placeholder="Appointment notes"></textarea>
-
-
-        <select id="a-status">
-            <option value="confirmed">Confirmed</option>
-
-            <option value="cancelled">Cancelled</option>
-        </select>
         <h2>Create Appointment</h2> <br>
 
         <div class="window-grid">
             <div>
                 <label>Customer Name</label> <br>
-                <select class="select" id="a-customer">
-                    <option value="">Select Customer</option>
-                </select>
+                <input id="a-customer" class="text-style">
+                <div id="customer-suggestions" class="suggestions-box"></div>
             </div>
 
             <div>
@@ -197,25 +172,11 @@
         <label>Appointment ID: </label>
         <input id="edit-id" readonly> <br><br>
 
-        <label>Customer Name</label> <br><br>
-        <input id="edit-customer">
-        <div id="edit-customer-suggestions" class="suggestions-box"></div> <br><br>
-        <label>Barber Name</label> <br><br>
-        <select id="edit-barber"></select><br><br>
-        <label>Service</label> <br><br>
-        <select id="edit-service" multiple size="6"></select>
-        <label>Date</label> <br><br>
-        <input type="date" id="edit-date"> <br><br>
-        <label>Time</label> <br><br>
-        <input type="time" id="edit-time"> <br><br>
-        <label>Note</label> <br><br>
-        <textarea id="edit-notes"></textarea> <br><br>
-        <label>Status</label> <br><br>
-        <select id="edit-status">
         <div class="window-grid">
             <div>
                 <label>Customer Name</label> <br>
-                <select id="edit-customer"></select> <br>
+                <input id="edit-customer" class="text-style">
+                <div id="edit-customer-suggestions"></div>
             </div>
 
             <div>
@@ -228,7 +189,6 @@
                 <select id="edit-service" multiple size="6"></select>
             </div>
 
-            <option value="in-process">In Process</option>
             <div>
                 <div>
                     <label>Date</label> <br>
@@ -246,19 +206,23 @@
                 <textarea id="edit-notes"></textarea> <br>
             </div>
 
-            <option value="cancelled">Cancelled</option>
 
-        </select>
-        <div id="supply-section" style="display:none;">
-            <h4>Supplies Used</h4>
-            <div id="supply-list"></div>
+
+
             <div>
                 <label>Status</label> <br>
                 <select id="edit-status">
                     <option value="confirmed" class="confirmed">Confirmed</option>
                     <option value="cancelled" class="cancelled">Cancelled</option>
+                    <option value="in-process">In Process</option>
                     <option value="completed" class="completed">Completed</option>
                 </select>
+
+                <div id="supply-section" style="display:none;">
+                    <br>
+                    <h4>Supplies Used</h4>
+                    <div id="supply-list"></div>
+                </div>
             </div>
         </div>
 

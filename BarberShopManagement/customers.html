@@ -159,21 +159,13 @@
                     <label class="text">Email Address</label> <br>
                     <input id="edit-email" class="text-style">
                 </div>
+
+                <div>
+                    <label class="text">History</label><br>
+                    <textarea id="history-input" class="text-style"></textarea>
+                </div>
+
             </div>
-
-
-            <input type="hidden" id="edit-id">
-            <label class="text">Customer First Name</label>
-            <input id="edit-firstName" class="text-field"> <br><br>
-            <label class="text">Customer Last Name</label>
-            <input id="edit-lastName" class="text-field"> <br><br>
-            <label class="text">Customer Phone</label>
-            <input id="edit-phone" class="text-field"> <br><br>
-            <label class="text">Customer Email</label>
-            <input id="edit-email" class="text-field"> <br><br>
-            <label class="text">History</label><br><br>
-           <input id="history-input" class="text-field">
-          <br><br>
 
             <div class="modal-action-forButtons">
                 <button id="updateCustomer" class="edit">Update</button>
@@ -195,11 +187,15 @@
         <div id="history-list" style="max-height:200px; overflow:auto;"></div>
 
         <br>
-        <input id="new-history-note" class="text-field" placeholder="Add note">
-        <br><br>
+        <textarea id="new-history-note" class="text-style" placeholder="Add note"></textarea>
 
-        <button id="saveHistoryNote" class="create-buttons">Add</button>
-        <button id="closeHistoryModal" class="cancel-buttons">Close</button>
+        <br>
+
+        <div class="modal-action-forButtons">
+            <button id="saveHistoryNote" class="edit">Add</button>
+            <button id="closeHistoryModal" class="cancel-buttons">Close</button>
+        </div>
+
     </div>
 </div>
 

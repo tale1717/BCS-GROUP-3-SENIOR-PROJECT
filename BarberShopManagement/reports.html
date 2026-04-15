@@ -48,29 +48,57 @@
 
     <main class="content">
 
-    <label>Appointment Report</label><br><br>
-    <button onclick="exportAppointmentsReport('today')">Today's Appointments</button>
-    <button onclick="exportAppointmentsReport('week')">This Week</button>
-    <button onclick="exportAppointmentsReport('year')">This Year</button><br><br>
+        <header class="page-header">
+            <div>
+                <h1>Reports</h1>
+                <p>Generate Reports</p>
+            </div>
+        </header>
 
-
-        <label>Invenroty Reports</label><br><br>
-<button onclick="exportSuppliesReport()">Supplies Report</button> <br><br>
-
-        <label>Employess Reports</label><br><br>
-        <button onclick="exportBarberReport()">Barber Performance</button><br><br>
-
-        <label>Customer Reports</label><br><br>
-        <label>Customer visit Report</label><br><br>
-        <button onclick="exportCustomerReport('today','visit')">Today's Visits</button>
-        <button onclick="exportCustomerReport('week','visit')">This Week Visits</button>
-        <button onclick="exportCustomerReport('month','visit')">This Month Visits</button><br><br>
-
-        <label>Customer Report</label><br><br>
-        <button onclick="exportCustomerReport('today','new')">New Customers Today</button>
-        <button onclick="exportCustomerReport('week','new')">New Customers This Week</button>
-        <button onclick="exportCustomerReport('month','new')">New Customers This Month</button>
-
+        <div class="card">
+            <h2>Appointment Reports</h2><br>
+            <div class="grid">
+                <button class="report-button" onclick="exportAppointmentsReport('today')">Today's Appointments</button>
+                <button class="report-button" onclick="exportAppointmentsReport('week')">This Week</button>
+                <button class="report-button" onclick="exportAppointmentsReport('year')">This Year</button>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <h2>Inventory Reports</h2><br>
+            <div class="grid">
+                <button class="report-button" onclick="exportSuppliesReport()">Supplies Report</button> <br><br>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <h2>Employee Reports</h2><br>
+            <div class="grid">
+                <button class="report-button" onclick="exportBarberReport()">Barber Performance</button><br><br>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <h2>Customer Reports</h2><br>
+            <div class="card">
+                <h3>Visit Reports</h3><br>
+                <div class="grid">
+                    <button class="report-button" onclick="exportCustomerReport('today','visit')">Today's Visits</button>
+                    <button class="report-button" onclick="exportCustomerReport('week','visit')">This Week Visits</button>
+                    <button class="report-button" onclick="exportCustomerReport('month','visit')">This Month Visits</button><br><br>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <h3>New Customer Reports</h3><br>
+                <div class="grid">
+                    <button class="report-button" onclick="exportCustomerReport('today','new')">New Customers Today</button>
+                    <button class="report-button" onclick="exportCustomerReport('week','new')">New Customers This Week</button>
+                    <button class="report-button" onclick="exportCustomerReport('month','new')">New Customers This Month</button>
+                </div>
+            </div>
+        </div>
+        <br>
 
     </main>
 </div>
