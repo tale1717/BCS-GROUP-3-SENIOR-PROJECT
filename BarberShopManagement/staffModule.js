@@ -11,6 +11,7 @@ import {
 
 let allStaff = [];
 let allServices = [];
+let sortState = { column: null, direction: "asc" }
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -40,6 +41,7 @@ async function init() {
     setupStaffTableEvents()
     setupUpdateButton();
     setupCancelButtons();
+    setupSorting();
 
     formatPhoneNumber(document.getElementById("s-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
@@ -85,7 +87,7 @@ function renderTable(list) {
             <td>${s.staffID || ""}</td>
             <td>${s.name || ""}</td>
             <td>${s.phone || ""}</td>
-            <td>${s.email || ""}</td>
+            <td style="overflow-wrap: break-word;">${s.email || ""}</td>
             <td>${s.address || ""}</td>
             <td>${s.position || ""}</td>
             <td>${Array.isArray(s.services) ? s.services.join(", ") : ""}</td>
@@ -95,8 +97,10 @@ function renderTable(list) {
             <td>${s.endDate || "Active"}</td>
             <td>${s.bankAccount || ""}</td>
             <td>
-                <button class="edit" data-id="${s.id}">Edit</button>
-                <button class="delete" data-id="${s.id}">Delete</button>
+                <div class="action">
+                <button class="edit" data-id="${s.id}">&#9998;</button>
+                <button class="delete" data-id="${s.id}">&#10006;</button>
+                </div>
             </td>
         `;
 
@@ -173,18 +177,18 @@ function setupCreate() {
                 salary: document.getElementById("s-salary").value,
                 startDate: document.getElementById("s-startDate").value,
                 endDate: document.getElementById("s-endDate").value || null,
-                workingDays: Array.from(document.querySelectorAll(".workday:checked")).map(cb => cb.value),
+                workingDays: Array.from(document.querySelectorAll('#createStaffModal input[name="days"]:checked')).map(cb => cb.value),
                 bankAccount: document.getElementById("s-bank").value
             });
 
-            modal.style.display = "none";
+            closeModal("createStaffModal");
             await loadStaff();
         };
     }
 
     if (cancelBtn) {
         cancelBtn.onclick = () => {
-            modal.style.display = "none";
+            closeModal("createStaffModal");
         };
     }
 }
@@ -271,11 +275,11 @@ function setupUpdateButton() {
                 salary: document.getElementById("edit-salary").value,
                 startDate: document.getElementById("edit-startDate").value,
                 endDate: document.getElementById("edit-endDate").value || null,
-                workingDays: Array.from(document.querySelectorAll(".edit-workday:checked")).map(cb => cb.value),
+                workingDays: Array.from(document.querySelectorAll('#editStaffModal input[name="days"]:checked')).map(cb => cb.value),
                 bankAccount: document.getElementById("edit-bank").value
             });
 
-            document.getElementById("editStaffModal").style.display = "none";
+            closeModal("editStaffModal");
             await loadStaff();
         } catch (error) {
             console.error("Failed to update staff:", error);
@@ -334,7 +338,13 @@ function setupSearch() {
             (s.position || "").toLowerCase().includes(term)
         );
 
-        renderTable(filtered);
+        const sorted = sortState.column
+            ? sortStaff(filtered, sortState.column, sortState.direction)
+            : filtered;
+
+        renderTable(sorted);
+
+        // renderTable(filtered);
     });
 }
 
@@ -394,7 +404,7 @@ function setupCancelButtons() {
     const cancelEditBtn = document.getElementById("cancelEditStaff");
     if (cancelEditBtn) {
         cancelEditBtn.onclick = () => {
-            document.getElementById("editStaffModal").style.display = "none";
+            closeModal("editStaffModal");
         };
     }
 }
@@ -422,4 +432,114 @@ function clearCreateForm() {
     }
 
     toggleCreateServicesSection("");
+}
+
+function sortStaff(list, column, direction) {
+    return [...list].sort((a, b) => {
+        let valA = "";
+        let valB = "";
+
+        switch (column) {
+            case "id":
+                valA = a.staffID || "";
+                valB = b.staffID || "";
+                break;
+            case "name":
+                valA = a.name || "";
+                valB = b.name || "";
+                break;
+            case "phone":
+                valA = a.phone || "";
+                valB = b.phone || "";
+                break;
+            case "email":
+                valA = a.email || "";
+                valB = b.email || "";
+                break;
+            case "address":
+                valA = a.address || "";
+                valB = b.address || "";
+                break;
+            case "position":
+                valA = a.position || "";
+                valB = b.position || "";
+                break;
+            case "salary":
+                // Numeric sort for salary
+                return direction === "asc"
+                    ? (parseFloat(a.salary) || 0) - (parseFloat(b.salary) || 0)
+                    : (parseFloat(b.salary) || 0) - (parseFloat(a.salary) || 0);
+            case "startDate":
+                valA = a.startDate || "";
+                valB = b.startDate || "";
+                break;
+            case "endDate":
+                valA = a.endDate || "";
+                valB = b.endDate || "";
+                break;
+            default:
+                return 0;
+        }
+
+        return direction === "asc"
+            ? valA.localeCompare(valB)
+            : valB.localeCompare(valA);
+    });
+}
+
+function getCurrentFilteredList() {
+    const input = document.getElementById("searchStaff");
+    const term = input?.value.toLowerCase() || "";
+
+    if (!term) return allStaff;
+
+    return allStaff.filter(s =>
+        (s.name || "").toLowerCase().includes(term) ||
+        (s.phone || "").toLowerCase().includes(term) ||
+        (s.email || "").toLowerCase().includes(term) ||
+        (s.position || "").toLowerCase().includes(term)
+    );
+}
+
+function setupSorting() {
+    const headers = document.querySelectorAll("th[data-sort]");
+
+    headers.forEach(th => {
+        th.style.cursor = "pointer";
+
+        th.addEventListener("click", () => {
+            const column = th.dataset.sort;
+
+            if (sortState.column === column) {
+                sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+            } else {
+                sortState.column = column;
+                sortState.direction = "asc";
+            }
+
+            headers.forEach(h => {
+                const arrow = h.querySelector(".sort-arrow");
+                if (arrow) arrow.textContent = "";
+            });
+
+            const activeArrow = th.querySelector(".sort-arrow");
+            if (activeArrow) {
+                activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
+            }
+
+            const sorted = sortStaff(getCurrentFilteredList(), sortState.column, sortState.direction);
+            renderTable(sorted);
+        });
+    });
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+
+    modal.classList.add("fade-out");
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("fade-out");
+    }, 150);
 }

@@ -23,13 +23,22 @@ import {
     getServices
 } from "../BarberShopWebsite/Collections/services.js";
 
+import {
+    getSupplies,
+    updateSupply
+} from "../BarberShopWebsite/Collections/inventory.js";
+
 let allAppointments = [];
 let allServices = [];
 let userCache = {};
 let allCustomers = [];
 let allStaff = [];
+let sortState = { column: null, direction: "asc" };
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", () => {
+    init();
+});
+
 
 function setupToggleMultiSelect(selectId) {
     const select = document.getElementById(selectId);
@@ -56,7 +65,65 @@ async function init() {
     setupTableEvents()
     setupUpdateButton();
     setupCancelButtons();
+
+    // hookup history
+    hookCreateHistory();
+    hookUpdateHistory();
+    setupSorting();
 }
+
+// customer autocomplete (for create/edit appointment)
+function setupCustomerAutocomplete(inputId, boxId) {
+    const input = document.getElementById(inputId);
+    const box = document.getElementById(boxId);
+    if (!input || !box) return;
+
+    function showSuggestions(value = "") {
+        const search = value.toLowerCase();
+        box.innerHTML = "";
+
+        const filtered = allCustomers.filter(c => {
+            const name =
+                c.name ||
+                [c.firstName, c.lastName].filter(Boolean).join(" ") ||
+                c.customerName ||
+                "";
+
+            return name.toLowerCase().includes(search);
+        });
+
+        filtered.forEach(c => {
+            const name =
+                c.name ||
+                [c.firstName, c.lastName].filter(Boolean).join(" ") ||
+                c.customerName ||
+                "Unknown";
+
+            const div = document.createElement("div");
+            div.className = "suggestion-item";
+            div.textContent = name;
+
+            div.onclick = () => {
+                input.value = name;
+                input.dataset.id = c.id;
+                box.innerHTML = "";
+            };
+
+            box.appendChild(div);
+        });
+    }
+    //show customer list
+    input.onfocus = () => showSuggestions("");
+    input.oninput = () => showSuggestions(input.value);
+
+    document.onclick = (e) => {
+        if (!input.contains(e.target) && !box.contains(e.target)) {
+            box.innerHTML = "";
+        }
+    };
+}
+
+
 
 async function loadServices() {
     allServices = await getServices();
@@ -65,25 +132,11 @@ async function loadServices() {
 
 async function loadCustomers() {
     allCustomers = await getCustomers();
+    //load suggestion when input
+    setupCustomerAutocomplete("a-customer", "customer-suggestions");
+    setupCustomerAutocomplete("edit-customer", "edit-customer-suggestions");
 
-    const select = document.getElementById("a-customer");
-    if (!select) return;
 
-    select.innerHTML = `<option value="">Select Customer</option>`;
-
-    allCustomers.forEach(c => {
-        const option = document.createElement("option");
-        option.value = c.id;
-
-        const displayName =
-            c.name ||
-            [c.firstName, c.lastName].filter(Boolean).join(" ").trim() ||
-            c.customerName ||
-            "Unknown Customer";
-
-        option.textContent = displayName;
-        select.appendChild(option);
-    });
 }
 
 async function loadStaff() {
@@ -104,6 +157,7 @@ async function loadStaff() {
         });
 }
 
+//generate ID automatically
 async function generateAppointmentID() {
     const appointments = await getAppointments();
     let max = 0;
@@ -168,12 +222,16 @@ async function renderTable(list) {
             <td>${a.date || ""}</td>
             <td>${a.time || ""}</td>
             <td>${a.notes || ""}</td>
-<td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
-<td>$${Number(a.totalCost || 0).toFixed(2)}</td>
-<td>
-    <button class="edit" data-id="${a.id}">Edit</button>
-    <button class="delete" data-id="${a.id}">Delete</button>
-</td>
+            <td>${Array.isArray(a.suppliesUsed) ? a.suppliesUsed.map(s => `${s.name} (${s.quantity})`).join(", ") : ""}</td>
+            
+            <td><span class="status ${a.status || "upcoming"}">${a.status || "upcoming"}</span></td>
+            <td>$${Number(a.totalCost || 0).toFixed(2)}</td>
+            <td>
+                <div class="action">
+                <button class="edit" data-id="${a.id}">&#9998;</button>
+                <button class="delete" data-id="${a.id}">&#10006;</button>
+                </div>
+            </td>
         `;
 
         body.appendChild(row);
@@ -202,7 +260,12 @@ function setupSearch() {
             );
         });
 
-        renderTable(filtered);
+        const sorted = sortState.column
+            ? sortAppointments(filtered, sortState.column, sortState.direction)
+            : filtered;
+        renderTable(sorted);
+
+        // renderTable(filtered);
     });
 }
 
@@ -222,6 +285,7 @@ function getSelectedServices(selectId) {
         }));
 }
 
+//create
 function calculateTotalCost(services) {
     return services.reduce(
         (sum, service) => sum + Number(service.servicePrice || 0),
@@ -246,13 +310,15 @@ function setupCreate() {
     if (!saveBtn) return;
 
     saveBtn.onclick = async () => {
-        const customerSelect = document.getElementById("a-customer");
+        const customerInput = document.getElementById("a-customer");
         const barberSelect = document.getElementById("a-barber");
+        const serviceSelect = document.getElementById("a-service");
         const selectedServices = getSelectedServices("a-service");
         const totalCost = calculateTotalCost(selectedServices);
 
-        if (!customerSelect.value) {
-            alert("Please select a customer.");
+
+        if (!customerInput.dataset.id) {
+            alert("Please select a valid customer from suggestions.");
             return;
         }
 
@@ -270,8 +336,8 @@ function setupCreate() {
 
         await createAppointment({
             appointmentID: appointmentID,
-            customerID: customerSelect.value,
-            customer: customerSelect.options[customerSelect.selectedIndex]?.text || "",
+            customerID: customerInput.dataset.id,
+            customer: customerInput.value,
             staffID: barberSelect.value,
             barber: barberSelect.options[barberSelect.selectedIndex]?.text || "",
             services: selectedServices,
@@ -283,31 +349,51 @@ function setupCreate() {
             status: document.getElementById("a-status").value || "upcoming"
         });
 
-        modal.style.display = "none";
+        closeModal("appointmentModal");
         await loadAppointments();
+
+        //close window when click save and alert
+        alert("Appointments created successfully!");
+        modal.style.display = "none";
+
+        // keep every information when created, then when click on edit, there will show the information
+
+        const selectedServiceIds = Array.from(serviceSelect.selectedOptions).map(o => o.value);
+
+        window.lastAppointment = {
+            customerName: customerInput.value,
+            customerId: customerInput.dataset.id,
+            barberId: barberSelect.value,
+            services: selectedServices,
+            date: document.getElementById("a-date").value,
+            time: document.getElementById("a-time").value,
+            notes: document.getElementById("a-notes")?.value || "",
+            status: document.getElementById("a-status").value
+        };
+
+
+        customerInput.value = window.lastAppointment.customerName;
+        customerInput.dataset.id = window.lastAppointment.customerId;
+
+        barberSelect.value = window.lastAppointment.barberId;
+
+        document.getElementById("a-date").value = window.lastAppointment.date;
+        document.getElementById("a-time").value = window.lastAppointment.time;
+        document.getElementById("a-notes").value = window.lastAppointment.notes;
+        document.getElementById("a-status").value = window.lastAppointment.status;
+
+
+        Array.from(serviceSelect.options).forEach(option => {
+            option.selected = window.lastAppointment.services.includes(option.value);
+        });
     };
 }
 
-function populateEditDropdowns() {
-    const customerSelect = document.getElementById("edit-customer");
-    if (customerSelect) {
-        customerSelect.innerHTML = `<option value="">Select Customer</option>`;
+//edit
+async function populateEditDropdowns() {
 
-        allCustomers.forEach(c => {
-            const option = document.createElement("option");
-            option.value = c.id;
 
-            const displayName =
-                c.name ||
-                [c.firstName, c.lastName].filter(Boolean).join(" ").trim() ||
-                c.customerName ||
-                "Unknown Customer";
-
-            option.textContent = displayName;
-            customerSelect.appendChild(option);
-        });
-    }
-
+    //show the barber name in edit
     const barberSelect = document.getElementById("edit-barber");
     if (barberSelect) {
         barberSelect.innerHTML = `<option value="">Select Barber</option>`;
@@ -322,17 +408,21 @@ function populateEditDropdowns() {
             });
     }
 
+
+    //show the serive in edit
     const serviceSelect = document.getElementById("edit-service");
     if (serviceSelect) {
-        serviceSelect.innerHTML = `<option value="">Select Service</option>`;
+        serviceSelect.innerHTML = "";
 
         allServices.forEach(s => {
             const option = document.createElement("option");
             option.value = s.id;
-            option.textContent = s.serviceName;
+            option.textContent = `${s.serviceName} - $${s.price}`;
             serviceSelect.appendChild(option);
         });
     }
+
+
 }
 
 function setupTableEvents() {
@@ -344,20 +434,62 @@ function setupTableEvents() {
         const deleteBtn = e.target.closest(".delete");
 
         if (editBtn) {
+
+
+
             const appointment = allAppointments.find(
                 a => a.id === editBtn.dataset.id
             );
 
             if (!appointment) return;
 
-            populateEditDropdowns();
+            await populateEditDropdowns();
 
             document.getElementById("edit-id").value = appointment.id;
             document.getElementById("edit-date").value = appointment.date || "";
             document.getElementById("edit-time").value = appointment.time || "";
             document.getElementById("edit-status").value = appointment.status || "upcoming";
+            //AUTO SHOW IF ALREADY "in process"
+            if(appointment.status === "in-process"){
+                const section = document.getElementById("supply-section");
+                if(section){
+                    section.style.display = "block";
+                    await loadSuppliesForAppointment(appointment.suppliesUsed || []);
+                }
+            }
 
-            document.getElementById("edit-customer").value = appointment.customerID || "";
+            document.getElementById("editAppointmentModal").style.display = "block";
+
+            setupCustomerAutocomplete("edit-customer", "edit-customer-suggestions");
+
+            // FORCE BIND AFTER MODAL OPENS
+            const statusSelect = document.getElementById("edit-status");
+
+            if(statusSelect){
+                statusSelect.onchange = async function(){
+
+                    console.log("STATUS CHANGED:", this.value);
+
+                    const section = document.getElementById("supply-section");
+
+                    if(!section){
+                        console.error("NO supply-section");
+                        return;
+                    }
+
+                    if(this.value === "in-process"){
+                        section.style.display = "block";
+                        await loadSuppliesForAppointment(appointment.suppliesUsed || []);
+                    } else {
+                        section.style.display = "none";
+                    }
+                };
+            }
+            const editCustomerInput = document.getElementById("edit-customer");
+
+            editCustomerInput.value = appointment.customer || "";
+            editCustomerInput.dataset.id = appointment.customerID || "";
+
             document.getElementById("edit-barber").value = appointment.staffID || "";
             const selectedServiceIds = Array.isArray(appointment.services)
                 ? appointment.services.map(service => service.serviceId)
@@ -379,20 +511,26 @@ function setupTableEvents() {
     };
 }
 
+//update
 function setupUpdateButton() {
     const updateBtn = document.getElementById("updateAppointment");
     if (!updateBtn) return;
 
     updateBtn.onclick = async () => {
+        if (!allSupplies.length) {
+            allSupplies = await getSupplies();
+        }
+
         const id = document.getElementById("edit-id").value;
 
-        const customerSelect = document.getElementById("edit-customer");
+        const customerInput = document.getElementById("edit-customer");
         const barberSelect = document.getElementById("edit-barber");
         const selectedServices = getSelectedServices("edit-service");
         const totalCost = calculateTotalCost(selectedServices);
 
-        if (!customerSelect.value) {
-            alert("Please select a customer.");
+
+        if (!customerInput.dataset.id) {
+            alert("Please select a valid customer from suggestions.");
             return;
         }
 
@@ -410,10 +548,65 @@ function setupUpdateButton() {
             document.getElementById("edit-note") ||
             document.getElementById("edit-notes");
 
+        //supply list appear when status changes to in process
+        const status = document.getElementById("edit-status").value;
+        //test
+        console.log("UPDATE CLICKED");
+        console.log("STATUS VALUE:", status);
+
+        let suppliesUsed = [];
+
+        if (status.toLowerCase().includes("process")) {
+
+            const selectedSupplies = getSelectedSupplies();
+            console.log("selectedSupplies:", selectedSupplies);
+
+            for (const s of selectedSupplies) {
+
+                const item = allSupplies.find(i => i.id === s.id);
+                if (!item) continue;
+
+                const newQty = (item.quantity || 0) - s.quantity;
+
+                if (newQty < 0) {
+                    alert("Not enough stock for " + item.itemName);
+                    continue;
+                }
+
+                await updateSupply(s.id, {
+                    ...item,
+                    quantity: newQty
+                });
+
+                // save supplies used
+                suppliesUsed.push({
+                    id: s.id,
+                    name: item.itemName,
+                    quantity: s.quantity
+                });
+            }
+        }
+        const currentAppointment = allAppointments.find(a => a.id === id);
+
+        const oldSupplies = Array.isArray(currentAppointment?.suppliesUsed)
+            ? currentAppointment.suppliesUsed
+            : [];
+
+        const mergedSupplies = [...oldSupplies];
+
+        suppliesUsed.forEach(newItem => {
+            const existing = mergedSupplies.find(i => i.id === newItem.id);
+            if (existing) {
+                existing.quantity += newItem.quantity;
+            } else {
+                mergedSupplies.push(newItem);
+            }
+        });
+
         try {
             await updateAppointment(id, {
-                customerID: customerSelect.value,
-                customer: customerSelect.options[customerSelect.selectedIndex]?.text || "",
+                customerID: customerInput.dataset.id,
+                customer: customerInput.value,
                 staffID: barberSelect.value,
                 barber: barberSelect.options[barberSelect.selectedIndex]?.text || "",
                 services: selectedServices,
@@ -422,10 +615,11 @@ function setupUpdateButton() {
                 totalCost: totalCost,
                 time: document.getElementById("edit-time").value,
                 notes: noteField?.value || "",
+                suppliesUsed: mergedSupplies,
                 status: document.getElementById("edit-status").value
             });
 
-            document.getElementById("editAppointmentModal").style.display = "none";
+            closeModal("editAppointmentModal");
             await loadAppointments();
         } catch (error) {
             console.error("Failed to update appointment:", error);
@@ -438,14 +632,262 @@ function setupCancelButtons() {
     const cancelCreateBtn = document.getElementById("cancelAppointment");
     if (cancelCreateBtn) {
         cancelCreateBtn.onclick = () => {
-            document.getElementById("appointmentModal").style.display = "none";
+            cancelCreateBtn.onclick = () => closeModal("appointmentModal");
         };
     }
 
     const cancelEditBtn = document.getElementById("cancelEditAppointment");
     if (cancelEditBtn) {
         cancelEditBtn.onclick = () => {
-            document.getElementById("editAppointmentModal").style.display = "none";
+            cancelEditBtn.onclick = () => closeModal("editAppointmentModal");
         };
     }
+}
+
+//add note to customer module
+
+async function addNoteToCustomer(customerId, entry){
+    const customers = await getCustomers();
+    const customer = customers.find(c => c.id === customerId);
+    if(!customer) return;
+
+    const history = customer.history || [];
+    history.push(entry);
+
+    const { updateCustomer } = await import("../BarberShopWebsite/Collections/customers.js");
+
+    await updateCustomer(customerId, {
+        ...customer,
+        history: history
+    });
+}
+
+function hookCreateHistory(){
+    setTimeout(()=>{
+        const btn = document.getElementById("saveAppointment");
+        if(!btn) return;
+
+        const original = btn.onclick;
+
+        btn.onclick = async function(){
+            if(original){
+                await original.apply(this, arguments);
+            }
+
+            const customerSelect = document.getElementById("a-customer");
+            const barberSelect = document.getElementById("a-barber");
+            const note = document.getElementById("a-notes")?.value || "";
+
+            if(note){
+                await addNoteToCustomer(customerSelect.value,{
+                    date: document.getElementById("a-date").value,
+                    note: note,
+                    staff: barberSelect.options[barberSelect.selectedIndex]?.text || ""
+                });
+            }
+        };
+    },300);
+}
+
+function hookUpdateHistory(){
+    setTimeout(()=>{
+        const btn = document.getElementById("updateAppointment");
+        if(!btn) return;
+
+        const original = btn.onclick;
+
+        btn.onclick = async function(){
+            if(original){
+                await original.apply(this, arguments);
+
+            }
+
+            const customerSelect = document.getElementById("edit-customer");
+            const barberSelect = document.getElementById("edit-barber");
+
+            const noteField =
+                document.getElementById("edit-note") ||
+                document.getElementById("edit-notes");
+
+            const note = noteField?.value || "";
+
+            if(note){
+                await addNoteToCustomer(customerSelect.dataset.id,{
+                    date: document.getElementById("edit-date").value,
+                    note: note,
+                    staff: barberSelect.options[barberSelect.selectedIndex]?.text || ""
+                });
+            }
+        };
+    },300);
+}
+
+
+//load supplies
+let allSupplies = [];
+
+async function loadSuppliesForAppointment(existingSupplies = []) {
+
+    allSupplies = await getSupplies();
+
+    const container = document.getElementById("supply-list");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    allSupplies.forEach(item => {
+
+        const existing = existingSupplies.find(s => s.id === item.id);
+
+        const checked = existing ? "checked" : "";
+        const qty = existing ? existing.quantity : "";
+
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            <label>
+                <input type="checkbox" class="supply-check" value="${item.id}" ${checked}>
+                ${item.itemName} (${item.quantity} ${item.unit || ""})
+            </label>
+            <input type="number" min="1" value="${qty}" class="supply-qty" data-id="${item.id}">
+            <br>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+
+function getSelectedSupplies() {
+
+    const result = [];
+
+    const container = document.getElementById("supply-list"); // ✅ FIX
+
+    if (!container) return result;
+
+    container.querySelectorAll(".supply-qty").forEach(input => {
+
+        const id = input.dataset.id;
+        const qty = parseInt(input.value || "0");
+
+        if (qty > 0) {
+            result.push({
+                id,
+                quantity: qty
+            });
+        }
+    });
+
+    return result;
+    //test
+    console.log("selectedSupplies:", selectedSupplies);
+}
+
+function sortAppointments(list, column, direction) {
+    return [...list].sort((a, b) => {
+        let valA = "";
+        let valB = "";
+
+        switch (column) {
+            case "id":
+                valA = a.appointmentID || a.id || "";
+                valB = b.appointmentID || b.id || "";
+                break;
+            case "customer":
+                valA = userCache[a.customerUid] || a.customer || "";
+                valB = userCache[b.customerUid] || b.customer || "";
+                break;
+            case "barber":
+                valA = a.barber || "";
+                valB = b.barber || "";
+                break;
+            case "service":
+                valA = a.serviceName || a.serviceID || "";
+                valB = b.serviceName || b.serviceID || "";
+                break;
+            case "date":
+                valA = a.date || "";
+                valB = b.date || "";
+                break;
+            case "time":
+                valA = a.time || "";
+                valB = b.time || "";
+                break;
+            case "status":
+                valA = a.status || "";
+                valB = b.status || "";
+                break;
+            default:
+                return 0;
+        }
+
+        return direction === "asc"
+            ? valA.localeCompare(valB)
+            : valB.localeCompare(valA);
+    });
+}
+
+function setupSorting() {
+    const headers = document.querySelectorAll("th[data-sort]");
+
+    headers.forEach(th => {
+        th.style.cursor = "pointer";
+
+        th.addEventListener("click", () => {
+            const column = th.dataset.sort;
+
+            if (sortState.column === column) {
+                sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+            } else {
+                sortState.column = column;
+                sortState.direction = "asc";
+            }
+
+            // Update arrow indicators on all headers
+            headers.forEach(h => {
+                const arrow = h.querySelector(".sort-arrow");
+                if (arrow) arrow.textContent = "";
+            });
+
+            const activeArrow = th.querySelector(".sort-arrow");
+            if (activeArrow) {
+                activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
+            }
+
+            const currentList = getCurrentFilteredList();
+            const sorted = sortAppointments(currentList, sortState.column, sortState.direction);
+            renderTable(sorted);
+        });
+    });
+}
+
+function getCurrentFilteredList() {
+    const input = document.getElementById("searchAppointment");
+    const term = input?.value.toLowerCase() || "";
+
+    if (!term) return allAppointments;
+
+    return allAppointments.filter(a => {
+        const name = (userCache[a.customerUid] || a.customer || "").toLowerCase();
+        return (
+            name.includes(term) ||
+            (a.barber || "").toLowerCase().includes(term) ||
+            (a.serviceName || a.service || "").toLowerCase().includes(term) ||
+            (a.date || "").toLowerCase().includes(term) ||
+            (a.time || "").toLowerCase().includes(term) ||
+            (a.notes || "").toLowerCase().includes(term)
+        );
+    });
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+
+    modal.classList.add("fade-out");
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("fade-out");
+    }, 150);
 }

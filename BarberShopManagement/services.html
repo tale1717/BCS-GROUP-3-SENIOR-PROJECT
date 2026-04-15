@@ -39,6 +39,7 @@
             <a href="services.html">Services</a>
             <a href="Inventory.html">Inventory</a>
             <a href="rating.html">Ratings</a>
+            <a href="reports.html">Reports</a>
             <a class="book-now" href="profile.html">Profile</a>
         </nav>
     </div>
@@ -79,10 +80,10 @@
 
                 <thead>
                 <tr>
-                    <th>ServiceID</th>
-                    <th>Service Name</th>
-                    <th>Price</th>
-                    <th>Estimated Time</th>
+                    <th data-sort="id">ID <span class="sort-arrow"></span></th>
+                    <th data-sort="name">Service Name <span class="sort-arrow"></span></th>
+                    <th data-sort="price">Price <span class="sort-arrow"></span></th>
+                    <th data-sort="duration">Duration <span class="sort-arrow"></span></th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -102,61 +103,61 @@
 
 <div id="serviceModal" class="modal">
 
-    <div class="modal-content">
+    <div class="modal-content service-content">
+        <h2>Create Service</h2> <br>
 
-        <h2 class="logintitletext">Create Service</h2>
+        <div class="window-grid service-grid">
+            <div>
+                <label class="text">Service Name</label><br>
+                <input id="s-name" class="text-style" placeholder="Service Name">
+            </div>
 
-        <label class="text">Service Name</label><br><br>
-        <input id="s-name" class="text-field" placeholder="Service Name"><br><br>
+            <div>
+                <label class="text">Price</label><br>
+                <input id="s-price" class="text-style" placeholder="Price">
+            </div>
 
-        <label class="text">Price</label><br><br>
-        <input id="s-price" class="text-field" placeholder="Price"><br><br>
-
-        <label class="text">Estimated Time (minutes)</label><br><br>
-        <input id="s-duration" class="text-field" placeholder="Duration"><br><br>
-
-        <div class="modal-action-forButtons">
-
-            <button id="saveService" class="create-buttons">
-                Create
-            </button>
-
-            <button id="cancelService" class="cancel-buttons">
-                Cancel
-            </button>
-
+            <div>
+                <label class="text">Estimated Time (minutes)</label><br>
+                <input id="s-duration" class="text-style" placeholder="Duration">
+            </div>
         </div>
 
-
+        <div class="modal-action-forButtons">
+            <button id="saveService" class="edit">Create</button>
+            <button id="cancelService" class="cancel-buttons">Cancel</button>
+        </div>
     </div>
 
 </div>
 
 <div id="editModal" class="modal">
-    <div class="modal-content">
-        <h2>Edit Service</h2>
+    <div class="modal-content service-content">
+        <h2>Edit Service</h2> <br>
 
         <input type="hidden" id="edit-id">
 
-        <label>Service Name</label><br><br>
-        <input id="edit-name" class="text-field"><br><br>
+        <div class="window-grid service-grid">
+            <div>
+                <label>Service Name</label><br>
+                <input id="edit-name" class="text-style">
+            </div>
 
-        <label>Price</label><br><br>
-        <input id="edit-price" class="text-field"><br><br>
+            <div>
+                <label>Price</label><br>
+                <input id="edit-price" class="text-style">
+            </div>
 
-        <label>Duration</label><br><br>
-        <input id="edit-duration" class="text-field"><br><br>
 
-        <div class="modal-actions">
+            <div>
+                <label>Duration</label><br>
+                <input id="edit-duration" class="text-style">
+            </div>
+        </div>
 
-            <button id="updateService" class="create-buttons">
-                Update
-            </button>
-
-            <button id="cancelEdit" class="cancel-buttons">
-                Cancel
-            </button>
-
+        <div class="modal-action-forButtons">
+            <button id="updateService" class="edit">Update</button>
+            <button id="cancelEdit" class="cancel-buttons">Cancel</button>
         </div>
 
     </div>

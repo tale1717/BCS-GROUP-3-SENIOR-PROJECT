@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const logoutBtn = document.getElementById("logoutBtn");
 
+    if(!logoutBtn) return;
+
     logoutBtn.addEventListener("click", async (e) => {
 
         e.preventDefault(); // stops page jump

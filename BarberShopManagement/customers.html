@@ -35,6 +35,7 @@
             <a href="services.html">Services</a>
             <a href="Inventory.html">Inventory</a>
             <a href="rating.html">Ratings</a>
+            <a href="reports.html">Reports</a>
             <a class="book-now" href="profile.html">Profile</a>
         </nav>
     </div>
@@ -70,13 +71,13 @@
 
                 <thead>
 
-                <tr>
-                    <th>Customer ID</th>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Email</th>
+                <tr>         
+                    <th data-sort="id">ID <span class="sort-arrow"></span></th>
+                    <th data-sort="name">Name <span class="sort-arrow"></span></th>
+                    <th data-sort="phone">Phone <span class="sort-arrow"></span></th>
+                    <th data-sort="email">Email <span class="sort-arrow"></span></th>
+                    <th>History</th>
                     <th>Actions</th>
-
                 </tr>
 
                 </thead>
@@ -96,17 +97,33 @@
 <!-- create customer -->
 <div id="createModal" class="modal">
     <div class="modal-content">
-        <h2>Create Customer</h2><br><br>
-        <label class="text">Customer First Name</label>
-        <input id="c-firstName" class="text-field" placeholder="First Name" /> <br><br>
-        <label class="text">Customer Last Name</label>
-        <input id="c-lastName" class="text-field" placeholder="Last Name" /> <br><br>
-        <label class="text">Customer Phone</label>
-        <input id="c-phone" class="text-field" placeholder="Phone" /> <br><br>
-        <label class="text">Customer Email</label>
-        <input id="c-email" class="text-field" placeholder="Email" /> <br><br>
+        <h2>Create New Customer</h2><br>
+
+        <div class="window-grid">
+            <div>
+                <label class="text">First Name</label>
+                <input id="c-firstName" class="text-style" placeholder="First Name" /> <br>
+            </div>
+
+            <div>
+                <label class="text">Last Name</label>
+                <input id="c-lastName" class="text-style" placeholder="Last Name" /> <br><br>
+            </div>
+
+            <div>
+                <label class="text">Phone Number</label>
+                <input id="c-phone" class="text-style" placeholder="Phone Number" /> <br><br>
+            </div>
+
+            <div>
+                <label class="text">Email Address</label>
+                <input id="c-email" class="text-style" placeholder="Email" /> <br><br>
+            </div>
+
+        </div>
+
         <div class="modal-action-forButtons">
-            <button id="saveCreate" class="create-buttons">Save</button>
+            <button id="saveCreate" class="edit">Save</button>
             <button id="cancelCreate" class="cancel-buttons">Cancel</button>
         </div>
     </div>
@@ -117,20 +134,41 @@
 
         <div class="modal-content">
 
-            <h2>Edit Customer</h2>
+            <h2>Edit Customer</h2> <br>
 
-            <input type="hidden" id="edit-id">
-            <label class="text">Customer First Name</label>
-            <input id="edit-firstName" class="text-field"> <br><br>
-            <label class="text">Customer Last Name</label>
-            <input id="edit-lastName" class="text-field"> <br><br>
-            <label class="text">Customer Phone</label>
-            <input id="edit-phone" class="text-field"> <br><br>
-            <label class="text">Customer Email</label>
-            <input id="edit-email" class="text-field"> <br><br>
+            <label>Customer ID: </label>
+            <input id="edit-id" readonly> <br><br>
+
+            <div class="window-grid">
+                <div>
+                    <label class="text">First Name</label> <br>
+                    <input id="edit-firstName" class="text-style">
+                </div>
+
+                <div>
+                    <label class="text">Last Name</label> <br>
+                    <input id="edit-lastName" class="text-style">
+                </div>
+
+                <div>
+                    <label class="text">Phone Number</label> <br>
+                    <input id="edit-phone" class="text-style">
+                </div>
+
+                <div>
+                    <label class="text">Email Address</label> <br>
+                    <input id="edit-email" class="text-style">
+                </div>
+
+                <div>
+                    <label class="text">History</label><br>
+                    <textarea id="history-input" class="text-style"></textarea>
+                </div>
+
+            </div>
 
             <div class="modal-action-forButtons">
-                <button id="updateCustomer" class="create-buttons">Update</button>
+                <button id="updateCustomer" class="edit">Update</button>
                 <button id="cancelEdit" class="cancel-buttons">Cancel</button>
 
             </div>
@@ -141,6 +179,25 @@
 
 </div>
 
+<!--History pop up-->
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <h3>Customer History</h3>
+
+        <div id="history-list" style="max-height:200px; overflow:auto;"></div>
+
+        <br>
+        <textarea id="new-history-note" class="text-style" placeholder="Add note"></textarea>
+
+        <br>
+
+        <div class="modal-action-forButtons">
+            <button id="saveHistoryNote" class="edit">Add</button>
+            <button id="closeHistoryModal" class="cancel-buttons">Close</button>
+        </div>
+
+    </div>
+</div>
 
 </body>
 </html>

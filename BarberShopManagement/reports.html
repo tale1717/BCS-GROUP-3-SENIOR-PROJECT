@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory</title>
+    <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <script type="module" src="reportModule.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+        .card:hover {
+            transform: none;
+            box-shadow: none;
+            cursor: default;
+        }
+        table, th, td {
+            border: 0;
+        }
+        th {
+            border-bottom: 1px solid gray;
+        }
+    </style>
+    <script type="module" src="logout.js"></script>
+</head>
+
+<body>
+
+<header>
+    <div class="container nav">
+        <a href="dashboard.html">
+            <h1  class="logo">TRIPLE T&G MANAGEMENT</h1>
+        </a>
+        <nav>
+            <a href="appointments.html">Appointments</a>
+            <a href="customers.html">Customers</a>
+            <a href="staff.html">Employees</a>
+            <a href="services.html">Services</a>
+            <a href="Inventory.html">Inventory</a>
+            <a href="rating.html">Ratings</a>
+            <a href="reports.html">Reports</a>
+            <a class="book-now" href="profile.html">Profile</a>
+        </nav>
+    </div>
+</header>
+
+<div class="app-container">
+
+    <main class="content">
+
+        <header class="page-header">
+            <div>
+                <h1>Reports</h1>
+                <p>Generate Reports</p>
+            </div>
+        </header>
+
+        <div class="card">
+            <h2>Appointment Reports</h2><br>
+            <div class="grid">
+                <button class="report-button" onclick="exportAppointmentsReport('today')">Today's Appointments</button>
+                <button class="report-button" onclick="exportAppointmentsReport('week')">This Week</button>
+                <button class="report-button" onclick="exportAppointmentsReport('year')">This Year</button>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <h2>Inventory Reports</h2><br>
+            <div class="grid">
+                <button class="report-button" onclick="exportSuppliesReport()">Supplies Report</button> <br><br>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <h2>Employee Reports</h2><br>
+            <div class="grid">
+                <button class="report-button" onclick="exportBarberReport()">Barber Performance</button><br><br>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <h2>Customer Reports</h2><br>
+            <div class="card">
+                <h3>Visit Reports</h3><br>
+                <div class="grid">
+                    <button class="report-button" onclick="exportCustomerReport('today','visit')">Today's Visits</button>
+                    <button class="report-button" onclick="exportCustomerReport('week','visit')">This Week Visits</button>
+                    <button class="report-button" onclick="exportCustomerReport('month','visit')">This Month Visits</button><br><br>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <h3>New Customer Reports</h3><br>
+                <div class="grid">
+                    <button class="report-button" onclick="exportCustomerReport('today','new')">New Customers Today</button>
+                    <button class="report-button" onclick="exportCustomerReport('week','new')">New Customers This Week</button>
+                    <button class="report-button" onclick="exportCustomerReport('month','new')">New Customers This Month</button>
+                </div>
+            </div>
+        </div>
+        <br>
+
+    </main>
+</div>
+</body>
+</html>

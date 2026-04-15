@@ -36,6 +36,7 @@
             <a href="services.html">Services</a>
             <a href="Inventory.html">Inventory</a>
             <a href="rating.html">Ratings</a>
+            <a href="reports.html">Reports</a>
             <a class="book-now" href="profile.html">Profile</a>
         </nav>
     </div>
@@ -74,15 +75,16 @@
 
                 <thead>
                 <tr>
-                    <th>Appointment ID</th>
-                    <th>Customer</th>
-                    <th>Barber</th>
-                    <th>Service</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Note</th>
-                    <th>Status</th>
-                    <th>Total Cost</th>
+                    <th data-sort="id">ID <span class="sort-arrow"></span></th>
+                    <th data-sort="customer">Customer <span class="sort-arrow"></span></th>
+                    <th data-sort="barber">Barber <span class="sort-arrow"></span></th>
+                    <th data-sort="service">Service <span class="sort-arrow"></span></th>
+                    <th data-sort="date">Date <span class="sort-arrow"></span></th>
+                    <th data-sort="time">Time <span class="sort-arrow"></span></th>
+                    <th>Notes</th>
+                    <th>Supplies Used</th>
+                    <th data-sort="status">Status <span class="sort-arrow"></span></th>
+                    <th data-sort="total cost">Total Cost <span class="sort-arrow"></span><th/>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -103,33 +105,57 @@
 
     <div class="modal-content">
 
-        <h2>Create Appointment</h2>
-        <label>Customer Name</label> <br><br>
-        <select id="a-customer">
-            <option value="">Select Customer</option>
-        </select><br><br>
-        <label>Barber Name</label> <br><br>
-        <select id="a-barber">
-            <option value="">Select Barber</option>
-        </select><br><br>
-        <label>Service</label> <br><br>
-        <select id="a-service" multiple size="6"></select>
-        <label>Date</label> <br><br>
-        <input type="date" id="a-date"> <br><br>
-        <label>Time</label> <br><br>
-        <input type="time" id="a-time"> <br><br>
-        <label>Notes</label>
-        <textarea id="a-notes"
-                  placeholder="Appointment notes"></textarea>
+        <h2>Create Appointment</h2> <br>
 
+        <div class="window-grid">
+            <div>
+                <label>Customer Name</label> <br>
+                <select class="select" id="a-customer">
+                    <option value="">Select Customer</option>
+                </select>
+            </div>
 
-        <select id="a-status">
-            <option value="confirmed">Confirmed</option>
-            <option value="cancelled">Cancelled</option>
-        </select>
+            <div>
+                <label>Barber Name</label> <br>
+                <select id="a-barber">
+                    <option value="">Select Barber</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Services</label> <br>
+                <select id="a-service" multiple size="6"></select>
+            </div>
+
+            <div>
+                <div>
+                    <label>Date</label> <br>
+                    <input type="date" id="a-date" class="text-style"> <br>
+                </div>
+                <br>
+                <div>
+                    <label>Time</label> <br>
+                    <input type="time" id="a-time" class="text-style"> <br>
+                </div>
+            </div>
+
+            <div>
+                <label>Notes</label> <br>
+                <textarea id="a-notes" placeholder="Appointment notes"></textarea>
+            </div>
+
+            <div>
+                <label>Status</label> <br>
+                <select id="a-status">
+                    <option value="confirmed" class="confirmed">Confirmed</option>
+                    <option value="cancelled" class="cancelled">Cancelled</option>
+                </select>
+            </div>
+        </div>
+
         <div class="modal-action-forButtons">
-            <button id="saveAppointment">Save Appointment</button>
-            <button id="cancelAppointment">Cancel</button>
+            <button id="saveAppointment" class="edit">Save Appointment</button>
+            <button id="cancelAppointment" class="cancel-buttons">Cancel</button>
         </div>
 
     </div>
@@ -142,42 +168,69 @@
 
     <div class="modal-content">
 
-        <h2>Edit Appointment</h2>
+        <h2 class="window-title">Edit Appointment</h2> <br>
 
-        <lable>Appointment ID</lable>
-        <input id= "edit-id" readonly> <br><br>
+        <label>Appointment ID: </label>
+        <input id="edit-id" readonly> <br><br>
 
-        <label>Customer Name</label> <br><br>
-        <select id="edit-customer"></select> <br><br>
-        <label>Barber Name</label> <br><br>
-        <select id="edit-barber"></select><br><br>
-        <label>Service</label> <br><br>
-        <select id="edit-service" multiple size="6"></select>
-        <label>Date</label> <br><br>
-        <input type="date" id="edit-date"> <br><br>
-        <label>Time</label> <br><br>
-        <input type="time" id="edit-time"> <br><br>
-        <label>Note</label> <br><br>
-        <textarea id="edit-notes"></textarea> <br><br>
-        <label>Status</label> <br><br>
-        <select id="edit-status">
+        <div class="window-grid">
+            <div>
+                <label>Customer Name</label> <br>
+                <select id="edit-customer"></select> <br>
+            </div>
 
-            <option value="confirmed">Confirmed</option>
+            <div>
+                <label>Barber Name</label> <br>
+                <select id="edit-barber"></select><br>
+            </div>
 
-            <option value="completed">Completed</option>
+            <div>
+                <label>Service</label> <br>
+                <select id="edit-service" multiple size="6"></select>
+            </div>
 
-            <option value="cancelled">Cancelled</option>
+            <div>
+                <div>
+                    <label>Date</label> <br>
+                    <input type="date" id="edit-date" class="text-style"> <br>
+                </div>
+                <br>
+                <div>
+                    <label>Time</label> <br>
+                    <input type="time" id="edit-time" class="text-style"> <br>
+                </div>
+            </div>
+
+            <div>
+                <label>Note</label> <br>
+                <textarea id="edit-notes"></textarea> <br>
+            </div>
 
 
-        </select>
+
+
+            <div>
+                <label>Status</label> <br>
+                <select id="edit-status">
+                    <option value="confirmed" class="confirmed">Confirmed</option>
+                    <option value="cancelled" class="cancelled">Cancelled</option>
+                    <option value="in-process">In Process</option>
+                    <option value="completed" class="completed">Completed</option>
+                </select>
+
+                <div id="supply-section" style="display:none;">
+                    <br>
+                    <h4>Supplies Used</h4>
+                    <div id="supply-list"></div>
+                </div>
+            </div>
+        </div>
 
         <div class="modal-action-forButtons">
 
-            <button id="updateAppointment" class="edit">Update
-            </button>
+            <button id="updateAppointment" class="edit">Update</button>
 
-            <button id="cancelEditAppointment" class="cancel-buttons">Cancel
-            </button>
+            <button id="cancelEditAppointment" class="cancel-buttons">Cancel</button>
 
         </div>
 
