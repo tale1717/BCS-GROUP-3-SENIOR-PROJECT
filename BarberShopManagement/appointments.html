@@ -105,9 +105,8 @@
 
         <h2>Create Appointment</h2>
         <label>Customer Name</label> <br><br>
-        <select id="a-customer">
-            <option value="">Select Customer</option>
-        </select><br><br>
+        <input id="a-customer" placeholder="Type customer name">
+        <div id="customer-suggestions" class="suggestions-box"></div><br><br>
         <label>Barber Name</label> <br><br>
         <select id="a-barber">
             <option value="">Select Barber</option>
@@ -149,7 +148,8 @@
         <input id= "edit-id" readonly> <br><br>
 
         <label>Customer Name</label> <br><br>
-        <select id="edit-customer"></select> <br><br>
+        <input id="edit-customer">
+        <div id="edit-customer-suggestions" class="suggestions-box"></div> <br><br>
         <label>Barber Name</label> <br><br>
         <select id="edit-barber"></select><br><br>
         <label>Service</label> <br><br>
