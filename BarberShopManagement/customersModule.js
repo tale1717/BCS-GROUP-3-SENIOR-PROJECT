@@ -16,7 +16,7 @@ async function init(){
     setupCreate();
     setupSearch();
     setupUpdate();
-    setupCancelEdit();
+    setupCancelButtons();
     setupSorting();
 
     formatPhoneNumber(document.getElementById("c-phone"));
@@ -164,7 +164,7 @@ function setupCreate(){
             history: []
         });
 
-        modal.style.display = "none";
+        closeModal("createModal");
         loadCustomers();
     };
 }
@@ -211,7 +211,6 @@ function setupUpdate(){
 
             document.getElementById("history-input").value = "";
         }
-        closeModal("createModal");
 
         await updateCustomer(id, {
             ...customer,
@@ -222,7 +221,7 @@ function setupUpdate(){
             history: customer.history
         });
 
-        document.getElementById("editModal").style.display = "none";
+        closeModal("editModal");
 
         loadCustomers();
     };
@@ -230,10 +229,13 @@ function setupUpdate(){
 
 
 // Cancel
-function setupCancelEdit(){
-    document.getElementById("cancelEdit").onclick = () => {
-        document.getElementById("editModal").style.display = "none";
+function setupCancelButtons(){
+    document.getElementById("cancelCreate").onclick = () => {
+        closeModal("createModal");
     };
+    document.getElementById("cancelEdit").onclick = () => {
+        closeModal("editModal");
+    }
 }
 
 
@@ -295,7 +297,6 @@ function renderHistoryPopup(customer){
 
     (customer.history || []).forEach(h=>{
         const div = document.createElement("div");
-        closeModal("editModal");
 
         loadCustomers();
 
@@ -326,7 +327,6 @@ document.getElementById("saveHistoryNote")?.addEventListener("click", async ()=>
         note,
         staff: "Manual"
     });
-        closeModal("editModal");
 
     await updateCustomer(currentCustomerId, customer);
 
@@ -341,7 +341,7 @@ const closeBtn = document.getElementById("closeHistoryModal");
 
 if(closeBtn){
     closeBtn.onclick = ()=>{
-        document.getElementById("historyModal").style.display = "none";
+        closeModal("historyModal");
     };
 }
 
@@ -361,9 +361,8 @@ async function addNoteToCustomer(customerId, entry){
         ...customer,
         history
     });
-}
 
-window.addNoteToCustomer = addNoteToCustomer;
+    window.addNoteToCustomer = addNoteToCustomer;
 }
 
 function sortCustomers(list, column, direction) {

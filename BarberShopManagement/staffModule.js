@@ -87,7 +87,7 @@ function renderTable(list) {
             <td>${s.staffID || ""}</td>
             <td>${s.name || ""}</td>
             <td>${s.phone || ""}</td>
-            <td>${s.email || ""}</td>
+            <td style="overflow-wrap: break-word;">${s.email || ""}</td>
             <td>${s.address || ""}</td>
             <td>${s.position || ""}</td>
             <td>${Array.isArray(s.services) ? s.services.join(", ") : ""}</td>

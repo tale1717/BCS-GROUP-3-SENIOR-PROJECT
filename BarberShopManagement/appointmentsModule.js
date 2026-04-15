@@ -768,7 +768,7 @@ function getSelectedSupplies() {
     return result;
     //test
     console.log("selectedSupplies:", selectedSupplies);
-
+}
 
 function sortAppointments(list, column, direction) {
     return [...list].sort((a, b) => {

@@ -27,6 +27,7 @@ async function init(){
     setupCancelEdit();
     setupAlertEdit();
     setupSorting();
+    setupTableActions()
 
 }
 
@@ -85,7 +86,7 @@ ${status}
 <td>${s.expiryDate||""}</td>
 <td>${s.supplierName||""}</td>
 <td>${s.supplierPhone||""}</td>
-<td>${s.supplierEmail||""}</td>
+<td style="overflow-wrap: break-word;">${s.supplierEmail||""}</td>
 <td>${s.supplierAddress||""}</td>
 <td>
 <button
@@ -100,8 +101,8 @@ class="delete" data-id="${s.id}">Delete</button>
 
     });
 
-    setupDelete();
-    setupEdit();
+    // setupDelete();
+    // setupEdit();
 
 }
 
@@ -210,7 +211,7 @@ function setupCreate(){
             });
 
 
-            closeModal(modal);
+            closeModal("createModal");
 
             loadSupplies();
 
@@ -228,12 +229,9 @@ function setupEdit(){
 
             btn.onclick=()=>{
 
-                const item=
-                    allSupplies.find(
-
-                        s=>s.id===btn.dataset.id
-
-                    );
+                const item = allSupplies.find(
+                    s => String(s.id) === btn.dataset.id
+                );
 
                 document.getElementById("edit-id").value=
                     item.id;
@@ -549,4 +547,37 @@ function closeModal(modalId) {
         modal.style.display = "none";
         modal.classList.remove("fade-out");
     }, 150);
+}
+
+function setupTableActions() {
+    const body = document.getElementById("supply-body");
+
+    body.addEventListener("click", e => {
+        const btn = e.target;
+        const id = btn.dataset.id;
+        if (!id) return;
+
+        if (btn.classList.contains("edit")) {
+            const item = allSupplies.find(s => String(s.id) === id);
+            if (!item) return;
+            openEditModal(item);
+        }
+
+        if (btn.classList.contains("delete")) {
+            handleDelete(id);
+        }
+    });
+}
+
+function openEditModal(item) {
+    document.getElementById("edit-id").value = item.id;
+    document.getElementById("edit-name").value = item.itemName;
+    // ...rest of your field assignments
+    document.getElementById("editModal").style.display = "block";
+}
+
+async function handleDelete(id) {
+    if (!confirm("Delete item?")) return;
+    await deleteSupply(id);
+    loadSupplies();
 }

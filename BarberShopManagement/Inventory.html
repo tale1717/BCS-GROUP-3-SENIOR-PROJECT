@@ -76,6 +76,7 @@
                     <th data-sort="id">ID <span class="sort-arrow"></span></th>
                     <th data-sort="name">Item Name <span class="sort-arrow"></span></th>
                     <th data-sort="quantity">Quantity <span class="sort-arrow"></span></th>
+                    <th data-sort="unit">Unit<span class="sort-arrow"></span></th>
                     <th data-sort="status">Status <span class="sort-arrow"></span></th>
                     <th data-sort="expiry">Expiry Date <span class="sort-arrow"></span></th>
                     <th data-sort="supplierName">Supplier Name <span class="sort-arrow"></span></th>
@@ -122,6 +123,19 @@
                     <input id="min-qty" class="text-style">
                 </div>
             </div>
+
+            <div>
+                <label>Unit</label> <br>
+                <select id="i-unit" class="text-style">
+                    <option value="">Select Unit</option>
+                    <option value="box">Box</option>
+                    <option value="tube">Tube</option>
+                    <option value="gallon">Gallon</option>
+                    <option value="bottle">Bottle</option>
+                    <option value="piece">Piece</option>
+                </select>
+            </div>
+
 
             <div>
                 <label>Expiry</label><br>
@@ -195,6 +209,18 @@
                     <label>Minimum Quantity</label><br>
                     <input id="edit-min-qty" class="text-style">
                 </div>
+            </div>
+
+            <div>
+                <label>Unit</label> <br>
+                <select id="edit-unit" class="text-style">
+                    <option value="">Select Unit</option>
+                    <option value="box">Box</option>
+                    <option value="tube">Tube</option>
+                    <option value="gallon">Gallon</option>
+                    <option value="bottle">Bottle</option>
+                    <option value="piece">Piece</option>
+                </select>
             </div>
 
             <div>
