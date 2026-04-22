@@ -1,3 +1,6 @@
+import { auth, db } from '../BarberShopWebsite/firebase.js';
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import {
     createStaff,
     getStaff,
@@ -167,12 +170,14 @@ function setupCreate() {
             const services = position === "Barber"
                 ? Array.from(document.getElementById("s-services").selectedOptions).map(o => o.value)
                 : [];
+            const email = document.getElementById("s-email").value;
+            const password = 'temp123';
 
             await createStaff({
                 staffID: id,
                 name: document.getElementById("s-name").value,
                 phone: document.getElementById("s-phone").value,
-                email: document.getElementById("s-email").value,
+                email: email,
                 address: document.getElementById("s-address").value,
                 position: position,
                 services: services,
@@ -182,6 +187,33 @@ function setupCreate() {
                 workingDays: Array.from(document.querySelectorAll('#createStaffModal input[name="days"]:checked')).map(cb => cb.value),
                 bankAccount: document.getElementById("s-bank").value
             });
+
+            try {
+                // Create the account in Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Save the user in Firestore with a default role
+                await setDoc(doc(db, 'users', user.uid), {
+                    email: user.email,
+                    role: position.toLowerCase(),
+                    createdAt: new Date()
+                });
+
+                alert('Employee account created successfully!');
+
+            } catch (error) {
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        alert('This email is already registered.');
+                        break;
+                    case 'auth/invalid-email':
+                        alert('Please enter a valid email address.');
+                        break;
+                    default:
+                        alert('Error: ' + error.message);
+                }
+            }
 
             closeModal("createStaffModal");
             await loadStaff();

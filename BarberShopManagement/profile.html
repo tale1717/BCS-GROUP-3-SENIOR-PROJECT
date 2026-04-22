@@ -15,12 +15,14 @@
             cursor: default;
         }
         body {
+            visibility: hidden;
             background-color: #f8f9fa;
         }
         header {
             background-color: white;
         }
     </style>
+    <script type="module" src="auth.js"></script>
     <script type="module" src="logout.js"></script>
 </head>
 <body>
@@ -37,6 +39,7 @@
             <a href="services.html">Services</a>
             <a href="Inventory.html">Inventory</a>
             <a href="rating.html">Ratings</a>
+            <a href="reports.html">Reports</a>
             <a class="book-now" href="profile.html">Profile</a>
         </nav>
     </div>
@@ -58,7 +61,6 @@
             <p><strong>Date of Birth:</strong> <span id="dobText">01-01-1970</span></p>
 
             <div class="button-group">
-                <button class="primary-btn" id="editBtn">Edit Profile</button>
                 <button class="primary-btn" id="pwBtn">Change Password</button>
                 <button class="primary-btn logout" id="logoutBtn">Log Out</button>
             </div>

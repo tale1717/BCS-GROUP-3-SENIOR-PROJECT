@@ -35,6 +35,7 @@ let allCustomers = [];
 let allStaff = [];
 let sortState = { column: null, direction: "asc" };
 let activeTimeframe = "all";
+let activeStatusFilter = "all";
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
@@ -67,6 +68,7 @@ async function init() {
     setupUpdateButton();
     setupCancelButtons();
     setupTimeframeFilters();
+    setupStatusFilter();
     // hookup history
     hookCreateHistory();
     hookUpdateHistory();
@@ -938,6 +940,16 @@ function filterByTimeframe(list, filter) {
     }
 }
 
+function setupStatusFilter() {
+    const select = document.getElementById("status-select");
+    if (!select) return;
+
+    select.addEventListener("change", () => {
+        activeStatusFilter = select.value;
+        renderTable(getFilteredAndSortedList());
+    });
+}
+
 function getFilteredAndSortedList() {
     const searchInput = document.getElementById("searchAppointment");
     const term = searchInput?.value.toLowerCase() || "";
@@ -961,6 +973,21 @@ function getFilteredAndSortedList() {
 
     // apply timeframe
     list = filterByTimeframe(list, activeTimeframe);
+
+    switch (activeStatusFilter) {
+        case "confirmed":
+            list = list.filter(a => a.status === "confirmed");
+            break;
+        case "in-process":
+            list = list.filter(a => a.status === "in-process");
+            break;
+        case "completed":
+            list = list.filter(a => a.status === "completed");
+            break;
+        case "cancelled":
+            list = list.filter(a => a.status === "cancelled");
+            break;
+    }
 
     // apply sort
     if (sortState.column) {
