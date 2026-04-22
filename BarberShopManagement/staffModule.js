@@ -12,6 +12,7 @@ import {
 let allStaff = [];
 let allServices = [];
 let sortState = { column: null, direction: "asc" }
+let activeStaffFilter = "all";
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -42,6 +43,7 @@ async function init() {
     setupUpdateButton();
     setupCancelButtons();
     setupSorting();
+    setupStaffFilter();
 
     formatPhoneNumber(document.getElementById("s-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
@@ -328,23 +330,8 @@ function setupSearch() {
     const input = document.getElementById("searchStaff");
     if (!input) return;
 
-    input.addEventListener("input", e => {
-        const term = e.target.value.toLowerCase();
-
-        const filtered = allStaff.filter(s =>
-            (s.name || "").toLowerCase().includes(term) ||
-            (s.phone || "").toLowerCase().includes(term) ||
-            (s.email || "").toLowerCase().includes(term) ||
-            (s.position || "").toLowerCase().includes(term)
-        );
-
-        const sorted = sortState.column
-            ? sortStaff(filtered, sortState.column, sortState.direction)
-            : filtered;
-
-        renderTable(sorted);
-
-        // renderTable(filtered);
+    input.addEventListener("input", () => {
+        renderTable(getFilteredAndSortedList());
     });
 }
 
@@ -487,18 +474,41 @@ function sortStaff(list, column, direction) {
     });
 }
 
-function getCurrentFilteredList() {
+function getFilteredAndSortedList() {
     const input = document.getElementById("searchStaff");
     const term = input?.value.toLowerCase() || "";
 
-    if (!term) return allStaff;
+    let list = allStaff;
 
-    return allStaff.filter(s =>
-        (s.name || "").toLowerCase().includes(term) ||
-        (s.phone || "").toLowerCase().includes(term) ||
-        (s.email || "").toLowerCase().includes(term) ||
-        (s.position || "").toLowerCase().includes(term)
-    );
+    // apply search
+    if (term) {
+        list = list.filter(s =>
+            (s.name || "").toLowerCase().includes(term) ||
+            (s.phone || "").toLowerCase().includes(term) ||
+            (s.email || "").toLowerCase().includes(term) ||
+            (s.position || "").toLowerCase().includes(term)
+        );
+    }
+
+    // apply position filter
+    switch (activeStaffFilter) {
+        case "barbers":
+            list = list.filter(s => s.position === "Barber");
+            break;
+        case "receptionists":
+            list = list.filter(s => s.position === "Receptionist");
+            break;
+        case "managers":
+            list = list.filter(s => s.position === "Manager");
+            break;
+    }
+
+    // apply sort
+    if (sortState.column) {
+        list = sortStaff(list, sortState.column, sortState.direction);
+    }
+
+    return list;
 }
 
 function setupSorting() {
@@ -527,9 +537,18 @@ function setupSorting() {
                 activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
             }
 
-            const sorted = sortStaff(getCurrentFilteredList(), sortState.column, sortState.direction);
-            renderTable(sorted);
+            renderTable(getFilteredAndSortedList());
         });
+    });
+}
+
+function setupStaffFilter() {
+    const select = document.getElementById("staff-select");
+    if (!select) return;
+
+    select.addEventListener("change", () => {
+        activeStaffFilter = select.value;
+        renderTable(getFilteredAndSortedList());
     });
 }
 

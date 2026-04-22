@@ -67,6 +67,29 @@
 
         </header>
 
+        <div id="timeframe-filters">
+            <label>Filter By:</label>
+            <select id="timeframe-select" class="text-style filter-select">
+                <option value="all">All</option>
+                <option value="today">Today</option>
+                <option value="this-week">This Week</option>
+                <option value="this-month">This Month</option>
+                <option value="this-year">This Year</option>
+                <option value="last-365">Last 365 Days</option>
+                <option value="custom">Custom Range...</option>
+            </select>
+
+            <!-- Only shows when "Custom Range" is selected -->
+            <div id="custom-range" style="display:none; align-items: center; gap: 8px;">
+                <label>From: </label>
+                <input type="date" id="filter-from" class="text-style">
+                <label>To: </label>
+                <input type="date" id="filter-to" class="text-style">
+                <button id="apply-range-btn" class="primary-btn">Apply</button>
+            </div>
+        </div>
+
+        <br>
 
         <!-- APPOINTMENT TABLE -->
         <div class="card">
