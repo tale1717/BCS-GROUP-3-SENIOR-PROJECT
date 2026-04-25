@@ -7,6 +7,7 @@
     <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <script type="module" src="profileModule.js"></script>
     <script type=module src="logout.js"></script>
     <style>
         .card:hover {
@@ -55,30 +56,19 @@
 
             <h2>Personal Information</h2>
 
-            <p><strong>Name:</strong> <span id="fnameText">John</span> <span id="lnameText">Doe</span></p>
-            <p><strong>Email:</strong> <span id="emailText">johndoe@email.com</span></p>
-            <p><strong>Mobile Number:</strong> <span id="mobileText">777-777-7777</span></p>
-            <p><strong>Date of Birth:</strong> <span id="dobText">01-01-1970</span></p>
+            <p><strong>Name:</strong> <span id="nameText"></span></p>
+            <p><strong>Email:</strong> <span id="emailText"></span></p>
+            <p><strong>Mobile Number:</strong> <span id="mobileText"></span></p>
+            <p><strong>Position:</strong> <span id="positionText"></span></p>
+            <p><strong>Date Joined:</strong> <span id="startDateText"></span></p>
 
             <div class="button-group">
                 <button class="primary-btn" id="pwBtn">Change Password</button>
                 <button class="primary-btn logout" id="logoutBtn">Log Out</button>
             </div>
 
-            <div class="form" id="editForm">
-
-                <input id="fnameInput" type="text" placeholder="Enter First Name">
-                <input id="lnameInput" type="text" placeholder="Enter Last Name">
-                <input id="emailInput" type="email" placeholder="Enter Email">
-                <input id="mobileInput" type="text" placeholder="Enter Mobile Number">
-                <input id="dobInput" type="date">
-
-                <button class="primary-btn" id="saveBtn">Save</button>
-                <button class="primary-btn" id="cancelBtn">Cancel</button>
-
-            </div>
-
             <div class="form" id="passwordForm" style="display: none;">
+                <br>
                 <input type="password" id="currentPassword" placeholder="Current Password">
                 <input type="password" id="newPassword" placeholder="New Password">
                 <input type="password" id="confirmPassword" placeholder="Confirm Password">
@@ -92,6 +82,7 @@
         <div class="receipt-card">
             <h2>Bank Information</h2>
 
+            <br>
             <p><strong>Routing Number:</strong> <span id="routNumText">123456789</span></p>
             <br>
             <p><strong>Account Number:</strong> <span id="acctNumText">1234567899</span></p>
@@ -101,16 +92,28 @@
                 <button class="primary-btn" id="editBankBtn">Edit Bank Information</button>
             </div>
 
-        </div>
+            <div class="form" id="bankModal" style="display:none;">
+                <br>
+                <input type="text" id="newRoutingInput" placeholder="Routing Number" maxlength="9">
+                <input type="text" id="newAccountInput" placeholder="Account Number" maxlength="17">
 
+                <button class="primary-btn" id="saveBankBtn">Save</button>
+                <button class="primary-btn" id="cancelBankBtn">Cancel</button>
+
+                <p id="bankError" style="color:red; display:none;"></p>
+            </div>
+        </div>
     </div>
 
-    <div class="performance-card">
-        <!-- Performance reports are different for different employees.
+    <!-- Bank Information Modal -->
+
+
+    <!-- <div class="performance-card">
+        <-- Performance reports are different for different employees.
              Barbers will see their individual performance summary of the past month
              Managers will see the performance of the whole barber shop of the past month
              Receptionists will not see this tab.
-        -->
+
 
         <h2>Performance Report</h2>
 
@@ -132,7 +135,7 @@
         </div>
 
 
-    </div>
+    </div> -->
 
 
     <div class="upcoming-card">
@@ -141,7 +144,10 @@
              Receptionists and managers will see ALL upcoming appointments.
          -->
 
-        <h2>Upcoming Appointments</h2>
+        <div class="card-header">
+            <h2>Upcoming Appointments</h2>
+            <button class="primary-btn" id="GTA1">Go to Appointments</button>
+        </div>
 
         <table>
 
@@ -167,7 +173,10 @@
              Receptionists and managers will see past completed appointments of all barbers.
          -->
 
-        <h2>Appointment History</h2>
+        <div class="card-header">
+            <h2>Appointment History</h2>
+            <button class="primary-btn" id="GTA2">Go to Appointments</button>
+        </div>
 
         <table>
 
@@ -177,7 +186,6 @@
                 <th>Barber</th>
                 <th>Service</th>
                 <th>Status</th>
-                <th>Review</th>
             </tr>
             </thead>
 
