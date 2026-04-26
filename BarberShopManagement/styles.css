@@ -410,6 +410,8 @@ td{
 
 .completed { color: blue; background: #add8e6; padding: 4px 8px; border-radius: 5px; }
 
+.paid { color: #2d3232; background: lightblue; padding: 4px 8px; border-radius: 5px; }
+
 label {
     font-weight: bold;
     padding-bottom: 5px;
@@ -496,4 +498,20 @@ textarea {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 6px;
+}
+
+/*-resize function -*/
+.resizable-box {
+    width: 600px;
+    height: 400px;
+    resize: both;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.optionlist {
+    display: flex;
+    width: 120px;
+    height: 30px;
 }
