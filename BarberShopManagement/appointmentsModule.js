@@ -818,6 +818,10 @@ function sortAppointments(list, column, direction) {
                 valA = a.status || "";
                 valB = b.status || "";
                 break;
+            case "totalCost":
+                valA = Number(a.totalCost || 0);
+                valB = Number(b.totalCost || 0);
+                return direction === "asc" ? valA - valB : valB - valA;
             default:
                 return 0;
         }
