@@ -302,19 +302,30 @@ function isBarberWorkingOnDate(barberId, date) {
 
     if (!barber) return true;
 
-    if (!Array.isArray(barber.workingDays) || barber.workingDays.length === 0) {
+    const dayName = new Date(date + "T00:00:00")
+        .toLocaleDateString("en-US", { weekday: "long" });
+
+    if (barber.workingHours && barber.workingHours[dayName]) {
         return true;
     }
 
+    return false;
+}
+
+function getBarberWorkingTimeForDate(barberId, date) {
+    const barber = allStaff.find(s => s.id === barberId);
+
+    if (!barber || !barber.workingHours) {
+        return {
+            start: "09:00",
+            end: "18:00"
+        };
+    }
+
     const dayName = new Date(date + "T00:00:00")
-        .toLocaleDateString("en-US", { weekday: "long" })
-        .toLowerCase();
+        .toLocaleDateString("en-US", { weekday: "long" });
 
-    const workingDays = barber.workingDays.map(day =>
-        String(day).toLowerCase().trim()
-    );
-
-    return workingDays.includes(dayName);
+    return barber.workingHours[dayName] || null;
 }
 
 function populateAvailableTimes(timeSelectId, barberSelectId, dateInputId, serviceSelectId, excludeId = null) {
@@ -342,13 +353,20 @@ function populateAvailableTimes(timeSelectId, barberSelectId, dateInputId, servi
 
     const duration = calculateTotalDuration(selectedServices);
 
-    const startOfDay = 9 * 60;
-    const endOfDay = 18 * 60;
+    const workingTime = getBarberWorkingTimeForDate(barberId, date);
+
+    if (!workingTime) {
+        timeSelect.innerHTML = `<option value="">Barber unavailable this day</option>`;
+        return;
+    }
+
+    const startOfDay = timeToMinutes(workingTime.start);
+    const endOfDay = timeToMinutes(workingTime.end);
 
     for (let minutes = startOfDay; minutes + duration <= endOfDay; minutes += 10) {
         const time = minutesToTime(minutes);
 
-        if (isTimeSlotAvailable(barberId, barberName, date, time, duration, excludeId)) {
+        if (isTimeSlotAvailable(barberId, date, time, duration, excludeId)) {
             const option = document.createElement("option");
             option.value = time;
             option.textContent = time;
