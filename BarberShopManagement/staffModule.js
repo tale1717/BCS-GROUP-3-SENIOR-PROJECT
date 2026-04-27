@@ -42,6 +42,8 @@ async function init() {
     setupUpdateButton();
     setupCancelButtons();
     setupSorting();
+    setupWorkingTimeToggle("create");
+    setupWorkingTimeToggle("edit");
 
     formatPhoneNumber(document.getElementById("s-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
@@ -76,6 +78,29 @@ async function loadStaff() {
     renderTable(allStaff);
 }
 
+function setupWorkingTimeToggle(prefix) {
+    ["mon","tue","wed","thu","fri","sat","sun"].forEach(d => {
+        const cb = document.getElementById(`${prefix}-${d}`);
+        const start = document.getElementById(`${prefix}-${d}-start`);
+        const end = document.getElementById(`${prefix}-${d}-end`);
+
+        if (cb && start && end) {
+            // set initial state
+            start.disabled = false;
+            end.disabled = false;
+            start.style.pointerEvents = "auto";
+            end.style.pointerEvents = "auto";
+
+            cb.addEventListener("change", () => {
+
+                start.style.opacity = cb.checked ? "1" : "0.4";
+                end.style.opacity = cb.checked ? "1" : "0.4";
+
+            });
+        }
+    });
+}
+
 function renderTable(list) {
     const body = document.getElementById("staff-body");
     body.innerHTML = "";
@@ -92,7 +117,7 @@ function renderTable(list) {
             <td>${s.position || ""}</td>
             <td>${Array.isArray(s.services) ? s.services.join(", ") : ""}</td>
             <td>$${s.salary || ""}</td>
-            <td>${Array.isArray(s.workingDays) ? s.workingDays.join(", ") : ""}</td>
+            <td>${formatWorkingHours(s.workingHours)}</td>
             <td>${s.startDate || ""}</td>
             <td>${s.endDate || "Active"}</td>
             <td>${s.bankAccount || ""}</td>
@@ -143,6 +168,45 @@ function formatPhoneNumber(input){
     });
 }
 
+//setup working time
+function getWorkingHours(prefix) {
+    const days = ["sun","mon","tue","wed","thu","fri","sat"];
+    const fullNames = {
+        sun: "Sunday",
+        mon: "Monday",
+        tue: "Tuesday",
+        wed: "Wednesday",
+        thu: "Thursday",
+        fri: "Friday",
+        sat: "Saturday"
+    };
+
+    const workingHours = {};
+
+    days.forEach(d => {
+        const checkbox = document.getElementById(`${prefix}-${d}`);
+        const start = document.getElementById(`${prefix}-${d}-start`);
+        const end = document.getElementById(`${prefix}-${d}-end`);
+
+        if (checkbox && checkbox.checked) {
+            workingHours[fullNames[d]] = {
+                start: start?.value || "00:00",
+                end: end?.value || "00:00"
+            };
+        }
+    });
+
+    return workingHours;
+}
+
+//helper for working time setup
+function formatWorkingHours(workingHours) {
+    if (!workingHours) return "";
+
+    return Object.entries(workingHours)
+        .map(([day, time]) => `${day}: ${time.start}-${time.end}`)
+        .join(", ");
+}
 
 function setupCreate() {
     const modal = document.getElementById("createStaffModal");
@@ -154,6 +218,7 @@ function setupCreate() {
         createBtn.onclick = () => {
             clearCreateForm();
             modal.style.display = "block";
+            setupWorkingTimeToggle("create");
         };
     }
 
@@ -165,7 +230,7 @@ function setupCreate() {
             const services = position === "Barber"
                 ? Array.from(document.getElementById("s-services").selectedOptions).map(o => o.value)
                 : [];
-
+            const workingHours = getWorkingHours("create");
             await createStaff({
                 staffID: id,
                 name: document.getElementById("s-name").value,
@@ -177,7 +242,8 @@ function setupCreate() {
                 salary: document.getElementById("s-salary").value,
                 startDate: document.getElementById("s-startDate").value,
                 endDate: document.getElementById("s-endDate").value || null,
-                workingDays: Array.from(document.querySelectorAll('#createStaffModal input[name="days"]:checked')).map(cb => cb.value),
+                workingHours: workingHours,
+                workingDays: Object.keys(workingHours),
                 bankAccount: document.getElementById("s-bank").value
             });
 
@@ -192,6 +258,8 @@ function setupCreate() {
         };
     }
 }
+
+
 
 function setupStaffTableEvents() {
     const body = document.getElementById("staff-body");
@@ -208,6 +276,8 @@ function setupStaffTableEvents() {
 
             if (!staff) return;
 
+            const workingHours = staff.workingHours || {};
+
             document.getElementById("edit-id").value = staff.id;
             document.getElementById("edit-name").value = staff.name || "";
             document.getElementById("edit-phone").value = staff.phone || "";
@@ -221,8 +291,23 @@ function setupStaffTableEvents() {
 
             // Working days
             const workingDays = staff.workingDays || [];
-            document.querySelectorAll(".edit-workday").forEach(cb => {
+            document.querySelectorAll('#editStaffModal input[name="days"]').forEach(cb => {
                 cb.checked = workingDays.includes(cb.value);
+            });
+
+            //edit working time
+
+
+            Object.entries(workingHours).forEach(([day, time]) => {
+                const key = day.substring(0,3).toLowerCase();
+
+                const checkbox = document.getElementById(`edit-${key}`);
+                const start = document.getElementById(`edit-${key}-start`);
+                const end = document.getElementById(`edit-${key}-end`);
+
+                if (checkbox) checkbox.checked = true;
+                if (start) start.value = time.start;
+                if (end) end.value = time.end;
             });
 
             // Services (for barbers)
@@ -264,6 +349,8 @@ function setupUpdateButton() {
             ? Array.from(document.getElementById("edit-services").selectedOptions).map(o => o.value)
             : [];
 
+        const workingHours = getWorkingHours("edit");
+
         try {
             await updateStaff(id, {
                 name: document.getElementById("edit-name").value,
@@ -275,7 +362,8 @@ function setupUpdateButton() {
                 salary: document.getElementById("edit-salary").value,
                 startDate: document.getElementById("edit-startDate").value,
                 endDate: document.getElementById("edit-endDate").value || null,
-                workingDays: Array.from(document.querySelectorAll('#editStaffModal input[name="days"]:checked')).map(cb => cb.value),
+                workingHours: workingHours,
+                workingDays: Object.keys(workingHours),
                 bankAccount: document.getElementById("edit-bank").value
             });
 
