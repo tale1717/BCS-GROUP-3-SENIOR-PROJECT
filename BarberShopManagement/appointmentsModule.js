@@ -1,3 +1,4 @@
+import { getAuth, onAuthStateChanged, } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 console.log("appointmentsModule loaded");
 
 import {
@@ -36,6 +37,7 @@ let allStaff = [];
 let sortState = { column: null, direction: "asc" };
 let activeTimeframe = "all";
 let activeStatusFilter = "all";
+let currentUser = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
@@ -54,8 +56,9 @@ function setupToggleMultiSelect(selectId) {
     });
 }
 async function init() {
-    await loadCustomers();
     await loadStaff();
+    await loadCurrentUser();
+    await loadCustomers();
     await loadServices();
     await loadAppointments();
 
@@ -194,6 +197,14 @@ function populateServiceDropdown() {
 
 async function loadAppointments() {
     allAppointments = await getAppointments();
+
+    if (currentUser?.position === "barber") {
+        allAppointments = allAppointments.filter(a => {
+            const barberName = (a.barber || "").trim().toLowerCase();
+            return barberName === currentUser.name.trim().toLowerCase();
+        });
+    }
+
     await renderTable(allAppointments);
 }
 
@@ -1017,6 +1028,51 @@ function setupTimeframeFilters() {
     applyBtn?.addEventListener("click", () => {
         activeTimeframe = "custom";
         renderTable(getFilteredAndSortedList());
+    });
+}
+
+function loadCurrentUser() {
+    return new Promise((resolve) => {
+        const auth = getAuth();
+
+        onAuthStateChanged(auth, async (firebaseUser) => {
+            if (!firebaseUser) {
+                console.warn("No user logged in — showing all appointments.");
+                currentUser = null;
+                resolve();
+                return;
+            }
+
+            try {
+                const email = firebaseUser.email;
+
+                // 1. get role from users collection (has email + role)
+                const profile = await getUserProfile(firebaseUser.uid);
+
+                // 2. get name from staff collection — matched by email
+                const staffMatch = allStaff.find(
+                    s => (s.email || "").toLowerCase() === email.toLowerCase()
+                );
+
+                console.log("Firebase email:", email);
+                console.log("Staff emails:", allStaff.map(s => s.email));
+                console.log("Staff match:", staffMatch);
+
+                currentUser = {
+                    uid:      firebaseUser.uid,
+                    email:    email,
+                    position: profile?.role || "",   // "Barber" / "Manager" / "Receptionist"
+                    name:     staffMatch?.name || ""
+                };
+
+                console.log("Logged-in user:", currentUser);
+            } catch (err) {
+                console.error("Error loading user profile:", err);
+                currentUser = null;
+            }
+
+            resolve();
+        });
     });
 }
 

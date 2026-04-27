@@ -16,6 +16,7 @@ let allStaff = [];
 let allServices = [];
 let sortState = { column: null, direction: "asc" }
 let activeStaffFilter = "all";
+let activeStatusFilter = "all";
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -47,6 +48,7 @@ async function init() {
     setupCancelButtons();
     setupSorting();
     setupStaffFilter();
+    setupStatusFilter();
 
     formatPhoneNumber(document.getElementById("s-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
@@ -100,7 +102,7 @@ function renderTable(list) {
             <td>${Array.isArray(s.workingDays) ? s.workingDays.join(", ") : ""}</td>
             <td>${s.startDate || ""}</td>
             <td>${s.endDate || "Active"}</td>
-            <td>${s.bankAccount || ""}</td>
+            <td>${[s.bankRouting, s.bankAccount].filter(Boolean).join(", ") || ""}</td>
             <td>
                 <div class="action">
                 <button class="edit" data-id="${s.id}">&#9998;</button>
@@ -185,6 +187,7 @@ function setupCreate() {
                 startDate: document.getElementById("s-startDate").value,
                 endDate: document.getElementById("s-endDate").value || null,
                 workingDays: Array.from(document.querySelectorAll('#createStaffModal input[name="days"]:checked')).map(cb => cb.value),
+                bankRouting: document.getElementById("s-routing").value,
                 bankAccount: document.getElementById("s-bank").value
             });
 
@@ -251,6 +254,7 @@ function setupStaffTableEvents() {
             document.getElementById("edit-position").value = staff.position || "";
             document.getElementById("edit-startDate").value = staff.startDate || "";
             document.getElementById("edit-endDate").value = staff.endDate || "";
+            document.getElementById("edit-routing").value = staff.bankRouting|| "";
             document.getElementById("edit-bank").value = staff.bankAccount || "";
 
             // Working days
@@ -310,7 +314,8 @@ function setupUpdateButton() {
                 startDate: document.getElementById("edit-startDate").value,
                 endDate: document.getElementById("edit-endDate").value || null,
                 workingDays: Array.from(document.querySelectorAll('#editStaffModal input[name="days"]:checked')).map(cb => cb.value),
-                bankAccount: document.getElementById("edit-bank").value
+                bankRouting: document.getElementById("edit-routing").value,
+                bankAccount: document.getElementById("edit-bank").value,
             });
 
             closeModal("editStaffModal");
@@ -437,6 +442,7 @@ function clearCreateForm() {
     document.getElementById("s-position").value = "";
     document.getElementById("s-startDate").value = "";
     document.getElementById("s-endDate").value = "";
+    document.getElementById("s-routing").value = "";
     document.getElementById("s-bank").value = "";
 
     document.querySelectorAll(".workday").forEach(cb => {
@@ -535,6 +541,16 @@ function getFilteredAndSortedList() {
             break;
     }
 
+    // ADD after the position switch block
+    switch (activeStatusFilter) {
+        case "active":
+            list = list.filter(s => !s.endDate || s.endDate.trim() === "");
+            break;
+        case "inactive":
+            list = list.filter(s => s.endDate && s.endDate.trim() !== "");
+            break;
+    }
+
     // apply sort
     if (sortState.column) {
         list = sortStaff(list, sortState.column, sortState.direction);
@@ -580,6 +596,16 @@ function setupStaffFilter() {
 
     select.addEventListener("change", () => {
         activeStaffFilter = select.value;
+        renderTable(getFilteredAndSortedList());
+    });
+}
+
+function setupStatusFilter() {
+    const select = document.getElementById("status-select");
+    if (!select) return;
+
+    select.addEventListener("change", () => {
+        activeStatusFilter = select.value;
         renderTable(getFilteredAndSortedList());
     });
 }

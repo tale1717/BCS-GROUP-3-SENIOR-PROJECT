@@ -62,13 +62,23 @@
         </header>
 
         <div id="staff-filters">
-            <label>Filter By:</label>
+            <h3>Filters:</h3><br>
+
+            <label>Position</label>
             <select id="staff-select" class="text-style filter-select">
                 <option value="all">All</option>
                 <option value="barbers">Barbers</option>
                 <option value="receptionists">Receptionists</option>
                 <option value="managers">Managers</option>
             </select>
+
+            <label>Status</label>
+            <select id="status-select" class="text-style filter-select">
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+
         </div>
         <br>
         <div class="card">
@@ -86,7 +96,7 @@
                     <th>Working Days</th>
                     <th data-sort="startDate">Start Date <span class="sort-arrow"></span></th>
                     <th data-sort="endDate">End Date <span class="sort-arrow"></span></th>
-                    <th>Bank Account</th>
+                    <th>Routing #, Account #</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -169,7 +179,8 @@
 
             <div>
                 <label>Bank Information</label> <br>
-                <input id="s-bank" placeholder="Bank Account" class="text-style">
+                <input id="s-routing" placeholder="Routing Number" class="text-style"> <br>
+                <input id="s-bank" placeholder="Account Number" class="text-style">
             </div>
 
             <div style="grid-column: span 2;">
@@ -266,6 +277,7 @@
             </div>
             <div>
                 <label>Bank Information</label> <br>
+                <input id="edit-routing" placeholder="Routing Number" class="text-style"> <br>
                 <input id="edit-bank" placeholder="Bank Account" class="text-style">
             </div>
             <div style="grid-column: span 2;">

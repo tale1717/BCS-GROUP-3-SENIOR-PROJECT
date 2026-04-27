@@ -42,6 +42,11 @@ const appointmentHistoryBody = document.getElementById("appointment-history");
 const perfCards = document.querySelectorAll(".performance-grid .card h3");
 // perfCards[0] = Completed Appointments, [1] = Feedback Received, [2] = Average Rating
 
+let upcomingData  = [];  // raw sorted-by-date arrays, re-rendered on sort
+let historyData   = [];
+let upcomingSortCol = 0, upcomingSortDir = 1;
+let historySortCol  = 0, historySortDir  = 1;
+
 // ── Auth state listener ────────────────────────────────────────────────────────
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
@@ -168,11 +173,11 @@ async function loadAppointments(staff) {
     });
 
     // Sort upcoming ascending, history descending
-    upcoming.sort((a, b)  => a.apptDate - b.apptDate);
-    completed.sort((a, b) => b.apptDate - a.apptDate);
+    upcomingData = upcoming;
+    historyData  = completed;
 
-    renderUpcomingAppointments(upcoming);
-    renderAppointmentHistory(completed, role);
+    renderUpcomingAppointments();
+    renderAppointmentHistory(role);
 }
 
 function formatDate(date) {
@@ -181,64 +186,113 @@ function formatDate(date) {
     });
 }
 
-function renderUpcomingAppointments(appointments) {
-    appointmentsTableBody.innerHTML = "";
+function renderUpcomingAppointments() {
+    const data = sortData(
+        upcomingData,
+        upcomingSortCol,
+        upcomingSortDir,
+        ["apptDate", "barber", "serviceName", "time"]
+    );
 
-    if (appointments.length === 0) {
-        appointmentsTableBody.innerHTML =
-            `<tr><td colspan="4" style="text-align:center;">No upcoming appointments</td></tr>`;
-        return;
-    }
-
-    appointments.forEach((appt) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${formatDate(appt.apptDate)}</td>
-            <td>${appt.barber ?? "N/A"}</td>
-            <td>${appt.serviceName    ?? "N/A"}</td>
-            <td>${appt.time       ?? "N/A"}</td>
-        `;
-        appointmentsTableBody.appendChild(tr);
-    });
+    appointmentsTableBody.innerHTML = data.length === 0
+        ? `<tr><td colspan="4" style="text-align:center;">No upcoming appointments</td></tr>`
+        : data.map(appt => `
+            <tr>
+                <td>${formatDate(appt.apptDate)}</td>
+                <td>${appt.barber      ?? "N/A"}</td>
+                <td>${appt.serviceName ?? "N/A"}</td>
+                <td>${appt.time        ?? "N/A"}</td>
+            </tr>`).join("");
 }
 
-function renderAppointmentHistory(appointments, role) {
-    appointmentHistoryBody.innerHTML = "";
+function renderAppointmentHistory(role = "barber") {
+    const data = sortData(
+        historyData,
+        historySortCol,
+        historySortDir,
+        ["apptDate", "barber", "serviceName", "status"]
+    );
 
-    // Receptionists see history but no Review column — adjust thead if needed
-    if (role === "receptionist") {
-        // Hide the Review column header
-        const reviewTh = document.querySelector("#history-card thead th:last-child");
-        if (reviewTh) reviewTh.style.display = "none";
-    }
+    const reviewTh = document.querySelector("#history-card thead th:last-child");
+    if (role === "receptionist" && reviewTh) reviewTh.style.display = "none";
 
-    if (appointments.length === 0) {
-        const cols = role === "receptionist" ? 4 : 4;
-        appointmentHistoryBody.innerHTML =
-            `<tr><td colspan="${cols}" style="text-align:center;">No appointment history</td></tr>`;
-        return;
-    }
+    appointmentHistoryBody.innerHTML = data.length === 0
+        ? `<tr><td colspan="4" style="text-align:center;">No appointment history</td></tr>`
+        : data.map(appt => `
+            <tr>
+                <td>${formatDate(appt.apptDate)}</td>
+                <td>${appt.barber      ?? "N/A"}</td>
+                <td>${appt.serviceName ?? "N/A"}</td>
+                <td><span class="status-${appt.status}">${capitalize(appt.status ?? "N/A")}</span></td>
+            </tr>`).join("");
+}
 
-    appointments.forEach((appt) => {
-        const tr = document.createElement("tr");
-
-        const reviewCell = role !== "receptionist"
-            ? `<td>${appt.review ?? "—"}</td>`
-            : "";
-
-        tr.innerHTML = `
-            <td>${formatDate(appt.apptDate)}</td>
-            <td>${appt.barber ?? "N/A"}</td>
-            <td>${appt.serviceName    ?? "N/A"}</td>
-            <td>${capitalize(appt.status ?? "N/A")}</td>
-        `;
-        appointmentHistoryBody.appendChild(tr);
+function sortData(data, col, dir, keys) {
+    if (col < 0) return data;
+    return [...data].sort((a, b) => {
+        const va = a[keys[col]], vb = b[keys[col]];
+        if (va instanceof Date && vb instanceof Date) return (va - vb) * dir;
+        return String(va ?? "").localeCompare(String(vb ?? "")) * dir;
     });
 }
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+// ── Table column sorting ───────────────────────────────────────────────────────
+function makeSortable(thead, getDir, setDir, getCol, setCol, renderFn, label) {
+    thead.querySelectorAll("th").forEach((th, i) => {
+        th.style.cursor = "pointer";
+        th.style.userSelect = "none";
+        const icon = document.createElement("span");
+        icon.style.cssText = "margin-left:5px;font-size:11px;color:var(--color-text-tertiary);letter-spacing:-2px";
+        icon.textContent = "";
+        th.appendChild(icon);
+
+        th.addEventListener("click", () => {
+            const prevCol = getCol();
+            const newDir  = (i === prevCol) ? getDir() * -1 : 1;
+            setCol(i);
+            setDir(newDir);
+
+            thead.querySelectorAll("th span").forEach((s, j) => {
+                s.textContent = j === i ? (newDir === 1 ? "▲" : "▼") : "";
+                s.style.color = j === i
+                    ? "var(--color-text-primary)"
+                    : "var(--color-text-tertiary)";
+            });
+
+            // Highlight the default active column on load
+            const initialThs = thead.querySelectorAll("th span");
+            const initCol = getCol();
+            if (initCol >= 0 && initialThs[initCol]) {
+                initialThs[initCol].textContent = getDir() === 1 ? "▲" : "▼";
+                initialThs[initCol].style.color = "var(--color-text-primary)";
+            }
+
+            renderFn();
+        });
+    });
+}
+
+const upcomingThead = document.querySelector(".upcoming-card thead");
+const historyThead  = document.querySelector(".history-card thead");
+
+makeSortable(
+    upcomingThead,
+    () => upcomingSortDir, d => upcomingSortDir = d,
+    () => upcomingSortCol, c => upcomingSortCol = c,
+    renderUpcomingAppointments
+);
+
+makeSortable(
+    historyThead,
+    () => historySortDir,  d => historySortDir = d,
+    () => historySortCol,  c => historySortCol = c,
+    () => renderAppointmentHistory(/* pass stored role */)
+);
+
 
 // ── Performance report ─────────────────────────────────────────────────────────
 async function loadPerformanceReport(staff) {
@@ -413,8 +467,8 @@ saveBankBtn.addEventListener("click", async () => {
         if (!staffData) throw new Error("Staff record not found.");
 
         await updateDoc(doc(db, "staff", staffData.id), {
-            routingNumber: newRouting,
-            accountNumber: newAccount
+            bankRouting: newRouting,
+            bankAccount: newAccount
         });
 
         routNumText.textContent = newRouting;
