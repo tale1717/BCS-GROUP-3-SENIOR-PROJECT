@@ -49,6 +49,7 @@ function setupToggleMultiSelect(selectId) {
 
         e.preventDefault();
         e.target.selected = !e.target.selected;
+        select.dispatchEvent(new Event("change"));
     });
 }
 async function init() {
@@ -70,6 +71,9 @@ async function init() {
     hookCreateHistory();
     hookUpdateHistory();
     setupSorting();
+
+    createMiniCalendar("a-calendar", "a-date", "a-date-display", "a-barber", "a-time", "a-service");
+    createMiniCalendar("edit-calendar", "edit-date", "edit-date-display", "edit-barber", "edit-time", "edit-service");
 }
 
 // customer autocomplete (for create/edit appointment)
@@ -293,6 +297,260 @@ function calculateTotalCost(services) {
     );
 }
 
+function isBarberWorkingOnDate(barberId, date) {
+    const barber = allStaff.find(s => s.id === barberId);
+
+    if (!barber) return true;
+
+    if (!Array.isArray(barber.workingDays) || barber.workingDays.length === 0) {
+        return true;
+    }
+
+    const dayName = new Date(date + "T00:00:00")
+        .toLocaleDateString("en-US", { weekday: "long" })
+        .toLowerCase();
+
+    const workingDays = barber.workingDays.map(day =>
+        String(day).toLowerCase().trim()
+    );
+
+    return workingDays.includes(dayName);
+}
+
+function populateAvailableTimes(timeSelectId, barberSelectId, dateInputId, serviceSelectId, excludeId = null) {
+    const timeSelect = document.getElementById(timeSelectId);
+    const barberSelect = document.getElementById(barberSelectId);
+    const dateInput = document.getElementById(dateInputId);
+
+    if (!timeSelect || !barberSelect || !dateInput) return;
+
+    const barberId = barberSelect.value;
+    const barberName = barberSelect.options[barberSelect.selectedIndex]?.text || "";
+    const date = dateInput.value;
+    const selectedServices = getSelectedServices(serviceSelectId);
+
+    timeSelect.innerHTML = `<option value="">Select Time</option>`;
+
+    if (!barberId || !date || selectedServices.length === 0) {
+        return;
+    }
+
+    if (!isBarberWorkingOnDate(barberId, date)) {
+        timeSelect.innerHTML = `<option value="">Barber unavailable this day</option>`;
+        return;
+    }
+
+    const duration = calculateTotalDuration(selectedServices);
+
+    const startOfDay = 9 * 60;
+    const endOfDay = 18 * 60;
+
+    for (let minutes = startOfDay; minutes + duration <= endOfDay; minutes += 10) {
+        const time = minutesToTime(minutes);
+
+        if (isTimeSlotAvailable(barberId, barberName, date, time, duration, excludeId)) {
+            const option = document.createElement("option");
+            option.value = time;
+            option.textContent = time;
+            timeSelect.appendChild(option);
+        }
+    }
+}
+
+function calculateTotalDuration(services) {
+    return services.reduce(
+        (sum, service) =>
+            sum + Number(service.serviceDuration || 0) + 10,
+        0
+    );
+}
+
+function timeToMinutes(time) {
+    const [h, m] = time.split(":").map(Number);
+    return h * 60 + m;
+}
+
+function minutesToTime(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+function getAppointmentDuration(appointment) {
+    if (Array.isArray(appointment.services)) {
+        return appointment.services.reduce(
+            (sum, service) => sum + Number(service.serviceDuration || 0) + 10,
+            0
+        );
+    }
+
+    return Number(appointment.serviceDuration || 0) + 10;
+}
+
+function isTimeSlotAvailable(barberId, date, startTime, duration, excludeId = null) {
+    const start = timeToMinutes(startTime);
+    const end = start + duration;
+
+    return !allAppointments.some(a => {
+        if (excludeId && a.id === excludeId) return false;
+
+        if (a.staffID !== barberId) return false;
+        if (a.date !== date) return false;
+
+        const existingStart = timeToMinutes(a.time || "00:00");
+
+        const existingDuration = Array.isArray(a.services)
+            ? a.services.reduce(
+                (sum, s) => sum + Number(s.serviceDuration || 0) + 10,
+                0
+            )
+            : 0;
+
+        const existingEnd = existingStart + existingDuration;
+
+        return start < existingEnd && end > existingStart;
+    });
+}
+
+function createMiniCalendar(calendarId, hiddenInputId, displayId, barberSelectId, timeSelectId, serviceSelectId, excludeId = null) {
+    const calendar = document.getElementById(calendarId);
+    const hiddenInput = document.getElementById(hiddenInputId);
+    const display = document.getElementById(displayId);
+    const barberSelect = document.getElementById(barberSelectId);
+
+    if (!calendar || !hiddenInput || !display || !barberSelect) return;
+
+    let currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+
+    function renderCalendar() {
+        calendar.innerHTML = "";
+
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        const header = document.createElement("div");
+        header.className = "calendar-header";
+
+        const prevBtn = document.createElement("button");
+        prevBtn.textContent = "<";
+
+        const title = document.createElement("span");
+        title.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+        const nextBtn = document.createElement("button");
+        nextBtn.textContent = ">";
+
+        header.appendChild(prevBtn);
+        header.appendChild(title);
+        header.appendChild(nextBtn);
+
+        const grid = document.createElement("div");
+        grid.className = "calendar-grid";
+
+        dayNames.forEach(day => {
+            const dayName = document.createElement("div");
+            dayName.className = "calendar-day-name";
+            dayName.textContent = day;
+            grid.appendChild(dayName);
+        });
+
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) {
+            const empty = document.createElement("div");
+            empty.className = "calendar-day empty";
+            grid.appendChild(empty);
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayEl = document.createElement("div");
+            dayEl.className = "calendar-day";
+            dayEl.textContent = day;
+
+            const dateObj = new Date(currentYear, currentMonth, day);
+            dateObj.setHours(0, 0, 0, 0);
+
+            const dateString =
+                `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+            const barberId = barberSelect.value;
+
+            const isPast = dateObj < today;
+            const barberWorks = barberId ? isBarberWorkingOnDate(barberId, dateString) : true;
+
+            if (isPast || !barberWorks) {
+                dayEl.classList.add("disabled");
+            } else {
+                dayEl.onclick = () => {
+                    hiddenInput.value = dateString;
+                    display.textContent = dateString;
+
+                    calendar.querySelectorAll(".calendar-day").forEach(d => {
+                        d.classList.remove("selected");
+                    });
+
+                    dayEl.classList.add("selected");
+
+                    populateAvailableTimes(
+                        timeSelectId,
+                        barberSelectId,
+                        hiddenInputId,
+                        serviceSelectId,
+                        excludeId
+                    );
+                };
+            }
+
+            if (hiddenInput.value === dateString) {
+                dayEl.classList.add("selected");
+            }
+
+            grid.appendChild(dayEl);
+        }
+
+        prevBtn.onclick = () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        };
+
+        nextBtn.onclick = () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        };
+
+        calendar.appendChild(header);
+        calendar.appendChild(grid);
+    }
+
+    barberSelect.addEventListener("change", () => {
+        hiddenInput.value = "";
+        display.textContent = "Select Date";
+        renderCalendar();
+        populateAvailableTimes(timeSelectId, barberSelectId, hiddenInputId, serviceSelectId, excludeId);
+    });
+
+    renderCalendar();
+}
+
 function setupCreate() {
     const btn = document.getElementById("createAppointmentBtn");
     const modal = document.getElementById("appointmentModal");
@@ -332,7 +590,36 @@ function setupCreate() {
             return;
         }
 
+        const selectedDate = document.getElementById("a-date").value;
+        const selectedTime = document.getElementById("a-time").value;
+        const duration = calculateTotalDuration(selectedServices);
+        const barberName = barberSelect.options[barberSelect.selectedIndex]?.text || "";
+
+        if (!selectedDate) {
+            alert("Please select a date.");
+            return;
+        }
+
+        if (!selectedTime) {
+            alert("Please select a time.");
+            return;
+        }
+
+        if (!isBarberWorkingOnDate(barberSelect.value, selectedDate)) {
+            alert("This barber does not work on the selected day.");
+            return;
+        }
+
+        if (!isTimeSlotAvailable(barberSelect.value, barberName, selectedDate, selectedTime, duration)) {
+            alert("This time is no longer available.");
+            populateAvailableTimes("a-time", "a-barber", "a-date", "a-service");
+            return;
+        }
+
+
         const appointmentID = await generateAppointmentID();
+
+
 
         await createAppointment({
             appointmentID: appointmentID,
@@ -343,8 +630,8 @@ function setupCreate() {
             services: selectedServices,
             serviceName: selectedServices.map(service => service.serviceName).join(", "),
             totalCost: totalCost,
-            date: document.getElementById("a-date").value,
-            time: document.getElementById("a-time").value,
+            date: selectedDate,
+            time: selectedTime,
             notes: document.getElementById("a-notes")?.value || "",
             status: document.getElementById("a-status").value || "upcoming"
         });
@@ -447,6 +734,7 @@ function setupTableEvents() {
 
             document.getElementById("edit-id").value = appointment.id;
             document.getElementById("edit-date").value = appointment.date || "";
+            document.getElementById("edit-date-display").textContent = appointment.date || "Select Date";
             document.getElementById("edit-time").value = appointment.time || "";
             document.getElementById("edit-status").value = appointment.status || "upcoming";
             //AUTO SHOW IF ALREADY "in process"
@@ -499,6 +787,9 @@ function setupTableEvents() {
                 option.selected = selectedServiceIds.includes(option.value);
             });
 
+            populateAvailableTimes("edit-time", "edit-barber", "edit-date", "edit-service", appointment.id);
+            document.getElementById("edit-time").value = appointment.time || "";
+
             document.getElementById("editAppointmentModal").style.display = "block";
         }
 
@@ -528,7 +819,6 @@ function setupUpdateButton() {
         const selectedServices = getSelectedServices("edit-service");
         const totalCost = calculateTotalCost(selectedServices);
 
-
         if (!customerInput.dataset.id) {
             alert("Please select a valid customer from suggestions.");
             return;
@@ -541,6 +831,32 @@ function setupUpdateButton() {
 
         if (selectedServices.length === 0) {
             alert("Please select at least one service.");
+            return;
+        }
+
+        const selectedDate = document.getElementById("edit-date").value;
+        const selectedTime = document.getElementById("edit-time").value;
+        const duration = calculateTotalDuration(selectedServices);
+        const barberName = barberSelect.options[barberSelect.selectedIndex]?.text || "";
+
+        if (!selectedDate) {
+            alert("Please select a date.");
+            return;
+        }
+
+        if (!selectedTime) {
+            alert("Please select a time.");
+            return;
+        }
+
+        if (!isBarberWorkingOnDate(barberSelect.value, selectedDate)) {
+            alert("This barber does not work on the selected day.");
+            return;
+        }
+
+        if (!isTimeSlotAvailable(barberSelect.value, barberName, selectedDate, selectedTime, duration, id)) {
+            alert("This time is no longer available.");
+            populateAvailableTimes("edit-time", "edit-barber", "edit-date", "edit-service", id);
             return;
         }
 
@@ -611,9 +927,9 @@ function setupUpdateButton() {
                 barber: barberSelect.options[barberSelect.selectedIndex]?.text || "",
                 services: selectedServices,
                 serviceName: selectedServices.map(service => service.serviceName).join(", "),
-                date: document.getElementById("edit-date").value,
+                date: selectedDate,
                 totalCost: totalCost,
-                time: document.getElementById("edit-time").value,
+                time: selectedTime,
                 notes: noteField?.value || "",
                 suppliesUsed: mergedSupplies,
                 status: document.getElementById("edit-status").value
