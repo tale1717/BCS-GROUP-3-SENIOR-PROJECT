@@ -178,10 +178,15 @@ function renderUpcoming(table) {
     sorted.forEach((data) => {
         const row = document.createElement("tr");
         row.dataset.id = data.id;
+
+        const serviceDisplay = data.services
+            ? data.services.map(s => s.serviceName).join(", ")
+            : (data.serviceName || "N/A")
+
         row.innerHTML = `
             <td>${formatDate(data.date)}</td>
             <td>${data.barber}</td>
-            <td>${data.serviceName}</td>
+            <td>${serviceDisplay}</td>
             <td>${data.time}</td>
         `;
         row.addEventListener("click", () => {
@@ -249,25 +254,36 @@ editAppointmentBtn.addEventListener("click", async () => {
     const confirmBtn = mustGet("confirm-appointment");
 
     confirmBtn.addEventListener("click", async (e) => {
-
         e.preventDefault();
 
-        const { barber, date, time, serviceId } = getFormData();
-        const service = getSelectedService(serviceId);
+        const { barber, date, time } = getFormData();
 
-        if (!barber || !date || !time || !service) {
-            alert("Please fill out all fields.");
+        // Read all selected options from the multi-select
+        const serviceSelect = document.getElementById("editService");
+        const selectedOptions = Array.from(serviceSelect.selectedOptions);
+
+        if (!barber || !date || !time || selectedOptions.length === 0) {
+            alert("Please fill out all fields and select at least one service.");
             return;
         }
+
+        const selectedServices = selectedOptions.map(opt => {
+            const service = allServices.find(s => s.id === opt.value);
+            return {
+                serviceId: service.id,
+                serviceName: service.serviceName,
+                servicePrice: service.price,
+                serviceDuration: service.duration
+            };
+        });
 
         await updateDoc(ref, {
             barber,
             date,
             time,
-            serviceId: service.id,
-            serviceName: service.serviceName,
-            servicePrice: service.price,
-            serviceDuration: service.duration
+            services: selectedServices,
+            totalPrice: selectedServices.reduce((sum, s) => sum + s.servicePrice, 0),
+            totalDuration: selectedServices.reduce((sum, s) => sum + s.serviceDuration, 0)
         });
 
         alert("Appointment updated!");
@@ -325,10 +341,14 @@ function renderHistory(historyTable) {
     sorted.forEach((data) => {
         const row = document.createElement("tr");
 
+        const serviceDisplay = data.services
+            ? data.services.map(s => s.serviceName).join(", ")
+            : (data.serviceName || "N/A");
+
         row.innerHTML = `
             <td>${formatDate(data.date)}</td>
             <td>${data.barber}</td>
-            <td>${data.serviceName}</td>
+            <td>${serviceDisplay}</td>
             <td><span class="status-${data.status}">${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span></td>
         `;
 
@@ -373,11 +393,15 @@ function makeReview(user, data, dataID) {
     const details = document.getElementById("review-details");
     const reviewText = document.getElementById("review-text");
 
+    const serviceDisplay = data.services
+        ? data.services.map(s => s.serviceName).join(", ")
+        : (data.serviceName || "N/A");
+
     details.innerHTML = `
-        <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
-        <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
-        <p style="font-size: 18px;"><strong>Service:</strong> ${data.serviceName}</p>
-    `;
+    <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
+    <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
+    <p style="font-size: 18px;"><strong>Service:</strong> ${serviceDisplay}</p>
+`;
 
     reviewText.value = data.review || "";
 
@@ -459,13 +483,20 @@ function showReceipt(data) {
     const receiptDetails = document.getElementById("receipt-details");
     const receiptSection = document.getElementById("receipt-card");
 
+    const serviceDisplay = data.services
+        ? data.services.map(s => `${s.serviceName} ($${s.servicePrice}, ${s.serviceDuration} min)`).join("<br>")
+        : `${data.serviceName} ($${data.servicePrice}, ${data.serviceDuration} min)`;
+
+    const totalPrice = data.totalPrice ?? data.servicePrice;
+    const totalDuration = data.totalDuration ?? data.serviceDuration;
+
     receiptDetails.innerHTML = `
         <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
         <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
-        <p style="font-size: 18px;"><strong>Service:</strong> ${data.serviceName}</p>
+        <p style="font-size: 18px;"><strong>Services:</strong><br>${serviceDisplay}</p>
         <p style="font-size: 18px;"><strong>Time:</strong> ${data.time}</p>
-        <p style="font-size: 18px;"><strong>Duration:</strong> ${data.serviceDuration} min</p>
-        <p style="font-size: 18px;"><strong>Price:</strong> $${data.servicePrice}</p>
+        <p style="font-size: 18px;"><strong>Total Duration:</strong> ${totalDuration} min</p>
+        <p style="font-size: 18px;"><strong>Total Price:</strong> $${totalPrice}</p>
     `;
 
     appointmentSection.style.display = "none";

@@ -44,15 +44,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const barber = mustGet("barber").value.trim();
                 const date = mustGet("date").value.trim();
                 const time = mustGet("time").value.trim();
-                const selectedServiceId = mustGet("service").value.trim();
+                const serviceSelect = mustGet("service");
+                const selectedServiceIds = Array.from(serviceSelect.selectedOptions).map(o => o.value);
+                const selectedServices = allServices.filter(s => selectedServiceIds.includes(s.id));
 
-                const selectedService = allServices.find(s => s.id === selectedServiceId);
-
-                if (!barber || barber==="Select Barber"
+                if (!barber || barber === "Select Barber"
                     || !date
-                    || !time || time==="Select Time"
-                    || !selectedService) {
-                    alert("Please fill out barber, date, time, and service.");
+                    || !time || time === "Select Time"
+                    || selectedServices.length === 0) {
+                    alert("Please fill out barber, date, time, and at least one service.");
                     return;
                 }
 
@@ -82,10 +82,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     barber,
                     date,
                     time,
-                    serviceId: selectedService.id,
-                    serviceName: selectedService.serviceName,
-                    servicePrice: selectedService.price,
-                    serviceDuration: selectedService.duration,
+                    services: selectedServices.map(s => ({
+                        serviceId: s.id,
+                        serviceName: s.serviceName,
+                        servicePrice: s.price,
+                        serviceDuration: s.duration,
+                    })),
+                    totalPrice: selectedServices.reduce((sum, s) => sum + s.price, 0),
+                    totalDuration: selectedServices.reduce((sum, s) => sum + s.duration, 0),
                     status: "confirmed",
                     createdAt: serverTimestamp()
                 });
@@ -96,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         barber: barber,
                         date: date,
                         time: time,
-                        service: selectedService.serviceName,
+                        service: selectedServices.map(s => s.serviceName).join(", "),
                         to_email: user.email
                     });
 
@@ -121,15 +125,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadServices() {
     allServices = await getServices();
-
     const serviceSelect = mustGet("service");
-    serviceSelect.innerHTML = `<option value="">Select a service</option>`;
+    serviceSelect.innerHTML = ""; // No default placeholder needed
 
     allServices.forEach(service => {
         const option = document.createElement("option");
         option.value = service.id;
         option.textContent = `${service.serviceName} ($${service.price}, ${service.duration} min)`;
         serviceSelect.appendChild(option);
+    });
+
+    serviceSelect.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        const option = e.target;
+        if (option.tagName !== "OPTION") return;
+        option.selected = !option.selected;
+        serviceSelect.focus();
     });
 }
 
