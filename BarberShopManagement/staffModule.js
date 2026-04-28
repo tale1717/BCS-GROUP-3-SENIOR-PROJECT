@@ -254,7 +254,6 @@ function setupCreate() {
                 endDate: document.getElementById("s-endDate").value || null,
                 workingHours: workingHours,
                 workingDays: Object.keys(workingHours),
-                workingDays: Array.from(document.querySelectorAll('#createStaffModal input[name="days"]:checked')).map(cb => cb.value),
                 bankRouting: document.getElementById("s-routing").value,
                 bankAccount: document.getElementById("s-bank").value
             });
@@ -404,8 +403,6 @@ function setupUpdateButton() {
                 endDate: document.getElementById("edit-endDate").value || null,
                 workingHours: workingHours,
                 workingDays: Object.keys(workingHours),
-                bankAccount: document.getElementById("edit-bank").value
-                workingDays: Array.from(document.querySelectorAll('#editStaffModal input[name="days"]:checked')).map(cb => cb.value),
                 bankRouting: document.getElementById("edit-routing").value,
                 bankAccount: document.getElementById("edit-bank").value,
             });

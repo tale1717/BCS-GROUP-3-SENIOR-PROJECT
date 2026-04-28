@@ -527,6 +527,8 @@ textarea {
     display: flex;
     width: 120px;
     height: 30px;
+}
+
 .filter-select {
     width: 200px;
 }
