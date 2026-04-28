@@ -2,6 +2,8 @@ import {
     getAppointments
 } from "../BarberShopWebsite/Collections/appointments.js";
 
+import { getStaff } from "../BarberShopWebsite/Collections/staff.js";
+
 import {
     isThisWeek,
     isThisMonth,
@@ -17,21 +19,43 @@ let chartInstance = null;
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         appointmentsData = await getAppointments();
+        const staff = await getStaff();
 
+        const performance = getPerformanceByBarber(appointmentsData, staff);
+        console.log("Appointments:", appointmentsData);
+        console.log("Staff:", staff);
+        console.log("Performance:", performance);
 
+        populateBarberSelect(staff);
+
+        const select = document.getElementById("barberSelect");
+
+        // DEFAULT (first barber)
+        const firstId = staff[0]?.id;
+        if (firstId) {
+            renderSingleBarberChart(performance[firstId]);
+            select.value = firstId;
+        }
+
+        // ONLY chart update here
+        select.addEventListener("change", (e) => {
+            const selectedId = e.target.value;
+            renderSingleBarberChart(performance[selectedId]);
+        });
+
+        // BARBER WORKING CHART
+        const barbersPerDay = getBarbersPerDay(staff);
+        const chartData = prepareBarberChartData(barbersPerDay);
+        renderBarberChart(chartData);
+
+        // TODAY STATS
         const todayCount = getTodayAppointmentsCount(appointmentsData);
         const todayRevenue = getTodayRevenue(appointmentsData);
 
-        // update total today's appointments
         document.getElementById("todayAppointments").innerText = todayCount;
-
-        // update total today's revenue
         document.getElementById("todayRevenue").innerText = `$${todayRevenue}`;
 
-
-        console.log("Loaded appointments:", appointmentsData);
-
-        // default = week
+        // CUSTOMER TREND
         updateChart("week");
 
         document.getElementById("viewMode").addEventListener("change", (e) => {
@@ -39,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
     } catch (err) {
-        console.error("Error loading appointments:", err);
+        console.error("Error loading dashboard:", err);
     }
 });
 
@@ -65,6 +89,7 @@ function getWeeklyCustomerData(appointments) {
     const weeklyData = Array(7).fill(0);
 
     appointments.forEach(app => {
+       // const barber = result[app.staffID || app.staffId];//
         if (!app.date) return;
 
         const date = parseISO(app.date);
@@ -167,4 +192,137 @@ function getTodayRevenue(appointments) {
 
         return total;
     }, 0);
+}
+
+//count barber per day
+function getBarbersPerDay(staffList) {
+    const days = [
+        "Sunday","Monday","Tuesday",
+        "Wednesday","Thursday","Friday","Saturday"
+    ];
+
+    const result = {};
+    days.forEach(day => result[day] = 0);
+
+    staffList.forEach(staff => {
+        const workingHours = staff.workingHours || {};
+
+        Object.keys(workingHours).forEach(day => {
+            if (result[day] !== undefined) {
+                result[day]++;
+            }
+        });
+    });
+
+    return result;
+}
+
+//convert it onto bar chart
+function prepareBarberChartData(data) {
+    return {
+        labels: Object.keys(data),
+        values: Object.values(data)
+    };
+}
+
+//put data on chart
+function renderBarberChart(data) {
+    const ctx = document.getElementById("barberChart");
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: "Barbers Working",
+                data: data.values
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+
+//show working hour
+function getWorkingHoursPerDay(staffList) {
+    const result = {
+        Sunday: 0, Monday: 0, Tuesday: 0,
+        Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0
+    };
+
+    staffList.forEach(staff => {
+        const workingHours = staff.workingHours || {};
+
+        Object.entries(workingHours).forEach(([day, time]) => {
+            if (time.start && time.end) {
+                const start = parseInt(time.start.split(":")[0]);
+                const end = parseInt(time.end.split(":")[0]);
+
+                result[day] += (end - start);
+            }
+        });
+    });
+
+    return result;
+}
+
+//group data by barber
+function getPerformanceByBarber(appointments, staffList) {
+    const result = {};
+
+    staffList.forEach(s => {
+        result[s.id] = {
+            name: s.name,
+            customers: 0,
+            revenue: 0
+        };
+    });
+
+    appointments.forEach(app => {
+        const barber = result[app.staffId];
+        if (!barber) return;
+
+        barber.customers++;
+
+        if ((app.status || "").toLowerCase() === "paid") {
+            barber.revenue += Number(app.totalCost || app.price || 0);
+        }
+    });
+
+    return result;
+}
+function populateBarberSelect(staffList) {
+    const select = document.getElementById("barberSelect");
+
+    staffList.forEach(s => {
+        const option = document.createElement("option");
+        option.value = s.id;
+        option.textContent = s.name;
+        select.appendChild(option);
+    });
+}
+
+let barberChart = null;
+//create single chart for each barber
+function renderSingleBarberChart(barber) {
+    const ctx = document.getElementById("barberPerformanceChart");
+
+    if (barberChart) barberChart.destroy();
+
+    barberChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["Customers", "Revenue"],
+            datasets: [{
+                label: barber.name,
+                data: [barber.customers, barber.revenue]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 }
