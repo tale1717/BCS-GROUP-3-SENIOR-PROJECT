@@ -527,4 +527,13 @@ textarea {
     display: flex;
     width: 120px;
     height: 30px;
+.filter-select {
+    width: 200px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
 }

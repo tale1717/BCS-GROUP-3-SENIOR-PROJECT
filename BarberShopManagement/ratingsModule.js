@@ -1,3 +1,4 @@
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { collection, getDocs, getDoc, doc as docRef } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { auth, db } from "../BarberShopWebsite/firebase.js";
 
@@ -9,15 +10,50 @@ let fiveStarCount = 0;
 let averageRating = 0;
 let totalScore = 0;
 
+onAuthStateChanged(auth, (user) => {
+    if (user) loadReviews();
+});
+
+async function getCurrentUserRole() {
+    const firebaseUser = auth.currentUser;
+    if (!firebaseUser) return { role: null, name: null };
+
+    const email = firebaseUser.email;
+
+    // get role from users collection
+    const userSnap = await getDoc(docRef(db, "users", firebaseUser.uid));
+    const role = userSnap.exists() ? userSnap.data().role : null;
+
+    // get name from staff collection matched by email
+    const staffSnap = await getDocs(collection(db, "staff"));
+    const staffMatch = staffSnap.docs.find(
+        d => (d.data().email || "").toLowerCase() === email.toLowerCase()
+    );
+    const name = staffMatch ? staffMatch.data().name : null;
+
+    console.log(name, email);
+
+    return { role, name };
+}
+
 async function loadReviews() {
     const container = document.getElementById("rating-list");
     container.innerHTML = "";
 
     try {
+        const { role, name } = await getCurrentUserRole();
+
         const { docs } = await getDocs(collection(db, "appointments"));
 
-        // Filter to only scored appointments first
-        const scoredDocs = docs.filter(d => d.data().rating != null && d.data().rating !== 0);
+        // Filter to only scored appointments
+        let scoredDocs = docs.filter(d => d.data().rating != null && d.data().rating !== 0);
+
+        // If barber, only show their own reviews
+        if (role === "barber" && name) {
+            scoredDocs = scoredDocs.filter(
+                d => (d.data().barber || "").toLowerCase() === name.toLowerCase()
+            );
+        }
 
         // Collect unique user IDs
         const uniqueUids = [...new Set(scoredDocs.map(d => d.data().customerUid || d.data().customerID))];
@@ -25,14 +61,18 @@ async function loadReviews() {
         // Fetch all users in parallel
         const userDocs = await Promise.all(uniqueUids.map(uid => getDoc(docRef(db, "users", uid))));
 
-        // Build a uid -> name map
+        // Build uid -> name map
         const nameMap = {};
         uniqueUids.forEach((uid, i) => {
             const d = userDocs[i];
             nameMap[uid] = d.exists() ? `${d.data().firstName} ${d.data().lastName}` : "Unknown";
         });
 
-        // Now build cards with no extra reads
+        // Reset counters on each load
+        reviewCount = 0;
+        fiveStarCount = 0;
+        totalScore = 0;
+
         for (const doc of scoredDocs) {
             const data = doc.data();
             const uid = data.customerUid || data.customerID;
@@ -43,7 +83,6 @@ async function loadReviews() {
             const score = data.rating;
             let reviewText = data.review;
 
-            // Build star display
             const stars = [
                 ...Array.from({ length: score }, () =>
                     `<img src="../BarberShopWebsite/comb-full.png" style="width: 20px;" />`
@@ -53,15 +92,13 @@ async function loadReviews() {
                 )
             ].join("");
 
-            // Build card
             if (score != null && score !== 0) {
-                if (!reviewText) {
-                    reviewText = "*No review available*";
-                }
+                if (!reviewText) reviewText = "*No review available*";
+
                 const card = document.createElement("div");
                 card.className = "rating-item";
                 card.innerHTML = `
-                <div class="rating-top">
+                    <div class="rating-top">
                         <div>
                             <strong>${customerName}</strong>
                             <p class="service-text">Barber: ${barber}</p>
@@ -70,10 +107,7 @@ async function loadReviews() {
                         </div>
                         <span class="rating-badge">${stars}</span>
                     </div>
-                    
-                    <p class="feedback-text">
-                        ${reviewText}
-                    </p>
+                    <p class="feedback-text">${reviewText}</p>
                 `;
 
                 if (score === 5) {
@@ -88,9 +122,11 @@ async function loadReviews() {
                 totalScore += score;
                 averageRating = totalScore / reviewCount;
                 averageRatingText.textContent = `${averageRating.toFixed(1)}`;
-
             }
+        }
 
+        if (reviewCount === 0) {
+            container.innerHTML = `<br><h2 style="text-align:center; color: gray;">No reviews found.</brh2>`;
         }
 
     } catch (err) {
@@ -98,5 +134,3 @@ async function loadReviews() {
         console.error(err);
     }
 }
-
-loadReviews();
