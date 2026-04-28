@@ -354,13 +354,13 @@ td{
     border: 1px solid #efefef;
 }
 
- .status{
-     padding:5px 10px;
-     border-radius:6px;
-     color:white;
-     font-weight:normal;
-     text-align:center;
- }
+.status{
+    padding:5px 10px;
+    border-radius:6px;
+    color:white;
+    font-weight:normal;
+    text-align:center;
+}
 
 .instock{
     background:#d1fae5;
@@ -410,8 +410,6 @@ td{
 
 .completed { color: blue; background: #add8e6; padding: 4px 8px; border-radius: 5px; }
 
-.paid { color: #2d3232; background: lightblue; padding: 4px 8px; border-radius: 5px; }
-
 label {
     font-weight: bold;
     padding-bottom: 5px;
@@ -448,9 +446,8 @@ textarea {
     flex-wrap: wrap;
 }
 
-.day-picker input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
+.day-picker input {
+    display: none;
 }
 
 .day-picker label {
@@ -463,25 +460,13 @@ textarea {
 }
 
 .day-picker label:hover {
-    background: #3987e1;
+    background: #eaeaea;
 }
 
 .day-picker input:checked + label {
     background: #1a73e8;
     color: white;
     border-color: #1a73e8;
-}
-
-.day-row label {
-    cursor: pointer;
-    user-select: none;
-}
-
-.day-row input[type="time"] {
-    display: inline-block !important;
-    width: 130px;
-    height: 35px;
-    padding: 5px;
 }
 
 .sort-arrow {
@@ -513,18 +498,55 @@ textarea {
     gap: 6px;
 }
 
-/*-resize function -*/
-.resizable-box {
-    width: 600px;
-    height: 400px;
-    resize: both;
-    overflow: hidden;
-    border: 1px solid #ccc;
-    padding: 10px;
+.filter-select {
+    width: 200px;
 }
 
-.optionlist {
+.card-header {
     display: flex;
-    width: 120px;
-    height: 30px;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+/*for bankinfo- */
+.bank-form {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bank-form input,
+.bank-form select {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.bank-account-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #f1f2f4;
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 8px;
+}
+
+.bank-account-details {
+    flex: 1;
+}
+
+.bank-account-details p {
+    margin: 4px 0;
+}
+
+.edit-bank-btn,
+.delete-bank-btn {
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
 }
