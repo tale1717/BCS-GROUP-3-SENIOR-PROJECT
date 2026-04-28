@@ -186,26 +186,78 @@
             <div style="grid-column: span 2;">
                 <label>Working Days</label> <br>
                 <div class="day-picker">
-                    <input type="checkbox" id="create-sun" name="days" value="sunday">
-                    <label for="create-sun">Sun</label>
 
-                    <input type="checkbox" id="create-mon" name="days" value="Monday">
-                    <label for="create-mon">Mon</label>
+                    <!-- MON -->
+                    <div class="day-row">
 
-                    <input type="checkbox" id="create-tue" name="days" value="Tuesday">
-                    <label for="create-tue">Tue</label>
+                        <input type="checkbox" id="create-mon" value="Monday" name="days">
+                        <label for="create-mon">Mon</label>
+                        <span>Start:</span>
+                        <input type="time" id="create-mon-start">
+                        <span>End:</span>
+                        <input type="time" id="create-mon-end">
+                    </div>
 
-                    <input type="checkbox" id="create-wed" name="days" value="Wednesday">
-                    <label for="create-wed">Wed</label>
+                    <!-- TUE -->
+                    <div class="day-row">
+                        <input type="checkbox" id="create-tue" value="Tuesday" name="days">
+                        <label for="create-tue">Tue</label>
+                        <span>Start:</span>
+                        <input type="time" id="create-tue-start">
+                        <span>End:</span>
+                        <input type="time" id="create-tue-end">
+                    </div>
 
-                    <input type="checkbox" id="create-thu" name="days" value="Thursday">
-                    <label for="create-thu">Thu</label>
+                    <!-- WED -->
+                    <div class="day-row">
+                        <input type="checkbox" id="create-wed" value="Wednesday" name="days">
+                        <label for="create-wed">Wed</label>
+                        <span>Start:</span>
+                        <input type="time" id="create-wed-start">
+                        <span>End:</span>
+                        <input type="time" id="create-wed-end">
+                    </div>
 
-                    <input type="checkbox" id="create-fri" name="days" value="Friday">
-                    <label for="create-fri">Fri</label>
+                    <!-- THU -->
+                    <div class="day-row">
+                        <input type="checkbox" id="create-thu" value="Thursday" name="days">
+                        <label for="create-thu">Thu</label>
+                        <span>Start:</span>
+                        <input type="time" id="create-thu-start">
+                        <span>End:</span>
+                        <input type="time" id="create-thu-end">
+                    </div>
 
-                    <input type="checkbox" id="create-sat" name="days" value="Saturday">
-                    <label for="create-sat">Sat</label>
+                    <!-- FRI -->
+                    <div class="day-row">
+                        <input type="checkbox" id="create-fri" value="Friday" name="days">
+                        <label for="create-fri">Fri</label>
+                        <span>Start:</span>
+                        <input type="time" id="create-fri-start">
+                        <span>End:</span>
+                        <input type="time" id="create-fri-end">
+                    </div>
+
+                    <!-- SAT -->
+                    <div class="day-row">
+                        <input type="checkbox" id="create-sat" value="Saturday" name="days">
+                        <label for="create-sat">Sat</label>
+                        <span>Start:</span>
+                        <input type="time" id="create-sat-start">
+                        <span>End:</span>
+                        <input type="time" id="create-sat-end">
+                    </div>
+
+                    <!-- SUN -->
+                    <div class="day-row">
+                        <input type="checkbox" id="create-sun" value="Sunday" name="days">
+                        <label for="create-sun">Sun</label>
+                        <span>Start:</span>
+                        <input type="time" id="create-sun-start">
+                        <span>End:</span>
+                        <input type="time" id="create-sun-end">
+                    </div>
+
                 </div>
             </div>
 
@@ -283,20 +335,77 @@
             <div style="grid-column: span 2;">
                 <label>Working Days</label> <br>
                 <div class="day-picker">
-                    <input type="checkbox" id="sun" name="days" value="Sunday">
-                    <label for="sun">Sun</label>
-                    <input type="checkbox" id="mon" name="days" value="Monday">
-                    <label for="mon">Mon</label>
-                    <input type="checkbox" id="tue" name="days" value="Tuesday">
-                    <label for="tue">Tue</label>
-                    <input type="checkbox" id="wed" name="days" value="Wednesday">
-                    <label for="wed">Wed</label>
-                    <input type="checkbox" id="thu" name="days" value="Thursday">
-                    <label for="thu">Thu</label>
-                    <input type="checkbox" id="fri" name="days" value="Friday">
-                    <label for="fri">Fri</label>
-                    <input type="checkbox" id="sat" name="days" value="Saturday">
-                    <label for="sat">Sat</label>
+
+                    <!-- MON -->
+                    <div class="day-row">
+                        <input type="checkbox" id="edit-mon" value="Monday" name="days">
+                        <label for="edit-mon">Mon</label>
+                        <span>Start:</span>
+                        <input type="time" id="edit-mon-start">
+                        <span>End:</span>
+                        <input type="time" id="edit-mon-end">
+                    </div>
+
+                    <!-- TUE -->
+                    <div class="day-row">
+                        <input type="checkbox" id="edit-tue" value="Tuesday" name="days">
+                        <label for="edit-tue">Tue</label>
+                        <span>Start:</span>
+                        <input type="time" id="edit-tue-start">
+                        <span>End:</span>
+                        <input type="time" id="edit-tue-end">
+                    </div>
+
+                    <!-- WED -->
+                    <div class="day-row">
+                        <input type="checkbox" id="edit-wed" value="Wednesday" name="days">
+                        <label for="edit-wed">Wed</label>
+                        <span>Start:</span>
+                        <input type="time" id="edit-wed-start">
+                        <span>End:</span>
+                        <input type="time" id="edit-wed-end">
+                    </div>
+
+                    <!-- THU -->
+                    <div class="day-row">
+                        <input type="checkbox" id="edit-thu" value="Thursday" name="days">
+                        <label for="edit-thu">Thu</label>
+                        <span>Start:</span>
+                        <input type="time" id="edit-thu-start">
+                        <span>End:</span>
+                        <input type="time" id="edit-thu-end">
+                    </div>
+
+                    <!-- FRI -->
+                    <div class="day-row">
+                        <input type="checkbox" id="edit-fri" value="Friday" name="days">
+                        <label for="edit-fri">Fri</label>
+                        <span>Start:</span>
+                        <input type="time" id="edit-fri-start">
+                        <span>End:</span>
+                        <input type="time" id="edit-fri-end">
+                    </div>
+
+                    <!-- SAT -->
+                    <div class="day-row">
+                        <input type="checkbox" id="edit-sat" value="Saturday" name="days">
+                        <label for="edit-sat">Sat</label>
+                        <span>Start:</span>
+                        <input type="time" id="edit-sat-start">
+                        <span>End:</span>
+                        <input type="time" id="edit-sat-end">
+                    </div>
+
+                    <!-- SUN -->
+                    <div class="day-row">
+                        <input type="checkbox" id="edit-sun" value="Sunday" name="days">
+                        <label for="edit-sun">Sun</label>
+                        <span>Start:</span>
+                        <input type="time" id="edit-sun-start">
+                        <span>End:</span>
+                        <input type="time" id="edit-sun-end">
+                    </div>
+
                 </div>
             </div>
         </div>

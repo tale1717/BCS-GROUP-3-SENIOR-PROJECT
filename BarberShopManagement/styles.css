@@ -410,6 +410,8 @@ td{
 
 .completed { color: blue; background: #add8e6; padding: 4px 8px; border-radius: 5px; }
 
+.paid { color: #2d3232; background: lightblue; padding: 4px 8px; border-radius: 5px; }
+
 label {
     font-weight: bold;
     padding-bottom: 5px;
@@ -446,8 +448,9 @@ textarea {
     flex-wrap: wrap;
 }
 
-.day-picker input {
-    display: none;
+.day-picker input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
 }
 
 .day-picker label {
@@ -460,13 +463,25 @@ textarea {
 }
 
 .day-picker label:hover {
-    background: #eaeaea;
+    background: #3987e1;
 }
 
 .day-picker input:checked + label {
     background: #1a73e8;
     color: white;
     border-color: #1a73e8;
+}
+
+.day-row label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.day-row input[type="time"] {
+    display: inline-block !important;
+    width: 130px;
+    height: 35px;
+    padding: 5px;
 }
 
 .sort-arrow {
@@ -498,6 +513,20 @@ textarea {
     gap: 6px;
 }
 
+/*-resize function -*/
+.resizable-box {
+    width: 600px;
+    height: 400px;
+    resize: both;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.optionlist {
+    display: flex;
+    width: 120px;
+    height: 30px;
 .filter-select {
     width: 200px;
 }

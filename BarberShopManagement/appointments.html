@@ -21,6 +21,65 @@
         th {
             border-bottom: 1px solid gray;
         }
+
+        .mini-calendar {
+            margin-top: 8px;
+            width: 260px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .calendar-header button {
+            cursor: pointer;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+        }
+
+        .calendar-day-name {
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .calendar-day {
+            padding: 6px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background: #eee;
+        }
+
+        .calendar-day.selected {
+            background: black;
+            color: white;
+        }
+
+        .calendar-day.disabled {
+            color: #aaa;
+            background: #f1f1f1;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.empty {
+            cursor: default;
+        }
+
     </style>
     <script type="module" src="./appointmentsModule.js"></script>
     <script type="module" src="auth.js"></script>
@@ -168,12 +227,16 @@
             <div>
                 <div>
                     <label>Date</label> <br>
-                    <input type="date" id="a-date" class="text-style"> <br>
+                    <input type="hidden" id="a-date">
+                    <div id="a-date-display" class="text-style">Select Date</div>
+                    <div id="a-calendar" class="mini-calendar"></div>
                 </div>
                 <br>
                 <div>
                     <label>Time</label> <br>
-                    <input type="time" id="a-time" class="text-style"> <br>
+                    <select id="a-time" class="text-style">
+                        <option value="">Select Time</option>
+                    </select> <br>
                 </div>
             </div>
 
@@ -231,12 +294,16 @@
             <div>
                 <div>
                     <label>Date</label> <br>
-                    <input type="date" id="edit-date" class="text-style"> <br>
+                    <input type="hidden" id="edit-date">
+                    <div id="edit-date-display" class="text-style">Select Date</div>
+                    <div id="edit-calendar" class="mini-calendar"></div>
                 </div>
                 <br>
                 <div>
                     <label>Time</label> <br>
-                    <input type="time" id="edit-time" class="text-style"> <br>
+                    <select id="edit-time" class="text-style">
+                        <option value="">Select Time</option>
+                    </select> <br>
                 </div>
             </div>
 
@@ -255,6 +322,7 @@
                     <option value="cancelled" class="cancelled">Cancelled</option>
                     <option value="in-process">In Process</option>
                     <option value="completed" class="completed">Completed</option>
+                    <option value="paid" class="paid">Paid</option>
                 </select>
 
                 <div id="supply-section" style="display:none;">
