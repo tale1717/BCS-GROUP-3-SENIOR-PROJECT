@@ -22,12 +22,9 @@ const emailText   = document.getElementById("emailText");
 const mobileText  = document.getElementById("mobileText");
 const positionText = document.getElementById("positionText");
 const startDateText = document.getElementById("startDateText");
-const routNumText = document.getElementById("routNumText");
-const acctNumText = document.getElementById("acctNumText");
 
 const pwBtn           = document.getElementById("pwBtn");
 const logoutBtn       = document.getElementById("logoutBtn");
-const editBankBtn     = document.getElementById("editBankBtn");
 const passwordForm    = document.getElementById("passwordForm");
 const savePWBtn       = document.getElementById("savePWBtn");
 const cancelPWBtn     = document.getElementById("cancelPWBtn");
@@ -65,7 +62,6 @@ onAuthStateChanged(auth, async (user) => {
         currentStaffData = staffData;
 
         populatePersonalInfo(staffData, user.email);
-        populateBankInfo(staffData);
         populateSchedule(staffData);
         loadScheduleRows(staffData.workingHours || {});  // ← add this
         await loadAppointments(staffData);
@@ -106,19 +102,6 @@ function populatePersonalInfo(staff, email) {
     } else {
         startDateText.textContent = "N/A";
     }
-}
-
-// ── Populate bank info ─────────────────────────────────────────────────────────
-function populateBankInfo(staff) {
-    routNumText.textContent = staff.routingNumber ?? "—";
-    acctNumText.textContent = staff.accountNumber
-        ? maskAccountNumber(String(staff.accountNumber))
-        : "—";
-}
-
-function maskAccountNumber(acct) {
-    // Show only last 4 digits: e.g. ••••••7899
-    return "•".repeat(Math.max(0, acct.length - 4)) + acct.slice(-4);
 }
 
 // ── Password change ────────────────────────────────────────────────────────────
@@ -168,6 +151,7 @@ savePWBtn.addEventListener("click", async () => {
     }
 });
 
+/**
 // ── Edit bank information (modal) ─────────────────────────────────────────────
 const bankModal       = document.getElementById("bankModal");
 const newRoutingInput = document.getElementById("newRoutingInput");
@@ -234,7 +218,7 @@ saveBankBtn.addEventListener("click", async () => {
         bankError.style.display = "block";
     }
 });
-
+**/
 // ── Schedule ─────────────────────────────────────────────
 function populateSchedule(staff) {
     const scheduleCard = document.getElementById("profile-schedule"); // or whatever your card's id is

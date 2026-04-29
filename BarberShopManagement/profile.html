@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
     <script type="module" src="profileModule.js"></script>
+    <script type="module" src="bankInfo.js"></script>
     <script type=module src="logout.js"></script>
     <style>
         .card:hover {
@@ -82,25 +83,40 @@
         <div class="receipt-card">
             <h2>Bank Information</h2>
 
-            <br>
-            <p><strong>Routing Number:</strong> <span id="routNumText">123456789</span></p>
-            <br>
-            <p><strong>Account Number:</strong> <span id="acctNumText">1234567899</span></p>
-            <br>
+            <div id="bankDisplay">
+                <p><strong>Accounts:</strong> <span id="accountCount">0</span> Item(s)</p>
+                <div id="bankAccountsList"></div>
 
-            <div class="button-group">
-                <button class="primary-btn" id="editBankBtn">Edit Bank Information</button>
+                <button class="primary-btn" id="addBankBtn">Add Bank Account</button>
             </div>
 
-            <div class="form" id="bankModal" style="display:none;">
+            <div class="form bank-form" id="bankForm" style="display: none;">
+                <h3 id="bankFormTitle">Add Direct Deposit Account</h3>
                 <br>
-                <input type="text" id="newRoutingInput" placeholder="Routing Number" maxlength="9">
-                <input type="text" id="newAccountInput" placeholder="Account Number" maxlength="17">
 
-                <button class="primary-btn" id="saveBankBtn">Save</button>
+                <label>Bank Name</label>
+                <input id="bankNameInput" type="text" placeholder="Bank Name">
+
+                <label>Account Type</label>
+                <select id="accountTypeInput">
+                    <option value="Checking">Checking</option>
+                    <option value="Savings">Savings</option>
+                </select>
+                <br>
+                <label>Routing Number</label>
+                <input id="routingInput" type="text" placeholder="Routing Number">
+
+                <label>Account Number</label>
+                <input id="accountInput" type="text" placeholder="Account Number">
+
+                <label>Confirm Account Number</label>
+                <input id="confirmAccountInput" type="text" placeholder="Confirm Account Number">
+
+                <label>Name on Account</label>
+                <input id="accountNameInput" type="text" placeholder="Name on Account">
+
+                <button class="primary-btn" id="saveBankBtn">Save Account</button>
                 <button class="primary-btn" id="cancelBankBtn">Cancel</button>
-
-                <p id="bankError" style="color:red; display:none;"></p>
             </div>
         </div>
     </div>
