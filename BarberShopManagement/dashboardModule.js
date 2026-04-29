@@ -273,7 +273,7 @@ function getPerformanceByBarber(appointments, staffList) {
     const result = {};
 
     staffList.forEach(s => {
-        result[s.id] = {
+        result[String(s.id)] = {
             name: s.name,
             customers: 0,
             revenue: 0
@@ -281,18 +281,24 @@ function getPerformanceByBarber(appointments, staffList) {
     });
 
     appointments.forEach(app => {
-        const barber = result[app.staffId];
-        if (!barber) return;
+        const staffId = String(app.staffId || app.staffID || "");
 
-        barber.customers++;
+        if (!result[staffId]) {
+            console.warn("No matching barber for:", staffId);
+            return;
+        }
+
+        result[staffId].customers++;
 
         if ((app.status || "").toLowerCase() === "paid") {
-            barber.revenue += Number(app.totalCost || app.price || 0);
+            result[staffId].revenue += Number(app.totalCost || app.price || 0);
         }
     });
 
     return result;
 }
+
+
 function populateBarberSelect(staffList) {
     const select = document.getElementById("barberSelect");
 
