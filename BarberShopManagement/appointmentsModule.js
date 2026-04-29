@@ -1332,6 +1332,9 @@ function getFilteredAndSortedList() {
         case "cancelled":
             list = list.filter(a => a.status === "cancelled");
             break;
+        case "paid":
+            list = list.filter(a => a.status === "paid");
+            break;
     }
 
     // apply sort
