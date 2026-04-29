@@ -62,8 +62,12 @@ onAuthStateChanged(auth, async (user) => {
             return;
         }
 
+        currentStaffData = staffData;
+
         populatePersonalInfo(staffData, user.email);
         populateBankInfo(staffData);
+        populateSchedule(staffData);
+        loadScheduleRows(staffData.workingHours || {});  // ← add this
         await loadAppointments(staffData);
         await loadPerformanceReport(staffData);
 
@@ -115,256 +119,6 @@ function populateBankInfo(staff) {
 function maskAccountNumber(acct) {
     // Show only last 4 digits: e.g. ••••••7899
     return "•".repeat(Math.max(0, acct.length - 4)) + acct.slice(-4);
-}
-
-// ── Load appointments (upcoming + history) ─────────────────────────────────────
-async function loadAppointments(staff) {
-    const role     = (staff.position ?? "").toLowerCase();
-    const isBarber = role === "barber";
-
-    let appointmentsSnap;
-
-    if (isBarber) {
-        // Barbers only see their own appointments
-        const barberName = `${staff.name}`;
-        const q = query(
-            collection(db, "appointments"),
-            where("barber", "==", barberName)
-        );
-        appointmentsSnap = await getDocs(q);
-    } else if (role === "manager" || role === "receptionist") {
-        // Managers and receptionists see all appointments
-        appointmentsSnap = await getDocs(collection(db, "appointments"));
-    } else {
-        // Unknown role — default to all appointments
-        appointmentsSnap = await getDocs(collection(db, "appointments"));
-    }
-
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-
-    const upcoming  = [];
-    const completed = [];
-
-    appointmentsSnap.forEach((docSnap) => {
-        const appt = { id: docSnap.id, ...docSnap.data() };
-
-        // Normalize the appointment date
-        let apptDate;
-        if (appt.date?.toDate) {
-            apptDate = appt.date.toDate();
-        } else if (appt.date) {
-            apptDate = new Date(appt.date);
-        } else {
-            return; // skip if no date
-        }
-
-        const apptDay = new Date(apptDate);
-        apptDay.setHours(0, 0, 0, 0);
-
-        const status = (appt.status ?? "").toLowerCase();
-
-        if (status === "completed" || status === "cancelled") {
-            completed.push({ ...appt, apptDate });
-        } else if (apptDay >= now) {
-            upcoming.push({ ...appt, apptDate });
-        }
-        // Appointments that are past-dated but not completed/canceled are ignored
-    });
-
-    // Sort upcoming ascending, history descending
-    upcomingData = upcoming;
-    historyData  = completed;
-
-    renderUpcomingAppointments();
-    renderAppointmentHistory(role);
-}
-
-function formatDate(date) {
-    return date.toLocaleDateString("en-US", {
-        year: "numeric", month: "short", day: "numeric"
-    });
-}
-
-function renderUpcomingAppointments() {
-    const data = sortData(
-        upcomingData,
-        upcomingSortCol,
-        upcomingSortDir,
-        ["apptDate", "barber", "serviceName", "time"]
-    );
-
-    appointmentsTableBody.innerHTML = data.length === 0
-        ? `<tr><td colspan="4" style="text-align:center;">No upcoming appointments</td></tr>`
-        : data.map(appt => `
-            <tr>
-                <td>${formatDate(appt.apptDate)}</td>
-                <td>${appt.barber      ?? "N/A"}</td>
-                <td>${appt.serviceName ?? "N/A"}</td>
-                <td>${appt.time        ?? "N/A"}</td>
-            </tr>`).join("");
-}
-
-function renderAppointmentHistory(role = "barber") {
-    const data = sortData(
-        historyData,
-        historySortCol,
-        historySortDir,
-        ["apptDate", "barber", "serviceName", "status"]
-    );
-
-    const reviewTh = document.querySelector("#history-card thead th:last-child");
-    if (role === "receptionist" && reviewTh) reviewTh.style.display = "none";
-
-    appointmentHistoryBody.innerHTML = data.length === 0
-        ? `<tr><td colspan="4" style="text-align:center;">No appointment history</td></tr>`
-        : data.map(appt => `
-            <tr>
-                <td>${formatDate(appt.apptDate)}</td>
-                <td>${appt.barber      ?? "N/A"}</td>
-                <td>${appt.serviceName ?? "N/A"}</td>
-                <td><span class="status-${appt.status}">${capitalize(appt.status ?? "N/A")}</span></td>
-            </tr>`).join("");
-}
-
-function sortData(data, col, dir, keys) {
-    if (col < 0) return data;
-    return [...data].sort((a, b) => {
-        const va = a[keys[col]], vb = b[keys[col]];
-        if (va instanceof Date && vb instanceof Date) return (va - vb) * dir;
-        return String(va ?? "").localeCompare(String(vb ?? "")) * dir;
-    });
-}
-
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-// ── Table column sorting ───────────────────────────────────────────────────────
-function makeSortable(thead, getDir, setDir, getCol, setCol, renderFn, label) {
-    thead.querySelectorAll("th").forEach((th, i) => {
-        th.style.cursor = "pointer";
-        th.style.userSelect = "none";
-        const icon = document.createElement("span");
-        icon.style.cssText = "margin-left:5px;font-size:11px;color:var(--color-text-tertiary);letter-spacing:-2px";
-        icon.textContent = "";
-        th.appendChild(icon);
-
-        th.addEventListener("click", () => {
-            const prevCol = getCol();
-            const newDir  = (i === prevCol) ? getDir() * -1 : 1;
-            setCol(i);
-            setDir(newDir);
-
-            thead.querySelectorAll("th span").forEach((s, j) => {
-                s.textContent = j === i ? (newDir === 1 ? "▲" : "▼") : "";
-                s.style.color = j === i
-                    ? "var(--color-text-primary)"
-                    : "var(--color-text-tertiary)";
-            });
-
-            // Highlight the default active column on load
-            const initialThs = thead.querySelectorAll("th span");
-            const initCol = getCol();
-            if (initCol >= 0 && initialThs[initCol]) {
-                initialThs[initCol].textContent = getDir() === 1 ? "▲" : "▼";
-                initialThs[initCol].style.color = "var(--color-text-primary)";
-            }
-
-            renderFn();
-        });
-    });
-}
-
-const upcomingThead = document.querySelector(".upcoming-card thead");
-const historyThead  = document.querySelector(".history-card thead");
-
-makeSortable(
-    upcomingThead,
-    () => upcomingSortDir, d => upcomingSortDir = d,
-    () => upcomingSortCol, c => upcomingSortCol = c,
-    renderUpcomingAppointments
-);
-
-makeSortable(
-    historyThead,
-    () => historySortDir,  d => historySortDir = d,
-    () => historySortCol,  c => historySortCol = c,
-    () => renderAppointmentHistory(/* pass stored role */)
-);
-
-
-// ── Performance report ─────────────────────────────────────────────────────────
-async function loadPerformanceReport(staff) {
-    const role = (staff.position ?? "").toLowerCase();
-
-    // Receptionists don't have a performance report
-    if (role === "receptionist") {
-        const perfCard = document.querySelector(".performance-card");
-        if (perfCard) perfCard.style.display = "none";
-        return;
-    }
-
-    // Get the start of the current month
-    const now       = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    let appointmentsSnap;
-
-    if (role === "barber") {
-        const barberName = `${staff.name}`;
-        const q = query(
-            collection(db, "appointments"),
-            where("barber", "==", barberName),
-            where("status", "==", "completed")
-        );
-        appointmentsSnap = await getDocs(q);
-    } else {
-        // Manager sees whole shop
-        const q = query(
-            collection(db, "appointments"),
-            where("status", "==", "completed")
-        );
-        appointmentsSnap = await getDocs(q);
-    }
-
-    let completedCount = 0;
-    let feedbackCount  = 0;
-    let ratingSum      = 0;
-
-    appointmentsSnap.forEach((docSnap) => {
-        const appt = docSnap.data();
-
-        // Filter to this month
-        let apptDate;
-        if (appt.date?.toDate) {
-            apptDate = appt.date.toDate();
-        } else if (appt.date) {
-            apptDate = new Date(appt.date);
-        } else {
-            return;
-        }
-
-        if (apptDate < monthStart) return;
-
-        completedCount++;
-
-        if (appt.review || appt.rating) {
-            feedbackCount++;
-        }
-
-        if (appt.rating) {
-            ratingSum += Number(appt.rating);
-        }
-    });
-
-    const avgRating = feedbackCount > 0
-        ? (ratingSum / feedbackCount).toFixed(1)
-        : "N/A";
-
-    if (perfCards[0]) perfCards[0].textContent = completedCount;
-    if (perfCards[1]) perfCards[1].textContent = feedbackCount;
-    if (perfCards[2]) perfCards[2].textContent = avgRating;
 }
 
 // ── Password change ────────────────────────────────────────────────────────────
@@ -481,10 +235,208 @@ saveBankBtn.addEventListener("click", async () => {
     }
 });
 
-document.getElementById("GTA1").addEventListener("click", async () => {
-    window.location.href = "./appointments.html";
-})
+// ── Schedule ─────────────────────────────────────────────
+function populateSchedule(staff) {
+    const scheduleCard = document.getElementById("profile-schedule"); // or whatever your card's id is
+    if (!scheduleCard) return;
 
-document.getElementById("GTA2").addEventListener("click", async () => {
-    window.location.href = "./appointments.html";
-})
+    const workingHours = staff.workingHours || {};
+    const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+    if (Object.keys(workingHours).length === 0) {
+        scheduleCard.innerHTML = "<p>No schedule set.</p>";
+        return;
+    }
+
+    const rows = dayOrder.map(day => {
+        const hours = workingHours[day];
+
+        if (hours) {
+            return `
+                <div class="schedule-row">
+                    <span class="schedule-day">${day}</span>
+                    <span class="schedule-time">${formatTime(hours.start)} – ${formatTime(hours.end)}</span>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="schedule-row inactive">
+                    <span class="schedule-day">${day}</span>
+                    <span class="schedule-inactive">Inactive</span>
+                </div>
+            `;
+        }
+    }).join("");
+
+    scheduleCard.innerHTML = rows || "<p>No schedule set.</p>";
+}
+
+// Converts "14:00" → "2:00 PM"
+function formatTime(time) {
+    if (!time) return "";
+    const [hourStr, minute] = time.split(":");
+    const hour = parseInt(hourStr);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minute} ${ampm}`;
+}
+
+// ── Schedule editing ───────────────────────────────────────────────────────────
+const scheduleModal     = document.getElementById("scheduleModal");
+const editScheduleBtn   = document.getElementById("editScheduleBtn");
+const saveScheduleBtn   = document.getElementById("saveScheduleBtn");
+const cancelScheduleBtn = document.getElementById("cancelScheduleBtn");
+const scheduleError     = document.getElementById("scheduleError");
+
+const DAY_KEYS = [
+    { key: "mon", full: "Monday" },
+    { key: "tue", full: "Tuesday" },
+    { key: "wed", full: "Wednesday" },
+    { key: "thu", full: "Thursday" },
+    { key: "fri", full: "Friday" },
+    { key: "sat", full: "Saturday" },
+    { key: "sun", full: "Sunday" },
+];
+
+function openScheduleModal(currentWorkingHours = {}) {
+    scheduleError.style.display = "none";
+
+    // Pre-fill checkboxes and times from existing schedule
+    DAY_KEYS.forEach(({ key, full }) => {
+        const cb    = document.getElementById(`modal-${key}-cb`);
+        const start = document.getElementById(`modal-${key}-start`);
+        const end   = document.getElementById(`modal-${key}-end`);
+
+        const existing = currentWorkingHours[full];
+        cb.checked    = !!existing;
+        start.value   = existing?.start || "09:00";
+        end.value     = existing?.end   || "17:00";
+
+        // Dim time inputs if day is unchecked
+        toggleDayInputs(key, cb.checked);
+
+        cb.onchange = () => toggleDayInputs(key, cb.checked);
+    });
+
+    scheduleModal.style.display = "flex";
+}
+
+function toggleDayInputs(key, enabled) {
+    const row = document.getElementById(`modal-${key}`);
+    if (!row) return;
+    row.classList.toggle("active", enabled);
+}
+
+function loadScheduleRows(workingHours = {}) {
+    DAY_KEYS.forEach(({ key, full }) => {
+        const cb    = document.getElementById(`modal-${key}-cb`);
+        const start = document.getElementById(`modal-${key}-start`);
+        const end   = document.getElementById(`modal-${key}-end`);
+
+        const existing = workingHours[full];
+        cb.checked  = !!existing;
+        start.value = existing?.start || "09:00";
+        end.value   = existing?.end   || "17:00";
+
+        // Apply active class immediately
+        toggleDayInputs(key, cb.checked);
+
+        // Allow toggling by clicking the checkbox
+        cb.onchange = () => toggleDayInputs(key, cb.checked);
+    });
+}
+
+function closeScheduleModal() {
+    scheduleModal.style.display = "none";
+}
+
+function buildWorkingHoursFromModal() {
+    const workingHours = {};
+    const workingDays  = [];
+
+    for (const { key, full } of DAY_KEYS) {
+        const cb    = document.getElementById(`modal-${key}-cb`);
+        const start = document.getElementById(`modal-${key}-start`);
+        const end   = document.getElementById(`modal-${key}-end`);
+
+        if (cb.checked) {
+            workingHours[full] = { start: start.value, end: end.value };
+            workingDays.push(full);
+        }
+    }
+
+    return { workingHours, workingDays };
+}
+
+// Store current schedule in memory so the modal can pre-fill it
+let currentStaffData = null;
+
+saveScheduleBtn.addEventListener("click", async () => {
+    const { workingHours, workingDays } = buildWorkingHoursFromModal();
+
+    // validation ...
+
+    try {
+        const user = auth.currentUser;
+        const staffData = await fetchStaffByEmail(user.email);
+        await updateDoc(doc(db, "staff", staffData.id), { workingHours, workingDays });
+
+        currentStaffData = { ...currentStaffData, workingHours, workingDays };
+
+        // Reload the rows in place instead of closing a modal
+        loadScheduleRows(workingHours);
+
+    } catch (err) {
+        console.error("Schedule update error:", err);
+    }
+});
+
+editScheduleBtn.addEventListener("click", () => {
+    openScheduleModal(currentStaffData?.workingHours || {});
+});
+
+cancelScheduleBtn.addEventListener("click", closeScheduleModal);
+
+scheduleModal.addEventListener("click", (e) => {
+    if (e.target === scheduleModal) closeScheduleModal();
+});
+
+saveScheduleBtn.addEventListener("click", async () => {
+    const { workingHours, workingDays } = buildWorkingHoursFromModal();
+
+    // Validate: end time must be after start time for checked days
+    for (const { key, full } of DAY_KEYS) {
+        const cb = document.getElementById(`modal-${key}-cb`);
+        if (!cb.checked) continue;
+
+        const start = document.getElementById(`modal-${key}-start`).value;
+        const end   = document.getElementById(`modal-${key}-end`).value;
+
+        if (end <= start) {
+            scheduleError.textContent = `${full}: end time must be after start time.`;
+            scheduleError.style.display = "block";
+            return;
+        }
+    }
+
+    try {
+        const user = auth.currentUser;
+        const staffData = await fetchStaffByEmail(user.email);
+        if (!staffData) throw new Error("Staff record not found.");
+
+        await updateDoc(doc(db, "staff", staffData.id), {
+            workingHours,
+            workingDays
+        });
+
+        // Update local cache and re-render the card
+        currentStaffData = { ...currentStaffData, workingHours, workingDays };
+        populateSchedule(currentStaffData);
+        closeScheduleModal();
+
+    } catch (err) {
+        console.error("Schedule update error:", err);
+        scheduleError.textContent = "Failed to save schedule. Please try again.";
+        scheduleError.style.display = "block";
+    }
+});

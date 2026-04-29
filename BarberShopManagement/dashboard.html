@@ -60,32 +60,33 @@
 
         <div class="card">
 
-        <h2>Customers Trend</h2> <br><br>
-        <!-- Toggle -->
-        <label for="viewMode">View:</label>
-        <select id="viewMode" class="optionlist">
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-        </select>
+            <h2>Customers Trend</h2> <br><br>
+            <!-- Toggle -->
+            <label for="viewMode">View:</label>
+            <select id="viewMode" class="optionlist">
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+            </select>
 
-        <!--resize function-->
-        <div class="resizable-box">
-            <canvas id="customerLineChart"></canvas>
+            <!--resize function-->
+            <div class="resizable-box">
+                <canvas id="customerLineChart"></canvas>
+            </div>
 
+            <!-- Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        </div>
 
-        <!-- Chart.js -->
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script></div>
-
-
-
+        <br>
 
         <div class="card">
-            <h2>Number of Employee</h2> <br><br>
+            <h2>Number of Employees</h2> <br><br>
             <div class="resizable-box">
-            <canvas id="barberChart"></canvas>
-        </div>
+                <canvas id="barberChart"></canvas>
+            </div>
+        </div> <br>
 
-        </div>
+
         <div class="card">
             <h2>Barber Performance</h2> <br><br>
             <label for="barberSelect">Select Barber:</label>
@@ -95,9 +96,7 @@
             </div>
         </div>
 
-
-
-        </div>
+        <br>
 
     </main>
 

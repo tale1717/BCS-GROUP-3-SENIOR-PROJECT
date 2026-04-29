@@ -515,7 +515,7 @@ textarea {
 
 /*-resize function -*/
 .resizable-box {
-    width: 600px;
+    width: 100%;
     height: 400px;
     resize: both;
     overflow: hidden;
@@ -539,3 +539,103 @@ textarea {
     align-items: center;
     padding-bottom: 10px;
 }
+
+.schedule-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    width: 90%;
+    height: 55px;
+}
+
+.schedule-day {
+    font-weight: 600;
+}
+
+.schedule-time {
+    color: #333;
+    font-size: 14px;
+}
+
+.schedule-row.inactive .schedule-day {
+    color: #bbb;
+}
+
+.schedule-inactive {
+    font-size: 13px;
+    color: #bbb;
+    font-style: italic;
+}
+
+.schedule-modal-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 1rem;
+}
+
+.sched-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background: #f8f9fa;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.sched-row.active {
+    background: #E6F1FB;
+    border-color: #378ADD;
+}
+
+.sched-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #185FA5;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.sched-day-label {
+    font-weight: 600;
+    font-size: 14px;
+    width: 36px;
+    cursor: pointer;
+    color: #555;
+}
+
+.sched-row.active .sched-day-label {
+    color: #0C447C;
+}
+
+.sched-off {
+    margin-left: auto;
+    font-size: 13px;
+    color: #aaa;
+    font-style: italic;
+}
+
+.sched-times {
+    display: none;
+    margin-left: auto;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #185FA5;
+}
+
+.sched-row.active .sched-off  { display: none; }
+.sched-row.active .sched-times { display: flex; }
+
+.sched-times input[type="time"] {
+    width: 110px;
+    padding: 4px 6px;
+    border: 1px solid #85B7EB;
+    border-radius: 6px;
+    font-size: 13px;
+}
+

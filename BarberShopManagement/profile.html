@@ -105,94 +105,101 @@
         </div>
     </div>
 
-    <!-- Bank Information Modal -->
+    <br>
 
+    <div class="profile-card">
+        <h2>Schedule</h2>
 
-    <!-- <div class="performance-card">
-        <-- Performance reports are different for different employees.
-             Barbers will see their individual performance summary of the past month
-             Managers will see the performance of the whole barber shop of the past month
-             Receptionists will not see this tab.
+        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+            <div class="day-picker" id="profile-schedule" style="display:grid"></div>
 
+            <div id="scheduleModal" style="display:none; align-items: center; justify-content: center;">
+                <div>
+                    <h3>Edit Schedule</h3>
 
-        <h2>Performance Report</h2>
+                    <div class="schedule-modal-grid">
+                        <div class="sched-row" id="modal-mon">
+                            <input type="checkbox" id="modal-mon-cb">
+                            <label class="sched-day-label" for="modal-mon-cb">Mon</label>
+                            <span class="sched-off">Day off</span>
+                            <div class="sched-times">
+                                Start: <input type="time" id="modal-mon-start">
+                                End: <input type="time" id="modal-mon-end">
+                            </div>
+                        </div>
 
-        <div class="performance-grid">
-            <div class="card">
-                Completed Appointments
-                <h3>0</h3>
-            </div>
+                        <div class="sched-row" id="modal-tue">
+                            <input type="checkbox" id="modal-tue-cb">
+                            <label class="sched-day-label" for="modal-tue-cb">Tue</label>
+                            <span class="sched-off">Day off</span>
+                            <div class="sched-times">
+                                Start: <input type="time" id="modal-tue-start">
+                                End: <input type="time" id="modal-tue-end">
+                            </div>
+                        </div>
 
-            <div class="card">
-                Feedback Received
-                <h3>0</h3>
-            </div>
+                        <div class="sched-row" id="modal-wed">
+                            <input type="checkbox" id="modal-wed-cb">
+                            <label class="sched-day-label" for="modal-wed-cb">Wed</label>
+                            <span class="sched-off">Day off</span>
+                            <div class="sched-times">
+                                Start: <input type="time" id="modal-wed-start">
+                                End: <input type="time" id="modal-wed-end">
+                            </div>
+                        </div>
 
-            <div class="card">
-                Average Rating
-                <h3>0</h3>
+                        <div class="sched-row" id="modal-thu">
+                            <input type="checkbox" id="modal-thu-cb">
+                            <label class="sched-day-label" for="modal-thu-cb">Thu</label>
+                            <span class="sched-off">Day off</span>
+                            <div class="sched-times">
+                                Start: <input type="time" id="modal-thu-start">
+                                End: <input type="time" id="modal-thu-end">
+                            </div>
+                        </div>
+
+                        <div class="sched-row" id="modal-fri">
+                            <input type="checkbox" id="modal-fri-cb">
+                            <label class="sched-day-label" for="modal-fri-cb">Fri</label>
+                            <span class="sched-off">Day off</span>
+                            <div class="sched-times">
+                                Start: <input type="time" id="modal-fri-start">
+                                End: <input type="time" id="modal-fri-end">
+                            </div>
+                        </div>
+
+                        <div class="sched-row" id="modal-sat">
+                            <input type="checkbox" id="modal-sat-cb">
+                            <label class="sched-day-label" for="modal-sat-cb">Sat</label>
+                            <span class="sched-off">Day off</span>
+                            <div class="sched-times">
+                                Start: <input type="time" id="modal-sat-start">
+                                End: <input type="time" id="modal-sat-end">
+                            </div>
+                        </div>
+
+                        <div class="sched-row" id="modal-sun">
+                            <input type="checkbox" id="modal-sun-cb">
+                            <label class="sched-day-label" for="modal-sun-cb">Sun</label>
+                            <span class="sched-off">Day off</span>
+                            <div class="sched-times">
+                                Start: <input type="time" id="modal-sun-start">
+                                End: <input type="time" id="modal-sun-end">
+                            </div>
+                        </div>
+                    </div>
+
+                    <p id="scheduleError" style="display:none; color:red;"></p>
+                    <button id="saveScheduleBtn" class="primary-btn">Save</button>
+                    <button id="cancelScheduleBtn" class="primary-btn">Cancel</button>
+                </div>
             </div>
         </div>
 
 
-    </div> -->
+        <br>
 
-
-    <div class="upcoming-card">
-        <!-- Upcoming appointments are different for different employees.
-             Barbers will only see their upcoming appointments.
-             Receptionists and managers will see ALL upcoming appointments.
-         -->
-
-        <div class="card-header">
-            <h2>Upcoming Appointments</h2>
-            <button class="primary-btn" id="GTA1">Go to Appointments</button>
-        </div>
-
-        <table>
-
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th>Barber</th>
-                <th>Service</th>
-                <th>Time</th>
-            </tr>
-            </thead>
-
-            <tbody id="appointments-table"></tbody>
-
-        </table>
-
-    </div>
-
-
-    <div class="history-card" id="history-card">
-        <!-- Appointment history is different for different employees.
-             Barbers will only see their past appointments that are completed.
-             Receptionists and managers will see past completed appointments of all barbers.
-         -->
-
-        <div class="card-header">
-            <h2>Appointment History</h2>
-            <button class="primary-btn" id="GTA2">Go to Appointments</button>
-        </div>
-
-        <table>
-
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th>Barber</th>
-                <th>Service</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-
-            <tbody id="appointment-history"></tbody>
-
-        </table>
-
+        <button id="editScheduleBtn" class="primary-btn">Edit Schedule</button>
     </div>
 
 </section>
