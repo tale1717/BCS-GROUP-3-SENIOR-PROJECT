@@ -1,3 +1,4 @@
+import { getAuth, onAuthStateChanged, } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 console.log("appointmentsModule loaded");
 
 import {
@@ -34,6 +35,9 @@ let userCache = {};
 let allCustomers = [];
 let allStaff = [];
 let sortState = { column: null, direction: "asc" };
+let activeTimeframe = "all";
+let activeStatusFilter = "all";
+let currentUser = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
@@ -53,8 +57,9 @@ function setupToggleMultiSelect(selectId) {
     });
 }
 async function init() {
-    await loadCustomers();
     await loadStaff();
+    await loadCurrentUser();
+    await loadCustomers();
     await loadServices();
     await loadAppointments();
 
@@ -66,7 +71,8 @@ async function init() {
     setupTableEvents()
     setupUpdateButton();
     setupCancelButtons();
-
+    setupTimeframeFilters();
+    setupStatusFilter();
     // hookup history
     hookCreateHistory();
     hookUpdateHistory();
@@ -195,6 +201,14 @@ function populateServiceDropdown() {
 
 async function loadAppointments() {
     allAppointments = await getAppointments();
+
+    if (currentUser?.position === "barber") {
+        allAppointments = allAppointments.filter(a => {
+            const barberName = (a.barber || "").trim().toLowerCase();
+            return barberName === currentUser.name.trim().toLowerCase();
+        });
+    }
+
     await renderTable(allAppointments);
 }
 
@@ -248,28 +262,8 @@ function setupSearch() {
     const input = document.getElementById("searchAppointment");
     if (!input) return;
 
-    input.addEventListener("input", e => {
-        const term = e.target.value.toLowerCase();
-
-        const filtered = allAppointments.filter(a => {
-            const name = (userCache[a.customerUid] || a.customer || "").toLowerCase();
-
-            return (
-                name.includes(term) ||
-                (a.barber || "").toLowerCase().includes(term) ||
-                (a.serviceName || a.service || "").toLowerCase().includes(term) ||
-                (a.date || "").toLowerCase().includes(term) ||
-                (a.time || "").toLowerCase().includes(term) ||
-                (a.notes || "").toLowerCase().includes(term)
-            );
-        });
-
-        const sorted = sortState.column
-            ? sortAppointments(filtered, sortState.column, sortState.direction)
-            : filtered;
-        renderTable(sorted);
-
-        // renderTable(filtered);
+    input.addEventListener("input", () => {
+        renderTable(getFilteredAndSortedList());
     });
 }
 
@@ -1193,9 +1187,7 @@ function setupSorting() {
                 activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
             }
 
-            const currentList = getCurrentFilteredList();
-            const sorted = sortAppointments(currentList, sortState.column, sortState.direction);
-            renderTable(sorted);
+            renderTable(getFilteredAndSortedList());
         });
     });
 }
@@ -1216,6 +1208,205 @@ function getCurrentFilteredList() {
             (a.time || "").toLowerCase().includes(term) ||
             (a.notes || "").toLowerCase().includes(term)
         );
+    });
+}
+
+function filterByTimeframe(list, filter) {
+    const now = new Date();
+
+    // normalize a date string "YYYY-MM-DD" to a Date object
+    const toDate = str => str ? new Date(str + "T00:00:00") : null;
+
+    switch (filter) {
+        case "all":
+            return list;
+
+        case "today": {
+            const today = now.toISOString().split("T")[0];
+            return list.filter(a => a.date === today);
+        }
+
+        case "this-week": {
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday
+            startOfWeek.setHours(0, 0, 0, 0);
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
+            endOfWeek.setHours(23, 59, 59, 999);
+
+            return list.filter(a => {
+                const d = toDate(a.date);
+                return d && d >= startOfWeek && d <= endOfWeek;
+            });
+        }
+
+        case "this-month":
+            return list.filter(a => {
+                const d = toDate(a.date);
+                return d && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            });
+
+        case "this-year":
+            return list.filter(a => {
+                const d = toDate(a.date);
+                return d && d.getFullYear() === now.getFullYear();
+            });
+
+        case "march-2026":
+            return list.filter(a => {
+                const d = toDate(a.date);
+                return d && d.getMonth() === 2 && d.getFullYear() === 2026; // month is 0-indexed
+            });
+
+        case "last-365": {
+            const cutoff = new Date(now);
+            cutoff.setDate(now.getDate() - 365);
+            return list.filter(a => {
+                const d = toDate(a.date);
+                return d && d >= cutoff && d <= now;
+            });
+        }
+
+        case "custom": {
+            const from = document.getElementById("filter-from")?.value;
+            const to = document.getElementById("filter-to")?.value;
+            return list.filter(a => {
+                const d = toDate(a.date);
+                if (!d) return false;
+                if (from && d < toDate(from)) return false;
+                if (to && d > toDate(to)) return false;
+                return true;
+            });
+        }
+
+        default:
+            return list;
+    }
+}
+
+function setupStatusFilter() {
+    const select = document.getElementById("status-select");
+    if (!select) return;
+
+    select.addEventListener("change", () => {
+        activeStatusFilter = select.value;
+        renderTable(getFilteredAndSortedList());
+    });
+}
+
+function getFilteredAndSortedList() {
+    const searchInput = document.getElementById("searchAppointment");
+    const term = searchInput?.value.toLowerCase() || "";
+
+    let list = allAppointments;
+
+    // apply search
+    if (term) {
+        list = list.filter(a => {
+            const name = (userCache[a.customerUid] || a.customer || "").toLowerCase();
+            return (
+                name.includes(term) ||
+                (a.barber || "").toLowerCase().includes(term) ||
+                (a.serviceName || a.service || "").toLowerCase().includes(term) ||
+                (a.date || "").toLowerCase().includes(term) ||
+                (a.time || "").toLowerCase().includes(term) ||
+                (a.notes || "").toLowerCase().includes(term)
+            );
+        });
+    }
+
+    // apply timeframe
+    list = filterByTimeframe(list, activeTimeframe);
+
+    switch (activeStatusFilter) {
+        case "confirmed":
+            list = list.filter(a => a.status === "confirmed");
+            break;
+        case "in-process":
+            list = list.filter(a => a.status === "in-process");
+            break;
+        case "completed":
+            list = list.filter(a => a.status === "completed");
+            break;
+        case "cancelled":
+            list = list.filter(a => a.status === "cancelled");
+            break;
+    }
+
+    // apply sort
+    if (sortState.column) {
+        list = sortAppointments(list, sortState.column, sortState.direction);
+    }
+
+    return list;
+}
+
+function setupTimeframeFilters() {
+    const select = document.getElementById("timeframe-select");
+    const customRange = document.getElementById("custom-range");
+    const applyBtn = document.getElementById("apply-range-btn");
+
+    if (!select) return;
+
+    select.addEventListener("change", () => {
+        if (select.value === "custom") {
+            customRange.style.display = "inline-flex";
+        } else {
+            customRange.style.display = "none";
+            activeTimeframe = select.value;         // ✅ update the local variable
+            renderTable(getFilteredAndSortedList());
+        }
+    });
+
+    applyBtn?.addEventListener("click", () => {
+        activeTimeframe = "custom";
+        renderTable(getFilteredAndSortedList());
+    });
+}
+
+function loadCurrentUser() {
+    return new Promise((resolve) => {
+        const auth = getAuth();
+
+        onAuthStateChanged(auth, async (firebaseUser) => {
+            if (!firebaseUser) {
+                console.warn("No user logged in — showing all appointments.");
+                currentUser = null;
+                resolve();
+                return;
+            }
+
+            try {
+                const email = firebaseUser.email;
+
+                // 1. get role from users collection (has email + role)
+                const profile = await getUserProfile(firebaseUser.uid);
+
+                // 2. get name from staff collection — matched by email
+                const staffMatch = allStaff.find(
+                    s => (s.email || "").toLowerCase() === email.toLowerCase()
+                );
+
+                console.log("Firebase email:", email);
+                console.log("Staff emails:", allStaff.map(s => s.email));
+                console.log("Staff match:", staffMatch);
+
+                currentUser = {
+                    uid:      firebaseUser.uid,
+                    email:    email,
+                    position: profile?.role || "",   // "Barber" / "Manager" / "Receptionist"
+                    name:     staffMatch?.name || ""
+                };
+
+                console.log("Logged-in user:", currentUser);
+            } catch (err) {
+                console.error("Error loading user profile:", err);
+                currentUser = null;
+            }
+
+            resolve();
+        });
     });
 }
 

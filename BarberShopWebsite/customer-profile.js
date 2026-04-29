@@ -52,6 +52,11 @@ const reviewSection = document.getElementById("review-card");
 const receiptSection = document.getElementById("receipt-card");
 
 let selectedRow = null;
+let upcomingData  = [];
+let historyData   = [];
+let upcomingSortCol = 0, upcomingSortDir = 1;
+let historySortCol  = 0, historySortDir  = 1;
+let currentHistoryUser = null;
 
 
 // LOAD USER DATA FROM FIREBASE
@@ -139,47 +144,58 @@ async function loadAppointments(user) {
         );
         const querySnapshot = await getDocs(q);
 
-        table.innerHTML = "";
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-                <tr>
-                    <td>${data.date}</td>
-                    <td>${data.barber}</td>
-                    <td>${data.serviceName}</td>
-                    <td>${data.time}</td>
-                </tr>
-            `;
-
-            // Store the document ID in a data attribute
-            row.dataset.id = doc.id;
-
-            // Add click event to select
-            row.addEventListener("click", () => {
-                // Remove selection from other rows
-                const rows = table.querySelectorAll("tr");
-                rows.forEach(r => r.classList.remove("selected-row"));
-
-                // Highlight this row
-                row.classList.add("selected-row");
-
-                // Store the currently selected row
-                selectedRow = row;
-
-                // Optional: do something with the selected row
-                console.log("Selected appointment ID:", doc.id);
-                console.log("Selected data:", data);
-            });
-
-            table.appendChild(row);
+        upcomingData = [];
+        querySnapshot.forEach((docSnap) => {
+            upcomingData.push({ id: docSnap.id, ...docSnap.data() });
         });
+
+        renderUpcoming(table);
+
+        const thead = document.querySelector(".upcoming-card thead");
+        makeSortable(
+            thead,
+            () => upcomingSortDir, d => upcomingSortDir = d,
+            () => upcomingSortCol, c => upcomingSortCol = c,
+            () => renderUpcoming(table)
+        );
 
     } catch (error) {
         console.error("Error loading appointments:", error);
     }
+}
+
+function renderUpcoming(table) {
+    const keys = ["date", "barber", "serviceName", "time"];
+    const sorted = sortData(upcomingData, upcomingSortCol, upcomingSortDir, keys);
+
+    table.innerHTML = "";
+
+    if (sorted.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" style="text-align:center;">No upcoming appointments</td></tr>`;
+        return;
+    }
+
+    sorted.forEach((data) => {
+        const row = document.createElement("tr");
+        row.dataset.id = data.id;
+
+        const serviceDisplay = data.services
+            ? data.services.map(s => s.serviceName).join(", ")
+            : (data.serviceName || "N/A")
+
+        row.innerHTML = `
+            <td>${formatDate(data.date)}</td>
+            <td>${data.barber}</td>
+            <td>${serviceDisplay}</td>
+            <td>${data.time}</td>
+        `;
+        row.addEventListener("click", () => {
+            table.querySelectorAll("tr").forEach(r => r.classList.remove("selected-row"));
+            row.classList.add("selected-row");
+            selectedRow = row;
+        });
+        table.appendChild(row);
+    });
 }
 
 cancelAppointmentBtn.addEventListener("click", async () => {
@@ -238,25 +254,36 @@ editAppointmentBtn.addEventListener("click", async () => {
     const confirmBtn = mustGet("confirm-appointment");
 
     confirmBtn.addEventListener("click", async (e) => {
-
         e.preventDefault();
 
-        const { barber, date, time, serviceId } = getFormData();
-        const service = getSelectedService(serviceId);
+        const { barber, date, time } = getFormData();
 
-        if (!barber || !date || !time || !service) {
-            alert("Please fill out all fields.");
+        // Read all selected options from the multi-select
+        const serviceSelect = document.getElementById("editService");
+        const selectedOptions = Array.from(serviceSelect.selectedOptions);
+
+        if (!barber || !date || !time || selectedOptions.length === 0) {
+            alert("Please fill out all fields and select at least one service.");
             return;
         }
+
+        const selectedServices = selectedOptions.map(opt => {
+            const service = allServices.find(s => s.id === opt.value);
+            return {
+                serviceId: service.id,
+                serviceName: service.serviceName,
+                servicePrice: service.price,
+                serviceDuration: service.duration
+            };
+        });
 
         await updateDoc(ref, {
             barber,
             date,
             time,
-            serviceId: service.id,
-            serviceName: service.serviceName,
-            servicePrice: service.price,
-            serviceDuration: service.duration
+            services: selectedServices,
+            totalPrice: selectedServices.reduce((sum, s) => sum + s.servicePrice, 0),
+            totalDuration: selectedServices.reduce((sum, s) => sum + s.serviceDuration, 0)
         });
 
         alert("Appointment updated!");
@@ -269,6 +296,7 @@ cancelEditAppointment.addEventListener("click", async () => {
 })
 
 async function loadAppointmentHistory(user) {
+    currentHistoryUser = user;
     const historyTable = document.getElementById("appointment-history");
 
     try {
@@ -277,73 +305,87 @@ async function loadAppointmentHistory(user) {
             where("customerUid", "==", user.uid),
             where("status", "in", ["cancelled", "completed"])
         );
-
         const querySnapshot = await getDocs(q);
 
-        historyTable.innerHTML = "";
-
+        historyData = [];
         querySnapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-                <td>${data.date}</td>
-                <td>${data.barber}</td>
-                <td>${data.serviceName}</td>
-                <td>
-                    <span class="status-${data.status}">
-                        ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}
-                    </span>                        
-                </td>       
-            `;
-
-            const ratingCell = document.createElement('td');
-            const link = document.createElement("a");
-            link.href="#";
-            link.onclick = (e) => {
-                e.preventDefault();
-
-                appointmentSection.style.display = "none";
-                reviewSection.style.display = "block";
-
-                makeReview(user, data, docSnap.id);
-            }
-            const text = document.createTextNode("View");
-
-            if (data.status === "completed") {
-                link.appendChild(text);
-                ratingCell.appendChild(link);
-
-            } else {
-                ratingCell.textContent = "Unavailable";
-            }
-
-            //receipt cell
-            const receiptCell = document.createElement("td");
-
-            if (data.status === "completed") {
-                const receiptLink = document.createElement("a");
-                receiptLink.href = "#";
-                receiptLink.textContent = "View";
-
-                receiptLink.onclick = (e) => {
-                    e.preventDefault();
-                    showReceipt(data);
-                };
-
-                receiptCell.appendChild(receiptLink);
-            } else {
-                receiptCell.textContent = "Unavailable";
-            }
-
-            row.appendChild(ratingCell);
-            row.appendChild(receiptCell);
-            historyTable.appendChild(row);
+            historyData.push({ id: docSnap.id, ...docSnap.data() });
         });
 
+        renderHistory(historyTable);
+
+        const thead = document.querySelector(".history-card thead");
+        makeSortable(
+            thead,
+            () => historySortDir, d => historySortDir = d,
+            () => historySortCol, c => historySortCol = c,
+            () => renderHistory(historyTable)
+        );
+
     } catch (error) {
-        console.error("Error loading appointments:", error);
+        console.error("Error loading appointment history:", error);
     }
+}
+
+function renderHistory(historyTable) {
+    const keys = ["date", "barber", "serviceName", "status", "review", "review"];
+    const sorted = sortData(historyData, historySortCol, historySortDir, keys);
+
+    historyTable.innerHTML = "";
+
+    if (sorted.length === 0) {
+        historyTable.innerHTML = `<tr><td colspan="6" style="text-align:center;">No appointment history</td></tr>`;
+        return;
+    }
+
+    sorted.forEach((data) => {
+        const row = document.createElement("tr");
+
+        const serviceDisplay = data.services
+            ? data.services.map(s => s.serviceName).join(", ")
+            : (data.serviceName || "N/A");
+
+        row.innerHTML = `
+            <td>${formatDate(data.date)}</td>
+            <td>${data.barber}</td>
+            <td>${serviceDisplay}</td>
+            <td><span class="status-${data.status}">${data.status.charAt(0).toUpperCase() + data.status.slice(1)}</span></td>
+        `;
+
+        const ratingCell = document.createElement("td");
+        if (data.status === "completed") {
+            const link = document.createElement("a");
+            link.href = "#";
+            link.textContent = "View";
+            link.onclick = (e) => {
+                e.preventDefault();
+                appointmentSection.style.display = "none";
+                reviewSection.style.display = "block";
+                makeReview(currentHistoryUser, data, data.id);
+            };
+            ratingCell.appendChild(link);
+        } else {
+            ratingCell.textContent = "Unavailable";
+        }
+
+        const receiptCell = document.createElement("td");
+        if (data.status === "completed") {
+            const receiptLink = document.createElement("a");
+            receiptLink.href = "#";
+            receiptLink.textContent = "View";
+            receiptLink.onclick = (e) => {
+                e.preventDefault();
+                showReceipt(data);
+            };
+            receiptCell.appendChild(receiptLink);
+        } else {
+            receiptCell.textContent = "Unavailable";
+        }
+
+        row.appendChild(ratingCell);
+        row.appendChild(receiptCell);
+        historyTable.appendChild(row);
+    });
 }
 
 function makeReview(user, data, dataID) {
@@ -351,11 +393,15 @@ function makeReview(user, data, dataID) {
     const details = document.getElementById("review-details");
     const reviewText = document.getElementById("review-text");
 
+    const serviceDisplay = data.services
+        ? data.services.map(s => s.serviceName).join(", ")
+        : (data.serviceName || "N/A");
+
     details.innerHTML = `
-        <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
-        <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
-        <p style="font-size: 18px;"><strong>Service:</strong> ${data.serviceName}</p>
-    `;
+    <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
+    <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
+    <p style="font-size: 18px;"><strong>Service:</strong> ${serviceDisplay}</p>
+`;
 
     reviewText.value = data.review || "";
 
@@ -437,13 +483,20 @@ function showReceipt(data) {
     const receiptDetails = document.getElementById("receipt-details");
     const receiptSection = document.getElementById("receipt-card");
 
+    const serviceDisplay = data.services
+        ? data.services.map(s => `${s.serviceName} ($${s.servicePrice}, ${s.serviceDuration} min)`).join("<br>")
+        : `${data.serviceName} ($${data.servicePrice}, ${data.serviceDuration} min)`;
+
+    const totalPrice = data.totalPrice ?? data.servicePrice;
+    const totalDuration = data.totalDuration ?? data.serviceDuration;
+
     receiptDetails.innerHTML = `
         <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
         <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
-        <p style="font-size: 18px;"><strong>Service:</strong> ${data.serviceName}</p>
+        <p style="font-size: 18px;"><strong>Services:</strong><br>${serviceDisplay}</p>
         <p style="font-size: 18px;"><strong>Time:</strong> ${data.time}</p>
-        <p style="font-size: 18px;"><strong>Duration:</strong> ${data.serviceDuration} min</p>
-        <p style="font-size: 18px;"><strong>Price:</strong> $${data.servicePrice}</p>
+        <p style="font-size: 18px;"><strong>Total Duration:</strong> ${totalDuration} min</p>
+        <p style="font-size: 18px;"><strong>Total Price:</strong> $${totalPrice}</p>
     `;
 
     appointmentSection.style.display = "none";
@@ -454,4 +507,56 @@ function showReceipt(data) {
         receiptSection.style.display = "none";
         appointmentSection.style.display = "block";
     };
+}
+
+function sortData(data, col, dir, keys) {
+    if (col < 0) return data;
+    return [...data].sort((a, b) => {
+        const va = a[keys[col]], vb = b[keys[col]];
+        if (va instanceof Date && vb instanceof Date) return (va - vb) * dir;
+        return String(va ?? "").localeCompare(String(vb ?? "")) * dir;
+    });
+}
+
+function makeSortable(thead, getDir, setDir, getCol, setCol, renderFn) {
+    thead.querySelectorAll("th").forEach((th, i) => {
+        th.style.cursor = "pointer";
+        th.style.userSelect = "none";
+        const icon = document.createElement("span");
+        icon.style.cssText = "margin-left:5px;font-size:11px;color:var(--color-text-tertiary);letter-spacing:-2px";
+        icon.textContent = "";
+        th.appendChild(icon);
+
+        th.addEventListener("click", () => {
+            const newDir = (i === getCol()) ? getDir() * -1 : 1;
+            setCol(i);
+            setDir(newDir);
+
+            thead.querySelectorAll("th span").forEach((s, j) => {
+                s.textContent = j === i ? (newDir === 1 ? "▲" : "▼") : "";
+                s.style.color = j === i
+                    ? "var(--color-text-primary)"
+                    : "var(--color-text-tertiary)";
+            });
+
+            renderFn();
+        });
+    });
+
+    // highlight default sort column on load
+    const icons = thead.querySelectorAll("th span");
+    const initCol = getCol();
+    if (initCol >= 0 && icons[initCol]) {
+        icons[initCol].textContent = getDir() === 1 ? "▲" : "▼";
+        icons[initCol].style.color = "var(--color-text-primary)";
+    }
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return "N/A";
+    const date = new Date(dateStr);
+    if (isNaN(date)) return dateStr; // fallback if unparseable
+    return date.toLocaleDateString("en-US", {
+        month: "short", day: "2-digit", year: "numeric"
+    });
 }

@@ -1,3 +1,6 @@
+import { auth, db } from '../BarberShopWebsite/firebase.js';
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import {
     createStaff,
     getStaff,
@@ -12,6 +15,8 @@ import {
 let allStaff = [];
 let allServices = [];
 let sortState = { column: null, direction: "asc" }
+let activeStaffFilter = "all";
+let activeStatusFilter = "all";
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -44,6 +49,8 @@ async function init() {
     setupSorting();
     setupWorkingTimeToggle("create");
     setupWorkingTimeToggle("edit");
+    setupStaffFilter();
+    setupStatusFilter();
 
     formatPhoneNumber(document.getElementById("s-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
@@ -120,7 +127,7 @@ function renderTable(list) {
             <td>${formatWorkingHours(s.workingHours)}</td>
             <td>${s.startDate || ""}</td>
             <td>${s.endDate || "Active"}</td>
-            <td>${s.bankAccount || ""}</td>
+            <td>${[s.bankRouting, s.bankAccount].filter(Boolean).join(", ") || ""}</td>
             <td>
                 <div class="action">
                 <button class="edit" data-id="${s.id}">&#9998;</button>
@@ -231,11 +238,14 @@ function setupCreate() {
                 ? Array.from(document.getElementById("s-services").selectedOptions).map(o => o.value)
                 : [];
             const workingHours = getWorkingHours("create");
+            const email = document.getElementById("s-email").value;
+            const password = 'temp123';
+
             await createStaff({
                 staffID: id,
                 name: document.getElementById("s-name").value,
                 phone: document.getElementById("s-phone").value,
-                email: document.getElementById("s-email").value,
+                email: email,
                 address: document.getElementById("s-address").value,
                 position: position,
                 services: services,
@@ -244,8 +254,36 @@ function setupCreate() {
                 endDate: document.getElementById("s-endDate").value || null,
                 workingHours: workingHours,
                 workingDays: Object.keys(workingHours),
+                bankRouting: document.getElementById("s-routing").value,
                 bankAccount: document.getElementById("s-bank").value
             });
+
+            try {
+                // Create the account in Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Save the user in Firestore with a default role
+                await setDoc(doc(db, 'users', user.uid), {
+                    email: user.email,
+                    role: position.toLowerCase(),
+                    createdAt: new Date()
+                });
+
+                alert('Employee account created successfully!');
+
+            } catch (error) {
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        alert('This email is already registered.');
+                        break;
+                    case 'auth/invalid-email':
+                        alert('Please enter a valid email address.');
+                        break;
+                    default:
+                        alert('Error: ' + error.message);
+                }
+            }
 
             closeModal("createStaffModal");
             await loadStaff();
@@ -287,6 +325,7 @@ function setupStaffTableEvents() {
             document.getElementById("edit-position").value = staff.position || "";
             document.getElementById("edit-startDate").value = staff.startDate || "";
             document.getElementById("edit-endDate").value = staff.endDate || "";
+            document.getElementById("edit-routing").value = staff.bankRouting|| "";
             document.getElementById("edit-bank").value = staff.bankAccount || "";
 
             // Working days
@@ -364,7 +403,8 @@ function setupUpdateButton() {
                 endDate: document.getElementById("edit-endDate").value || null,
                 workingHours: workingHours,
                 workingDays: Object.keys(workingHours),
-                bankAccount: document.getElementById("edit-bank").value
+                bankRouting: document.getElementById("edit-routing").value,
+                bankAccount: document.getElementById("edit-bank").value,
             });
 
             closeModal("editStaffModal");
@@ -416,23 +456,8 @@ function setupSearch() {
     const input = document.getElementById("searchStaff");
     if (!input) return;
 
-    input.addEventListener("input", e => {
-        const term = e.target.value.toLowerCase();
-
-        const filtered = allStaff.filter(s =>
-            (s.name || "").toLowerCase().includes(term) ||
-            (s.phone || "").toLowerCase().includes(term) ||
-            (s.email || "").toLowerCase().includes(term) ||
-            (s.position || "").toLowerCase().includes(term)
-        );
-
-        const sorted = sortState.column
-            ? sortStaff(filtered, sortState.column, sortState.direction)
-            : filtered;
-
-        renderTable(sorted);
-
-        // renderTable(filtered);
+    input.addEventListener("input", () => {
+        renderTable(getFilteredAndSortedList());
     });
 }
 
@@ -506,6 +531,7 @@ function clearCreateForm() {
     document.getElementById("s-position").value = "";
     document.getElementById("s-startDate").value = "";
     document.getElementById("s-endDate").value = "";
+    document.getElementById("s-routing").value = "";
     document.getElementById("s-bank").value = "";
 
     document.querySelectorAll(".workday").forEach(cb => {
@@ -575,18 +601,51 @@ function sortStaff(list, column, direction) {
     });
 }
 
-function getCurrentFilteredList() {
+function getFilteredAndSortedList() {
     const input = document.getElementById("searchStaff");
     const term = input?.value.toLowerCase() || "";
 
-    if (!term) return allStaff;
+    let list = allStaff;
 
-    return allStaff.filter(s =>
-        (s.name || "").toLowerCase().includes(term) ||
-        (s.phone || "").toLowerCase().includes(term) ||
-        (s.email || "").toLowerCase().includes(term) ||
-        (s.position || "").toLowerCase().includes(term)
-    );
+    // apply search
+    if (term) {
+        list = list.filter(s =>
+            (s.name || "").toLowerCase().includes(term) ||
+            (s.phone || "").toLowerCase().includes(term) ||
+            (s.email || "").toLowerCase().includes(term) ||
+            (s.position || "").toLowerCase().includes(term)
+        );
+    }
+
+    // apply position filter
+    switch (activeStaffFilter) {
+        case "barbers":
+            list = list.filter(s => s.position === "Barber");
+            break;
+        case "receptionists":
+            list = list.filter(s => s.position === "Receptionist");
+            break;
+        case "managers":
+            list = list.filter(s => s.position === "Manager");
+            break;
+    }
+
+    // ADD after the position switch block
+    switch (activeStatusFilter) {
+        case "active":
+            list = list.filter(s => !s.endDate || s.endDate.trim() === "");
+            break;
+        case "inactive":
+            list = list.filter(s => s.endDate && s.endDate.trim() !== "");
+            break;
+    }
+
+    // apply sort
+    if (sortState.column) {
+        list = sortStaff(list, sortState.column, sortState.direction);
+    }
+
+    return list;
 }
 
 function setupSorting() {
@@ -615,9 +674,28 @@ function setupSorting() {
                 activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
             }
 
-            const sorted = sortStaff(getCurrentFilteredList(), sortState.column, sortState.direction);
-            renderTable(sorted);
+            renderTable(getFilteredAndSortedList());
         });
+    });
+}
+
+function setupStaffFilter() {
+    const select = document.getElementById("staff-select");
+    if (!select) return;
+
+    select.addEventListener("change", () => {
+        activeStaffFilter = select.value;
+        renderTable(getFilteredAndSortedList());
+    });
+}
+
+function setupStatusFilter() {
+    const select = document.getElementById("status-select");
+    if (!select) return;
+
+    select.addEventListener("change", () => {
+        activeStatusFilter = select.value;
+        renderTable(getFilteredAndSortedList());
     });
 }
 

@@ -11,6 +11,7 @@ import {
 
 let allSupplies=[];
 let sortState = { column: null, direction: "asc" }
+let activeInventoryFilter = "all";
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -24,19 +25,22 @@ async function init(){
     setupCreate();
     setupSearch();
     setupUpdate();
+    setupEdit();
     setupCancelEdit();
     setupAlertEdit();
     setupSorting();
-    setupTableActions()
+    setupTableActions();
+    setupInventoryFilter();
 
 }
 
 
-async function loadSupplies(){
-    allSupplies=
-        await getSupplies();
-    renderTable(allSupplies);
+async function loadSupplies() {
+    allSupplies = await getSupplies();
 
+    allSupplies.sort((a, b) => (a.supplyID || "").localeCompare(b.supplyID || ""));
+
+    renderTable(allSupplies);
 }
 
 
@@ -409,42 +413,13 @@ function setupDelete(){
 
 
 //searching function
-function setupSearch(){
+function setupSearch() {
+    const input = document.getElementById("searchSupply");
+    if (!input) return;
 
-    const input=
-        document.getElementById("searchSupply");
-
-    input.addEventListener(
-
-        "input",
-
-        e=>{
-
-            const term=
-                e.target.value.toLowerCase();
-
-            const filtered=
-
-                allSupplies.filter(s=>
-
-                    (s.itemName||"")
-
-                        .toLowerCase()
-
-                        .includes(term)
-
-                );
-
-            const sorted = sortState.column
-                ? sortSupplies(filtered, sortState.column, sortState.direction)
-                : filtered;
-
-            renderTable(sorted);
-
-            // renderTable(filtered);
-
-        });
-
+    input.addEventListener("input", () => {
+        renderTable(getFilteredAndSortedList());
+    });
 }
 
 function sortSupplies(list, column, direction) {
@@ -490,20 +465,43 @@ function sortSupplies(list, column, direction) {
 
 // Helper to get the status label so status column sorts consistently
 function getStatus(s) {
-    if (s.quantity == 0) return "Out of Stock";
+    if (s.quantity === 0) return "Out of Stock";
     if (s.alertEnabled && s.quantity <= s.minQuantity) return "Low Stock";
     return "In Stock";
 }
 
-function getCurrentFilteredList() {
+function getFilteredAndSortedList() {
     const input = document.getElementById("searchSupply");
     const term = input?.value.toLowerCase() || "";
 
-    if (!term) return allSupplies;
+    let list = allSupplies;
 
-    return allSupplies.filter(s =>
-        (s.itemName || "").toLowerCase().includes(term)
-    );
+    // apply search
+    if (term) {
+        list = list.filter(s =>
+            (s.itemName || "").toLowerCase().includes(term)
+        );
+    }
+
+    // apply status filter — reuse your existing getStatus() helper
+    switch (activeInventoryFilter) {
+        case "in-stock":
+            list = list.filter(s => getStatus(s) === "In Stock");
+            break;
+        case "low-stock":
+            list = list.filter(s => getStatus(s) === "Low Stock");
+            break;
+        case "out-of-stock":
+            list = list.filter(s => getStatus(s) === "Out of Stock");
+            break;
+    }
+
+    // apply sort
+    if (sortState.column) {
+        list = sortSupplies(list, sortState.column, sortState.direction);
+    }
+
+    return list;
 }
 
 function setupSorting() {
@@ -532,9 +530,18 @@ function setupSorting() {
                 activeArrow.textContent = sortState.direction === "asc" ? " ▲" : " ▼";
             }
 
-            const sorted = sortSupplies(getCurrentFilteredList(), sortState.column, sortState.direction);
-            renderTable(sorted);
+            renderTable(getFilteredAndSortedList());
         });
+    });
+}
+
+function setupInventoryFilter() {
+    const select = document.getElementById("inventory-select");
+    if (!select) return;
+
+    select.addEventListener("change", () => {
+        activeInventoryFilter = select.value;
+        renderTable(getFilteredAndSortedList());
     });
 }
 
