@@ -65,20 +65,43 @@ onAuthStateChanged(auth, async (user) => {
         currentUser = user;
         const userId = user.uid;
 
-        const profile = await getUserProfile(userId);
+        const profile = await getUserProfile(userId); // still fetches from users table
 
         if (profile) {
-            fnameText.textContent = profile.firstName;
-            lnameText.textContent = profile.lastName;
-            emailText.textContent = profile.email;
-            mobileText.textContent = profile.phone;
-            dobText.textContent = profile.dob;
+            // Use the email from the users profile to query the customers table
+            const customerProfile = await getCustomerByEmail(profile.email);
+
+            if (customerProfile) {
+                fnameText.textContent = customerProfile.firstName;
+                lnameText.textContent = customerProfile.lastName;
+                emailText.textContent = customerProfile.email;
+                mobileText.textContent = customerProfile.phone;
+                dobText.textContent = customerProfile.dob;
+            }
         }
 
         await loadAppointments(user);
         await loadAppointmentHistory(user);
     }
 });
+
+async function getCustomerByEmail(email) {
+    try {
+        const customersRef = collection(db, "customers"); // your customers collection name
+        const q = query(customersRef, where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            return querySnapshot.docs[0].data();
+        } else {
+            console.warn("No customer found with email:", email);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching customer profile:", error);
+        return null;
+    }
+}
 
 // EDIT BUTTON
 editBtn.addEventListener("click", function(){
@@ -107,9 +130,10 @@ saveBtn.addEventListener("click", async function(e){
     };
 
     try {
+        const customerProfile = await getCustomerByEmail(currentUser.email);
+        console.log(customerProfile);
 
-        await updateDoc(doc(db, "users", currentUser.uid), updatedData);
-        await updateDoc(doc(db, "customers", currentUser.uid), updatedData);
+        await updateDoc(doc(db, "customers", customerProfile.customerID), updatedData);
 
         // UPDATE PAGE
         fnameText.textContent = updatedData.firstName;

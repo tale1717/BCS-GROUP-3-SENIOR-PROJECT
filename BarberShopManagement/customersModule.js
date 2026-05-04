@@ -1,9 +1,15 @@
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import {
     createCustomer,
     getCustomers,
     updateCustomer,
     deleteCustomer
 } from "../BarberShopWebsite/Collections/customers.js";
+import {
+    createUserProfile
+} from "../BarberShopWebsite/Collections/users.js";
+import {auth, db} from "../BarberShopWebsite/firebase.js";
 
 //Load Customer
 let allCustomers = [];
@@ -156,16 +162,47 @@ function setupCreate(){
     document.getElementById("saveCreate").onclick = async () => {
 
         const id = await generateCustomerID();
+        const firstName = document.getElementById("c-firstName").value;
+        const lastName = document.getElementById("c-lastName").value;
+        const phone = document.getElementById("c-phone").value;
+        const email = document.getElementById("c-email").value;
 
         await createCustomer({
             customerID: id,
-            firstName: document.getElementById("c-firstName").value,
-            lastName: document.getElementById("c-lastName").value,
-            phone: document.getElementById("c-phone").value,
-            email: document.getElementById("c-email").value,
+            firstName: firstName,
+            lastName: lastName,
+            phone: phone,
+            email: email,
             history: [],
             createdAt: new Date().toISOString()
         });
+
+        try {
+            // Create the account in Firebase Auth
+            const password = "temp123";
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // Save the user in Firestore with a default role
+            await setDoc(doc(db, 'users', user.uid), {
+                email: user.email,
+                role: "customer",
+                createdAt: new Date()
+            });
+
+            alert('Customer account created successfully!');
+        } catch (error) {
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    alert('This email is already registered.');
+                    break;
+                case 'auth/invalid-email':
+                    alert('Please enter a valid email address.');
+                    break;
+                default:
+                    alert('Error: ' + error.message);
+            }
+        }
 
         closeModal("createModal");
         loadCustomers();
