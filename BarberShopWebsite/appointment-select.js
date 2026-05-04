@@ -13,6 +13,24 @@ function mustGet(id) {
     return el;
 }
 
+async function getCustomerByEmail(email) {
+    try {
+        const customersRef = collection(db, "customers"); // your customers collection name
+        const q = query(customersRef, where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            return querySnapshot.docs[0].data();
+        } else {
+            console.warn("No customer found with email:", email);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching customer profile:", error);
+        return null;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const confirmBtn = mustGet("confirm-appointment");
 
@@ -47,6 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const serviceSelect = mustGet("service");
                 const selectedServiceIds = Array.from(serviceSelect.selectedOptions).map(o => o.value);
                 const selectedServices = allServices.filter(s => selectedServiceIds.includes(s.id));
+                const customerProfile = await getCustomerByEmail(user.email)
 
                 if (!barber || barber === "Select Barber"
                     || !date
@@ -77,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 await setDoc(appointmentRef, {
                     appointmentID: appointmentID,
-                    customerUid: user.uid,
+                    customerID: customerProfile.customerID,
                     customerEmail: user.email || "",
                     barber,
                     date,
