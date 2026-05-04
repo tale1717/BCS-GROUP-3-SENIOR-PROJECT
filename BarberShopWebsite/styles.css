@@ -599,6 +599,8 @@ th, td {
 
 .status-completed { color: blue; background: #add8e6; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; }
 
+.status-paid { color: #2d3232; background: lightblue; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; }
+
 .star-rating {
     display: inline-block;
     cursor: pointer;

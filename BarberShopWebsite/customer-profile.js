@@ -159,11 +159,12 @@ cancelBtn.addEventListener("click", function(){
 
 async function loadAppointments(user) {
     const table = document.getElementById("appointments-table");
+    const customerProfile = await getCustomerByEmail(currentUser.email);
 
     try {
         const q = query(
             collection(db, "appointments"),
-            where("customerUid", "==", user.uid),
+            where("customerID", "==", customerProfile.customerID),
             where("status", "in", ["upcoming", "confirmed"])
         );
         const querySnapshot = await getDocs(q);
@@ -322,11 +323,12 @@ cancelEditAppointment.addEventListener("click", async () => {
 async function loadAppointmentHistory(user) {
     currentHistoryUser = user;
     const historyTable = document.getElementById("appointment-history");
+    const customerProfile = await getCustomerByEmail(currentUser.email);
 
     try {
         const q = query(
             collection(db, "appointments"),
-            where("customerUid", "==", user.uid),
+            where("customerID", "==", customerProfile.customerID),
             where("status", "in", ["cancelled", "completed", "paid"])
         );
         const querySnapshot = await getDocs(q);
