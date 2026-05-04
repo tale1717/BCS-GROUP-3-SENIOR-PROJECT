@@ -14,6 +14,8 @@ import {
 
 let appointmentsData = [];
 let chartInstance = null;
+let currentMode = "day"; // or "month"
+let performanceData = {};
 
 //  Initial
 document.addEventListener("DOMContentLoaded", async () => {
@@ -21,26 +23,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         appointmentsData = await getAppointments();
         const staff = await getStaff();
 
-        const performance = getPerformanceByBarber(appointmentsData, staff);
-        console.log("Appointments:", appointmentsData);
-        console.log("Staff:", staff);
-        console.log("Performance:", performance);
+        const barbersOnly = staff.filter(s => {
+            const role = (s.role || s.position || "").toLowerCase();
+            return role.includes("barber");
+        });
 
-        populateBarberSelect(staff);
+
+        // use filtered list instead of all staff
+        performanceData = getPerformanceByBarber(
+            appointmentsData,
+            barbersOnly,
+            currentMode
+        );
+
+        //const performance = getPerformanceByBarber(appointmentsData, staff);
+       // console.log("Appointments:", appointmentsData);
+        //console.log("Staff:", barbersOnly);
+        //console.log("Performance:", performance);
+
+        populateBarberSelect(barbersOnly);
 
         const select = document.getElementById("barberSelect");
 
         // DEFAULT (first barber)
-        const firstId = staff[0]?.id;
+        const firstId = barbersOnly[0]?.id;
+
         if (firstId) {
-            renderSingleBarberChart(performance[firstId]);
+            renderSingleBarberChart(performanceData[firstId]);
             select.value = firstId;
         }
 
         // ONLY chart update here
         select.addEventListener("change", (e) => {
             const selectedId = e.target.value;
-            renderSingleBarberChart(performance[selectedId]);
+            renderSingleBarberChart(performanceData[selectedId]);
         });
 
         // BARBER WORKING CHART
@@ -58,8 +74,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         // CUSTOMER TREND
         updateChart("week");
 
-        document.getElementById("viewMode").addEventListener("change", (e) => {
-            updateChart(e.target.value);
+        document.getElementById("performanceView").addEventListener("change", (e) => {
+            currentMode = e.target.value;
+            // recalculate barber performance
+            performanceData = getPerformanceByBarber(
+                appointmentsData,
+                barbersOnly,
+                currentMode
+            );
+
+            // update chart with selected barber
+            const selectedId = select.value;
+            renderSingleBarberChart(performanceData[selectedId]);
+
+
+            // only update customer chart correctly in month, week
+            if (currentMode === "month") {
+                updateChart("month");
+            } else {
+                updateChart("week");
+            }
         });
 
     } catch (err) {
@@ -269,11 +303,12 @@ function getWorkingHoursPerDay(staffList) {
 }
 
 //group data by barber
-function getPerformanceByBarber(appointments, staffList) {
+function getPerformanceByBarber(appointments, staffList, mode = "all") {
     const result = {};
+    const today = new Date();
 
     staffList.forEach(s => {
-        result[String(s.id)] = {
+        result[String(s.id).trim()] = {
             name: s.name,
             customers: 0,
             revenue: 0
@@ -281,12 +316,39 @@ function getPerformanceByBarber(appointments, staffList) {
     });
 
     appointments.forEach(app => {
-        const staffId = String(app.staffId || app.staffID || "");
+        if (!app.date) return;
 
-        if (!result[staffId]) {
-            console.warn("No matching barber for:", staffId);
-            return;
+        const date = parseISO(app.date);
+
+        let isValid = true;
+
+        if (mode === "day") {
+            isValid =
+                date.getFullYear() === today.getFullYear() &&
+                date.getMonth() === today.getMonth() &&
+                date.getDate() === today.getDate();
         }
+
+        if (mode === "week") {
+            isValid = isThisWeek(date);
+        }
+
+        if (mode === "month") {
+            isValid =
+                date.getFullYear() === today.getFullYear() &&
+                date.getMonth() === today.getMonth();
+        }
+
+        if (mode === "year") {
+            isValid =
+                date.getFullYear() === today.getFullYear();
+        }
+
+        if (!isValid) return;
+
+        const staffId = String(app.staffId || app.staffID || "").trim();
+
+        if (!result[staffId]) return;
 
         result[staffId].customers++;
 
@@ -301,6 +363,7 @@ function getPerformanceByBarber(appointments, staffList) {
 
 function populateBarberSelect(staffList) {
     const select = document.getElementById("barberSelect");
+    select.innerHTML = "";
 
     staffList.forEach(s => {
         const option = document.createElement("option");
@@ -313,6 +376,10 @@ function populateBarberSelect(staffList) {
 let barberChart = null;
 //create single chart for each barber
 function renderSingleBarberChart(barber) {
+    if (!barber) {
+        console.warn("No barber data found");
+        barber = { name: "No Data", customers: 0, revenue: 0 };
+    }
     const ctx = document.getElementById("barberPerformanceChart");
 
     if (barberChart) barberChart.destroy();
