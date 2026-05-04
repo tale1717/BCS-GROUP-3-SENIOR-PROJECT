@@ -6,7 +6,9 @@ import {
     getDocs,
     doc,
     updateDoc,
-    deleteDoc
+    deleteDoc,
+    query,
+    where
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 let currentUser = null;
@@ -30,15 +32,28 @@ const accountInput = document.getElementById("accountInput");
 const confirmAccountInput = document.getElementById("confirmAccountInput");
 const accountNameInput = document.getElementById("accountNameInput");
 
+let currentStaffId = null; // Add this
+
 onAuthStateChanged(auth, async (user) => {
     if (!user) return;
 
     currentUser = user;
-    await loadBankAccounts();
+    currentStaffId = await getStaffIdByEmail(user.email); // Add this
+    if (currentStaffId) await loadBankAccounts();
 });
 
+async function getStaffIdByEmail(email) {
+    const q = query(collection(db, "staff"), where("email", "==", email));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) {
+        console.error("No staff document found for email:", email);
+        return null;
+    }
+    return snapshot.docs[0].id;
+}
+
 function bankCollectionRef() {
-    return collection(db, "users", currentUser.uid, "bankAccounts");
+    return collection(db, "staff", currentStaffId, "bankAccounts");
 }
 
 function maskAccountNumber(accountNumber) {
@@ -102,7 +117,7 @@ saveBankBtn.addEventListener("click", async () => {
     };
 
     if (editingBankId) {
-        await updateDoc(doc(db, "users", currentUser.uid, "bankAccounts", editingBankId), bankData);
+        await updateDoc(doc(db, "staff", currentStaffId, "bankAccounts", editingBankId), bankData);
     } else {
         bankData.createdAt = new Date();
         await addDoc(bankCollectionRef(), bankData);
@@ -168,7 +183,7 @@ async function loadBankAccounts() {
         div.querySelector(".delete-bank-btn").addEventListener("click", async () => {
             if (!confirm("Delete this bank account?")) return;
 
-            await deleteDoc(doc(db, "users", currentUser.uid, "bankAccounts", docSnap.id));
+            await deleteDoc(doc(db, "staff", currentStaffId, "bankAccounts", docSnap.id));
             await loadBankAccounts();
         });
 

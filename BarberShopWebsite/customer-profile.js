@@ -303,7 +303,7 @@ async function loadAppointmentHistory(user) {
         const q = query(
             collection(db, "appointments"),
             where("customerUid", "==", user.uid),
-            where("status", "in", ["cancelled", "completed"])
+            where("status", "in", ["cancelled", "completed", "paid"])
         );
         const querySnapshot = await getDocs(q);
 
@@ -353,7 +353,7 @@ function renderHistory(historyTable) {
         `;
 
         const ratingCell = document.createElement("td");
-        if (data.status === "completed") {
+        if (data.status === "completed" || data.status === "paid") {
             const link = document.createElement("a");
             link.href = "#";
             link.textContent = "View";
@@ -369,7 +369,7 @@ function renderHistory(historyTable) {
         }
 
         const receiptCell = document.createElement("td");
-        if (data.status === "completed") {
+        if (data.status === "completed" || data.status === "paid") {
             const receiptLink = document.createElement("a");
             receiptLink.href = "#";
             receiptLink.textContent = "View";

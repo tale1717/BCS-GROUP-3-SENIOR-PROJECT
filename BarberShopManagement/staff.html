@@ -96,7 +96,7 @@
                     <th>Working Days</th>
                     <th data-sort="startDate">Start Date <span class="sort-arrow"></span></th>
                     <th data-sort="endDate">End Date <span class="sort-arrow"></span></th>
-                    <th>Routing #, Account #</th>
+                    <th>Bank Information</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -175,12 +175,6 @@
             <div>
                 <label>End Date</label> <br>
                 <input type="date" id="s-endDate" placeholder="Optional Date" class="text-style">
-            </div>
-
-            <div>
-                <label>Bank Information</label> <br>
-                <input id="s-routing" placeholder="Routing Number" class="text-style"> <br>
-                <input id="s-bank" placeholder="Account Number" class="text-style">
             </div>
 
             <div style="grid-column: span 2;">
@@ -327,11 +321,6 @@
                 <label>End Date</label> <br>
                 <input type="date" id="edit-endDate" class="text-style">
             </div>
-            <div>
-                <label>Bank Information</label> <br>
-                <input id="edit-routing" placeholder="Routing Number" class="text-style"> <br>
-                <input id="edit-bank" placeholder="Bank Account" class="text-style">
-            </div>
             <div style="grid-column: span 2;">
                 <label>Working Days</label> <br>
                 <div class="day-picker">
@@ -416,6 +405,18 @@
         </div>
     </div>
 
+</div>
+
+<!-- VIEW BANK INFORMATION MODAL -->
+<div id="viewBankModal" class="modal">
+    <div class="modal-content">
+        <h2>Bank Information</h2>
+        <p id="viewBankStaffName" style="color: gray; margin-bottom: 16px;"></p>
+        <div id="viewBankList"></div>
+        <div class="modal-action-forButtons">
+            <button id="closeBankModal" class="cancel-buttons">Close</button>
+        </div>
+    </div>
 </div>
 
 </body>

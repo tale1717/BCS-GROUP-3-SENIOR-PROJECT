@@ -1,6 +1,6 @@
 import { auth, db } from '../BarberShopWebsite/firebase.js';
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import {
     createStaff,
     getStaff,
@@ -51,6 +51,7 @@ async function init() {
     setupWorkingTimeToggle("edit");
     setupStaffFilter();
     setupStatusFilter();
+    setupBankModal();
 
     formatPhoneNumber(document.getElementById("s-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
@@ -127,11 +128,13 @@ function renderTable(list) {
             <td>${formatWorkingHours(s.workingHours)}</td>
             <td>${s.startDate || ""}</td>
             <td>${s.endDate || "Active"}</td>
-            <td>${[s.bankRouting, s.bankAccount].filter(Boolean).join(", ") || ""}</td>
+            <td>
+                <button class="primary-btn view-bank-btn" data-id="${s.id}" data-name="${s.name || "Staff"}">View</button>
+            </td>
             <td>
                 <div class="action">
-                <button class="edit" data-id="${s.id}">&#9998;</button>
-                <button class="delete" data-id="${s.id}">&#10006;</button>
+                    <button class="edit" data-id="${s.id}">&#9998;</button>
+                    <button class="delete" data-id="${s.id}">&#10006;</button>
                 </div>
             </td>
         `;
@@ -254,8 +257,6 @@ function setupCreate() {
                 endDate: document.getElementById("s-endDate").value || null,
                 workingHours: workingHours,
                 workingDays: Object.keys(workingHours),
-                bankRouting: document.getElementById("s-routing").value,
-                bankAccount: document.getElementById("s-bank").value
             });
 
             try {
@@ -325,8 +326,6 @@ function setupStaffTableEvents() {
             document.getElementById("edit-position").value = staff.position || "";
             document.getElementById("edit-startDate").value = staff.startDate || "";
             document.getElementById("edit-endDate").value = staff.endDate || "";
-            document.getElementById("edit-routing").value = staff.bankRouting|| "";
-            document.getElementById("edit-bank").value = staff.bankAccount || "";
 
             // Working days
             const workingDays = staff.workingDays || [];
@@ -403,8 +402,6 @@ function setupUpdateButton() {
                 endDate: document.getElementById("edit-endDate").value || null,
                 workingHours: workingHours,
                 workingDays: Object.keys(workingHours),
-                bankRouting: document.getElementById("edit-routing").value,
-                bankAccount: document.getElementById("edit-bank").value,
             });
 
             closeModal("editStaffModal");
@@ -531,8 +528,6 @@ function clearCreateForm() {
     document.getElementById("s-position").value = "";
     document.getElementById("s-startDate").value = "";
     document.getElementById("s-endDate").value = "";
-    document.getElementById("s-routing").value = "";
-    document.getElementById("s-bank").value = "";
 
     document.querySelectorAll(".workday").forEach(cb => {
         cb.checked = false;
@@ -696,6 +691,52 @@ function setupStatusFilter() {
     select.addEventListener("change", () => {
         activeStatusFilter = select.value;
         renderTable(getFilteredAndSortedList());
+    });
+}
+
+async function openBankModal(staffId, staffName) {
+    document.getElementById("viewBankStaffName").textContent = staffName;
+    const listEl = document.getElementById("viewBankList");
+    listEl.innerHTML = "<p>Loading...</p>";
+    document.getElementById("viewBankModal").style.display = "block";
+
+    try {
+        const snapshot = await getDocs(collection(db, "staff", staffId, "bankAccounts"));
+
+        if (snapshot.empty) {
+            listEl.innerHTML = "<p>No bank accounts on file.</p>";
+            return;
+        }
+
+        listEl.innerHTML = "";
+        snapshot.forEach(docSnap => {
+            const d = docSnap.data();
+            const card = document.createElement("div");
+            card.style.cssText = "border:1px solid #ccc; border-radius:8px; padding:12px; margin-bottom:12px;";
+            card.innerHTML = `
+                <strong>${d.bankName || "Unknown Bank"}</strong>
+                <p>Account Type: ${d.accountType || "N/A"}</p>
+                <p>Account Holder: ${d.accountName || "N/A"}</p>
+                <p>Routing Number: ${d.routingNumber || "N/A"}</p>
+                <p>Account Number: ${d.accountNumber || "N/A"}</p>
+            `;
+            listEl.appendChild(card);
+        });
+    } catch (err) {
+        listEl.innerHTML = "<p>Failed to load bank accounts.</p>";
+        console.error(err);
+    }
+}
+
+function setupBankModal() {
+    document.getElementById("closeBankModal").onclick = () => {
+        closeModal("viewBankModal");
+    };
+
+    document.getElementById("staff-body").addEventListener("click", (e) => {
+        const btn = e.target.closest(".view-bank-btn");
+        if (!btn) return;
+        openBankModal(btn.dataset.id, btn.dataset.name);
     });
 }
 
