@@ -684,4 +684,32 @@ th, td {
 .service-options {
     border: 1px solid #000;
     padding: 0;
+
+    /* ===== ABOUT US REVIEWS ===== */
+
+    #reviews-container {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    #reviews-container .rating-item {
+        padding: 22px;
+        border-radius: 12px;
+    }
+
+    .manager-response {
+        margin-top: 14px;
+        padding: 14px;
+        border-left: 4px solid #222;
+        background: #f5f5f5;
+        border-radius: 8px;
+    }
+
+    .manager-response p {
+        margin-top: 6px;
+    }
+
 }

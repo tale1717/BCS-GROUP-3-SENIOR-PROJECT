@@ -1,3 +1,4 @@
+import { syncPublicReview } from "./publicReviews.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { collection, getDocs, getDoc, doc as docRef } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { auth, db } from "../BarberShopWebsite/firebase.js";
@@ -75,6 +76,7 @@ async function loadReviews() {
 
         for (const doc of scoredDocs) {
             const data = doc.data();
+            await syncPublicReview(doc.id, data);
             const uid = data.customerUid || data.customerID;
             const customerName = nameMap[uid];
             const barber = data.barber;
