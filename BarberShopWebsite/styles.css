@@ -267,10 +267,22 @@ h1 {
 }
 
 /* Placeholder Gradients for Barber Avatars */
-.bg-green   { background: linear-gradient(135deg, #d4e4be, #e2efd5); }
-.bg-pink    { background: linear-gradient(135deg, #e7c7c3, #f5e1da); }
-.bg-blue    { background: linear-gradient(135deg, #a7c5c5, #d2e1e1); }
-.bg-purple  { background: linear-gradient(135deg, #6A359C, #B589D6); }
+.bg-green   {
+    background: url(regular-haircut.jpg) 0 50%;
+    background-size: cover;
+}
+.bg-pink    {
+    background: url(fade-haircut.jpg) 0 50%;
+    background-size: cover;
+}
+.bg-blue    {
+    background: url(hair-dye.png) 0 50%;
+    background-size: cover;
+}
+.bg-purple  {
+    background: url(luxury-haircut.jpg) 0 20%;
+    background-size: cover;
+}
 
 .card-content {
     padding: 24px;

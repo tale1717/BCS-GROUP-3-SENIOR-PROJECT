@@ -17,19 +17,38 @@ const months = [
 
 // Barber working schedules
 // 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
-const barberSchedule = {
-    Talero: [0,1,2,3,4,5,6],   // Every Day
-    Thai: [2,3,5],             // Tue, Wed, Fri
-    Tobias: [0,1,4,6],         // Mon, Thur, Sat, Sun
-    Guaman: [0,6]              // Sat-Sun
+const dayNameToIndex = {
+    Sunday: 0,
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6
 };
 
 let clickedDay = null;
 let selectedDayElement = null;
 
-function getSelectedBarber() {
+function getSelectedBarberWorkingDays() {
     const barberSelect = document.getElementById("barber");
-    return barberSelect ? barberSelect.value : null;
+    const selectedOption = barberSelect?.options[barberSelect.selectedIndex];
+
+    if (!selectedOption?.dataset.workingHours) {
+        return [0, 1, 2, 3, 4, 5, 6];
+    }
+
+    try {
+        const workingHours = JSON.parse(selectedOption.dataset.workingHours);
+
+        return Object.keys(workingHours)
+            .filter(dayName => workingHours[dayName])
+            .map(dayName => dayNameToIndex[dayName])
+            .filter(dayIndex => dayIndex !== undefined);
+    } catch (error) {
+        console.error("Invalid barber working hours:", error);
+        return [0, 1, 2, 3, 4, 5, 6];
+    }
 }
 
 const manipulate = () => {
@@ -46,8 +65,7 @@ const manipulate = () => {
         lit += `<li class="inactive">${monthlastdate - i + 1}</li>`;
     }
 
-    const barber = getSelectedBarber();
-    const allowedDays = barberSchedule[barber] || [0,1,2,3,4,5,6];
+    const allowedDays = getSelectedBarberWorkingDays();
 
     // Current month days
     for (let i = 1; i <= lastdate; i++) {
@@ -154,6 +172,8 @@ prenexIcons.forEach(icon => {
 document.addEventListener("DOMContentLoaded", () => {
 
     const barberSelect = document.getElementById("barber");
+    const dateInput = document.getElementById("date");
+    const timeSelect = document.getElementById("time");
 
     if (barberSelect) {
 
@@ -161,6 +181,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             clickedDay = null;
             selectedDayElement = null;
+
+            if (dateInput) {
+                dateInput.value = "";
+            }
+
+            if (timeSelect) {
+                timeSelect.innerHTML = `<option value="">Select Time</option>`;
+            }
+
+            displayDate.textContent = "Select a Date";
 
             manipulate();
         });

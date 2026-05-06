@@ -28,54 +28,46 @@
 
 <section class="appointment-container" id="appointment-container" style="display: none">
     <h1>Book Your Appointment</h1>
-    <p class="subtitle">Please choose one of the following barbers:</p>
+    <p class="subtitle">Check out some of the popular services we offer:</p>
 
     <section class="barber-grid">
-        <div class="card" onclick="selectBarber('Talero')">
-            <div class="card-img bg-green"></div>
+        <div class="card">
+            <div class="card-img bg-green" onclick="window.location.href = 'appointment-select.html'"></div>
             <div class="card-content">
-                <h3>Talero</h3>
-                <p>Available Every Day</p>
+                <h3>Regular Hair Cut</h3>
+                <p>Clean, precise cut to keep your look fresh and neat.</p>
                 <a class="check-availability">Check Availability &rarr;</a>
             </div>
         </div>
 
-        <div class="card" onclick="selectBarber('Thai')">
-            <div class="card-img bg-pink"></div>
+        <div class="card">
+            <div class="card-img bg-pink" onclick="window.location.href = 'appointment-select.html'"></div>
             <div class="card-content">
-                <h3>Thai</h3>
-                <p>Available Tuesdays, Wednesdays and Fridays</p>
+                <h3>Fade</h3>
+                <p>Smoothly blended for a sharp, modern finish.</p>
                 <a class="check-availability">Check Availability &rarr;</a>
             </div>
         </div>
 
-        <div class="card" onclick="selectBarber('Tobias')">
-            <div class="card-img bg-blue"></div>
+        <div class="card">
+            <div class="card-img bg-blue" onclick="window.location.href = 'appointment-select.html'"></div>
             <div class="card-content">
-                <h3>Tobias</h3>
-                <p>Available Mondays, Thursdays and Weekends</p>
+                <h3>Hair Dye</h3>
+                <p>Custom color for a refreshed or bold new look.</p>
                 <a class="check-availability">Check Availability &rarr;</a>
             </div>
         </div>
 
-        <div class="card" onclick="selectBarber('Guaman')">
-            <div class="card-img bg-purple"></div>
+        <div class="card">
+            <div class="card-img bg-purple" onclick="window.location.href = 'appointment-select.html'"></div>
             <div class="card-content">
-                <h3>Guaman</h3>
-                <p>Available Weekends</p>
+                <h3>Luxury Hair Cut</h3>
+                <p>Premium cut with detailed styling and a polished finish.</p>
                 <a class="check-availability">Check Availability &rarr;</a>
             </div>
         </div>
     </section>
 </section>
-
-<script>
-    function selectBarber(barberName) {
-        sessionStorage.setItem('selectedBarber', barberName);
-        window.location.href = 'appointment-select.html';
-    }
-</script>
-
 
 </body>
 </html>
