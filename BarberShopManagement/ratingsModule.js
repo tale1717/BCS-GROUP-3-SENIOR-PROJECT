@@ -115,18 +115,52 @@ async function loadReviews() {
                 ${
                     role === "manager"
                         ? `
-                <div class="manager-response-box">
-                    <textarea
-                        id="response-${doc.id}"
-                        class="manager-response-input"
-                        placeholder="Write a manager response..."
-                    >${data.managerResponse || ""}</textarea>
-                    <br><br>
-                    <button class="edit save-response" data-id="${doc.id}">
-                        Save Response
-                    </button>
-                </div>
-            `
+            <div class="manager-response-box" style="margin-top: 24px;">
+
+                ${
+                            data.managerResponse
+                                ? `
+                            <div class="rating-item manager-response-card"
+                                 style="
+                                    margin-bottom: 20px;
+                                    margin-left: 40px;
+                                    background: #e8e8e8;
+                                    padding: 20px;
+                                    border-radius: 12px;
+                                 ">
+
+                                <strong>Triple T and G Barbers</strong>
+
+                                <p class="feedback-text" style="margin-top: 10px;">
+                                    ${data.managerResponse}
+                                </p>
+                            </div>
+                        `
+                                : ""
+                        }
+
+                <textarea
+                    id="response-${doc.id}"
+                    class="manager-response-input"
+                    placeholder="Write a manager response..."
+                    style="
+                        width: 100%;
+                        min-height: 120px;
+                        padding: 16px;
+                        border-radius: 10px;
+                        margin-top: 18px;
+                        box-sizing: border-box;
+                    "
+                >${data.managerResponse || ""}</textarea>
+
+                <br><br>
+
+                <button class="edit save-response" data-id="${doc.id}">
+                    ${data.managerResponse ? "Edit Response" : "Save Response"}
+                </button>
+
+            </div>
+        `
                         : ""
                 }
                 `;
@@ -137,23 +171,6 @@ async function loadReviews() {
                 }
 
                 container.appendChild(card);
-
-                if (data.managerResponse) {
-                    const responseCard = document.createElement("div");
-                    responseCard.className = "rating-item card manager-response-card";
-
-                    responseCard.innerHTML = `
-        <div class="rating-top">
-            <div>
-                <strong>Triple T and G Barbers</strong>
-            </div>
-        </div>
-
-        <p class="feedback-text">${data.managerResponse}</p>
-    `;
-
-                    container.appendChild(responseCard);
-                }
 
                 reviewCount++;
                 reviewCountText.textContent = `${reviewCount}`;
