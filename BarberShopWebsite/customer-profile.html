@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="calendar.css">
     <script type="module" src="/BarberShopWebsite/isCustomerLoggedIn.js"></script>
     <script type="module" src="customer-profile.js"></script>
+    <script type="module" src="calendar.js"></script>
     <script type="module" src="time-select.js"></script>
     <script type="module" src="updatePassword.js"></script>
 
@@ -152,25 +153,15 @@
                     <div class="custom-select profile">
                         Barber:
                         <select class="input-select profile" id="barber">
-                            <option>Talero</option>
-                            <option>Thai</option>
-                            <option>Tobias</option>
-                            <option>Guaman</option>
+                            <option value="">Select Barber</option>
                         </select>
                     </div>
 
-                    <script>
-                        const selectedBarber = sessionStorage.getItem("selectedBarber");
-                        if (selectedBarber) {
-                            const select = document.getElementById("barber");
-                            if (select) select.value = selectedBarber;
-                        }
-                    </script>
-                    <script type="module" src="calendar.js"></script>
-
                     <div class="custom-select profile">
                         Time:
-                        <select class="input-select profile" id="time"></select>
+                        <select class="input-select profile" id="time">
+                            <option value="">Select Time</option>
+                        </select>
                     </div>
 
                     <div class="custom-select profile">

@@ -25,7 +25,6 @@ async function init(){
     setupCreate();
     setupSearch();
     setupUpdate();
-    setupEdit();
     setupCancelEdit();
     setupAlertEdit();
     setupSorting();

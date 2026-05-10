@@ -1,4 +1,5 @@
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getAuth, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import {
     createCustomer,
@@ -6,10 +7,8 @@ import {
     updateCustomer,
     deleteCustomer
 } from "../BarberShopWebsite/Collections/customers.js";
-import {
-    createUserProfile
-} from "../BarberShopWebsite/Collections/users.js";
-import {auth, db} from "../BarberShopWebsite/firebase.js";
+import { db } from "../BarberShopWebsite/firebase.js";
+import { firebaseConfig } from "../BarberShopWebsite/firebaseConfig.js";
 
 //Load Customer
 let allCustomers = [];
@@ -24,11 +23,12 @@ async function init(){
     setupUpdate();
     setupCancelButtons();
     setupSorting();
+    setupEdit();
+    setupActions();
 
     formatPhoneNumber(document.getElementById("c-phone"));
     formatPhoneNumber(document.getElementById("edit-phone"));
 
-    // run history buttons after load
     setTimeout(addHistoryButtons, 500);
 }
 
@@ -89,8 +89,7 @@ function renderTable(list){
         body.appendChild(row);
     });
 
-    setupActions();
-    setupEdit();
+    setTimeout(addHistoryButtons, 300);
 }
 
 
@@ -122,8 +121,6 @@ function setupSearch(){
             : filtered;
 
         renderTable(sorted);
-
-        // renderTable(filtered);
 
     });
 }
@@ -177,18 +174,22 @@ function setupCreate(){
             createdAt: new Date().toISOString()
         });
 
+        const secondaryApp = initializeApp(firebaseConfig, "CustomerCreation");
+        const secondaryAuth = getAuth(secondaryApp);
+
         try {
-            // Create the account in Firebase Auth
             const password = "temp123";
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
             const user = userCredential.user;
 
-            // Save the user in Firestore with a default role
             await setDoc(doc(db, 'users', user.uid), {
                 email: user.email,
                 role: "customer",
                 createdAt: new Date()
             });
+
+            await signOut(secondaryAuth);
+            await deleteApp(secondaryApp);
 
             alert('Customer account created successfully!');
         } catch (error) {
@@ -210,22 +211,34 @@ function setupCreate(){
 }
 
 
-// Edit
+// Edit — event delegation, set up once in init
+function handleEditClick(e) {
+    const btn = e.target.closest(".edit");
+    if (!btn) return;
+
+    const id = btn.dataset.id;
+    const c = allCustomers.find(x => x.id === id);
+
+    if (!c) {
+        console.error("Customer not found for id:", id);
+        return;
+    }
+
+    document.getElementById("edit-id").value = c.id;
+    document.getElementById("edit-firstName").value = c.firstName || "";
+    document.getElementById("edit-lastName").value = c.lastName || "";
+    document.getElementById("edit-phone").value = c.phone || "";
+    document.getElementById("edit-email").value = c.email || "";
+
+    document.getElementById("editModal").style.display = "block";
+}
+
 function setupEdit(){
-    document.querySelectorAll(".edit").forEach(btn => {
-        btn.onclick = () => {
+    const body = document.getElementById("customer-body");
+    if (!body) return;
 
-            const c = allCustomers.find(x => x.id === btn.dataset.id);
-
-            document.getElementById("edit-id").value = c.id;
-            document.getElementById("edit-firstName").value = c.firstName;
-            document.getElementById("edit-lastName").value = c.lastName;
-            document.getElementById("edit-phone").value = c.phone;
-            document.getElementById("edit-email").value = c.email;
-
-            document.getElementById("editModal").style.display = "block";
-        };
-    });
+    body.removeEventListener("click", handleEditClick);
+    body.addEventListener("click", handleEditClick);
 }
 
 
@@ -236,6 +249,11 @@ function setupUpdate(){
         const id = document.getElementById("edit-id").value;
 
         const customer = allCustomers.find(c => c.id === id);
+
+        if (!customer) {
+            alert("Customer not found. Please close and reopen the edit window.");
+            return;
+        }
 
         //  manual history add
         const note = document.getElementById("history-input").value;
@@ -263,7 +281,7 @@ function setupUpdate(){
 
         closeModal("editModal");
 
-        loadCustomers();
+        await loadCustomers();
     };
 }
 
@@ -279,15 +297,22 @@ function setupCancelButtons(){
 }
 
 
-// Delete
+// Delete — event delegation, set up once in init
+async function handleDeleteClick(e) {
+    const btn = e.target.closest(".delete");
+    if (!btn) return;
+
+    if(!confirm("Delete?")) return;
+    await deleteCustomer(btn.dataset.id);
+    loadCustomers();
+}
+
 function setupActions(){
-    document.querySelectorAll(".delete").forEach(btn => {
-        btn.onclick = async () => {
-            if(!confirm("Delete?")) return;
-            await deleteCustomer(btn.dataset.id);
-            loadCustomers();
-        };
-    });
+    const body = document.getElementById("customer-body");
+    if (!body) return;
+
+    body.removeEventListener("click", handleDeleteClick);
+    body.addEventListener("click", handleDeleteClick);
 }
 
 
@@ -337,8 +362,6 @@ function renderHistoryPopup(customer){
 
     (customer.history || []).forEach(h=>{
         const div = document.createElement("div");
-
-        loadCustomers();
 
         div.innerHTML = `
 <strong>${h.date}</strong> - ${h.staff}<br>
@@ -401,9 +424,9 @@ async function addNoteToCustomer(customerId, entry){
         ...customer,
         history
     });
-
-    window.addNoteToCustomer = addNoteToCustomer;
 }
+
+window.addNoteToCustomer = addNoteToCustomer;
 
 function sortCustomers(list, column, direction) {
     return [...list].sort((a, b) => {
