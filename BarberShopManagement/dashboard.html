@@ -7,6 +7,7 @@
     <link rel="icon" href="../BarberShopWebsite/3tg-logo.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../BarberShopWebsite/styles.css">
+    <link rel="stylesheet" href="../BarberShopWebsite/calendar.css">
     <style>
         .card:hover {
             transform: none;
@@ -86,6 +87,73 @@
             </div>
         </div> <br>
 
+        <div id="managerScheduleCalendarCard" class="card" style="display:none;">
+            <h2>Employee Work Calendar</h2>
+            <br>
+
+            <label for="scheduleViewMode">View:</label>
+            <select id="scheduleViewMode" class="optionlist">
+                <option value="day">Day View</option>
+                <option value="week">Week View</option>
+            </select>
+
+            <br><br>
+
+            <div class="manager-calendar-layout">
+                <div class="calendar">
+                    <div class="calendar-container">
+                        <header>
+                            <p class="calendar-current-date" id="manager-calendar-current-date"></p>
+
+                            <div class="calendar-navigation">
+                                <span id="manager-calendar-prev">&#8249;</span>
+                                <span id="manager-calendar-next">&#8250;</span>
+                            </div>
+                        </header>
+
+                        <div class="calendar-body">
+                            <ul class="calendar-weekdays">
+                                <li>Sun</li>
+                                <li>Mon</li>
+                                <li>Tue</li>
+                                <li>Wed</li>
+                                <li>Thu</li>
+                                <li>Fri</li>
+                                <li>Sat</li>
+                            </ul>
+
+                            <ul class="calendar-dates" id="manager-calendar-dates"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="manager-day-view" class="card manager-day-details">
+                <h3 id="manager-selected-date">Select a date</h3>
+                <div id="manager-working-list" class="manager-working-list"></div>
+            </div>
+
+            <div id="manager-week-view" class="manager-week-view" style="display:none;">
+                <h3>Weekly Employee Schedule</h3>
+                <p style="color:gray;">Click any date on the calendar to view that week.</p>
+                <br>
+
+                <div class="week-navigation">
+                    <button id="prev-week" class="edit">&#8249; Previous Week</button>
+                    <span id="week-range"></span>
+                    <button id="next-week" class="edit">Next Week &#8250;</button>
+                </div>
+
+                <br>
+
+                <div id="manager-week-table"></div>
+            </div>
+        </div>
+
+
+
+
+        <script type="module" src="dashboardScheduleCalendar.js"></script>
 
         <div class="card">
             <h2>Barber Performance</h2> <br><br>
