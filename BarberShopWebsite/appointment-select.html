@@ -88,36 +88,26 @@
                 <p id="date-display" class="input-select"></p>
                 <input type="hidden" id="date">
             </div>
+
             <div class="custom-select">
                 Barber:
                 <select class="input-select" id="barber">
-                    <option>Select Barber</option>
-                    <option>Talero</option>
-                    <option>Thai</option>
-                    <option>Tobias</option>
-                    <option>Guaman</option>
+                    <option value="">Select Barber</option>
                 </select>
             </div>
 
-            <!--
-            <script>
-                const selectedBarber = sessionStorage.getItem("selectedBarber");
-                if (selectedBarber) {
-                    const select = document.getElementById("barber");
-                    if (select) select.value = selectedBarber;
-                }
-            </script>
-            -->
-
             <div class="custom-select">
                 Time:
-                <select class="input-select" id="time">Select a Time</select>
+                <select class="input-select" id="time">
+                    <option value="">Select Time</option>
+                </select>
             </div>
 
             <div class="custom-select">
                 Type of Service:
                 <select class="input-select service-options" id="service" multiple></select>
             </div>
+
             <a href="appointment-confirm.html" class="btn-confirm" id="confirm-appointment">Confirm Appointment</a>
         </div>
     </div>

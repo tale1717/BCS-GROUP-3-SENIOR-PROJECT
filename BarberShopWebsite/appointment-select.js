@@ -1,11 +1,13 @@
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { doc, collection, query, where, getDocs, setDoc,addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, collection, query, where, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
 import { getServices } from "/BarberShopWebsite/Collections/services.js";
+import { getStaff } from "/BarberShopWebsite/Collections/staff.js";
 import { getAppointments } from "./Collections/appointments.js";
 
 let allServices = [];
+let allStaff = [];
 
 function mustGet(id) {
     const el = document.getElementById(id);
@@ -34,6 +36,7 @@ async function getCustomerByEmail(email) {
 document.addEventListener("DOMContentLoaded", async () => {
     const confirmBtn = mustGet("confirm-appointment");
 
+    await loadStaff();
     await loadServices();
 
     onAuthStateChanged(auth, async (user) => {
@@ -58,60 +61,67 @@ document.addEventListener("DOMContentLoaded", async () => {
         confirmBtn.addEventListener("click", async (e) => {
             e.preventDefault();
 
-            try {
-                const barber = mustGet("barber").value.trim();
-                const date = mustGet("date").value.trim();
-                const time = mustGet("time").value.trim();
-                const serviceSelect = mustGet("service");
-                const selectedServiceIds = Array.from(serviceSelect.selectedOptions).map(o => o.value);
-                const selectedServices = allServices.filter(s => selectedServiceIds.includes(s.id));
-                const customerProfile = await getCustomerByEmail(user.email)
+                try {
+                    const barberSelect = mustGet("barber");
+                    const staffID = barberSelect.value.trim();
+                    const barber = barberSelect.options[barberSelect.selectedIndex]?.textContent.trim() || "";
+                    const date = mustGet("date").value.trim();
+                    const time = mustGet("time").value.trim();
+                    const serviceSelect = mustGet("service");
+                    const selectedServiceIds = Array.from(serviceSelect.selectedOptions).map(o => o.value);
+                    const selectedServices = allServices.filter(s => selectedServiceIds.includes(s.id));
+                    const customerProfile = await getCustomerByEmail(user.email);
 
-                if (!barber || barber === "Select Barber"
-                    || !date
-                    || !time || time === "Select Time"
-                    || selectedServices.length === 0) {
-                    alert("Please fill out barber, date, time, and at least one service.");
-                    return;
-                }
+                    if (!staffID
+                        || !barber
+                        || !date
+                        || !time
+                        || time === "Select Time"
+                        || selectedServices.length === 0) {
+                        alert("Please fill out barber, date, time, and at least one service.");
+                        return;
+                    }
 
-                const appointmentID = await generateAppointmentID();
-                const appointmentsRef = collection(db, "appointments");
+                    const appointmentID = await generateAppointmentID();
+                    const appointmentsRef = collection(db, "appointments");
 
-                const q = query(
-                    appointmentsRef,
-                    where("barber", "==", barber),
-                    where("date", "==", date),
-                    where("time", "==", time)
-                );
+                    const q = query(
+                        appointmentsRef,
+                        where("staffID", "==", staffID),
+                        where("date", "==", date),
+                        where("time", "==", time)
+                    );
 
-                const existing = await getDocs(q);
+                    const existing = await getDocs(q);
 
-                if (!existing.empty) {
-                    alert("This time slot is already booked.");
-                    return;
-                }
+                    if (!existing.empty) {
+                        alert("This time slot is already booked.");
+                        return;
+                    }
 
-                const appointmentRef = doc(db, "appointments", appointmentID);
+                    const appointmentRef = doc(db, "appointments", appointmentID);
 
-                await setDoc(appointmentRef, {
-                    appointmentID: appointmentID,
-                    customerID: customerProfile.customerID,
-                    customerEmail: user.email || "",
-                    barber,
-                    date,
-                    time,
-                    services: selectedServices.map(s => ({
-                        serviceId: s.id,
-                        serviceName: s.serviceName,
-                        servicePrice: s.price,
-                        serviceDuration: s.duration,
-                    })),
-                    totalPrice: selectedServices.reduce((sum, s) => sum + s.price, 0),
-                    totalDuration: selectedServices.reduce((sum, s) => sum + s.duration, 0),
-                    status: "confirmed",
-                    createdAt: serverTimestamp()
-                });
+                    await setDoc(appointmentRef, {
+                        appointmentID: appointmentID,
+                        customerID: customerProfile.customerID,
+                        customerEmail: user.email || "",
+                        staffID,
+                        barber,
+                        date,
+                        time,
+                        services: selectedServices.map(s => ({
+                            serviceId: s.id,
+                            serviceName: s.serviceName,
+                            servicePrice: s.price,
+                            serviceDuration: s.duration,
+                        })),
+                        serviceName: selectedServices.map(s => s.serviceName).join(", "),
+                        totalCost: selectedServices.reduce((sum, s) => sum + Number(s.price || 0), 0),
+                        totalPrice: selectedServices.reduce((sum, s) => sum + Number(s.price || 0), 0),
+                        totalDuration: selectedServices.reduce((sum, s) => sum + Number(s.duration || 0), 0),
+                        status: "confirmed",
+                        createdAt: serverTimestamp()
+                    });
 
                 // SEND EMAIL so when user clicks confirm button it sends the email!
                 try {
@@ -141,6 +151,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 });
 
+async function loadStaff() {
+    allStaff = await getStaff();
+
+    const barberSelect = mustGet("barber");
+    barberSelect.innerHTML = `<option value="">Select Barber</option>`;
+
+    const barbers = allStaff.filter(staff =>
+        String(staff.position || "").trim().toLowerCase() === "barber"
+    );
+
+    barbers.forEach(barber => {
+        const option = document.createElement("option");
+        option.value = barber.id;
+        option.textContent = barber.name || "Unnamed Barber";
+
+        if (barber.workingHours) {
+            option.dataset.workingHours = JSON.stringify(barber.workingHours);
+        }
+
+        barberSelect.appendChild(option);
+    });
+}
 
 async function loadServices() {
     allServices = await getServices();
@@ -161,6 +193,7 @@ async function loadServices() {
         option.selected = !option.selected;
         serviceSelect.focus();
     });
+
 }
 
 async function generateAppointmentID(){
