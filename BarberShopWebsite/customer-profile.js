@@ -3,6 +3,13 @@ import { updateDoc, doc, query, where, collection, getDocs, getDoc } from "https
 
 import { auth, db } from "/BarberShopWebsite/firebase.js";
 import { getUserProfile } from "/BarberShopWebsite/Collections/users.js";
+import { getServices } from "/BarberShopWebsite/Collections/services.js";
+import { getStaff } from "/BarberShopWebsite/Collections/staff.js";
+
+let currentUser = null;
+let allServices = [];
+let allStaff = [];
+
 
 import {
     loadServices,
@@ -12,8 +19,6 @@ import {
     mustGet
 } from "./appointment-form.js";
 
-let currentUser = null;
-
 // buttons
 const editBtn = document.getElementById("editBtn");
 const saveBtn = document.getElementById("saveBtn");
@@ -21,7 +26,7 @@ const cancelBtn = document.getElementById("cancelBtn");
 const cancelAppointmentBtn = document.getElementById("cancel-appointment-btn");
 const editAppointmentBtn = document.getElementById("edit-appointment-btn");
 const cancelEditAppointment = document.getElementById("cancelEditAptBtn");
-const saveEditAppointment = document.getElementById("saveEditAptBtn");
+const saveEditAppointment = document.getElementById("confirm-appointment");
 
 // form
 const editForm = document.getElementById("editForm");
@@ -223,6 +228,7 @@ function renderUpcoming(table) {
     });
 }
 
+// ... existing code ...
 cancelAppointmentBtn.addEventListener("click", async () => {
     if (!selectedRow) {
         alert("Please select an appointment first.");
@@ -249,13 +255,102 @@ cancelAppointmentBtn.addEventListener("click", async () => {
     }
 });
 
+async function loadStaffOptions() {
+    allStaff = await getStaff();
+
+    const barberSelect = mustGet("barber");
+    barberSelect.innerHTML = `<option value="">Select Barber</option>`;
+
+    const barbers = allStaff.filter(staff =>
+        String(staff.position || "").trim().toLowerCase() === "barber"
+    );
+
+    barbers.forEach(barber => {
+        const option = document.createElement("option");
+        option.value = barber.id;
+        option.textContent = barber.name || "Unnamed Barber";
+
+        if (barber.workingHours) {
+            option.dataset.workingHours = JSON.stringify(barber.workingHours);
+        }
+
+        barberSelect.appendChild(option);
+    });
+}
+
+async function loadServiceOptions() {
+    allServices = await getServices();
+
+    const serviceSelect = mustGet("service");
+    serviceSelect.innerHTML = "";
+
+    allServices.forEach(service => {
+        const option = document.createElement("option");
+        option.value = service.id;
+        option.textContent = `${service.serviceName} ($${service.price}, ${service.duration} min)`;
+        serviceSelect.appendChild(option);
+    });
+
+    serviceSelect.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+
+        const option = e.target;
+        if (option.tagName !== "OPTION") return;
+
+        option.selected = !option.selected;
+        serviceSelect.focus();
+    });
+}
+
+function populateEditAppointmentForm(appointment) {
+    const barberSelect = mustGet("barber");
+    const serviceSelect = mustGet("service");
+
+    barberSelect.value = appointment.staffID || "";
+
+    if (window.setCalendarDate && appointment.date) {
+        window.setCalendarDate(appointment.date);
+    } else {
+        mustGet("date").value = appointment.date || "";
+    }
+
+    Array.from(serviceSelect.options).forEach(option => {
+        option.selected = appointment.services?.some(service =>
+            service.serviceId === option.value
+        ) || false;
+    });
+
+    document.getElementById("date").dispatchEvent(new Event("change"));
+
+    setTimeout(() => {
+        const timeSelect = mustGet("time");
+        timeSelect.value = appointment.time || "";
+    }, 500);
+}
+
+async function appointmentTimeAlreadyBooked(appointmentId, staffID, date, time) {
+    const q = query(
+        collection(db, "appointments"),
+        where("staffID", "==", staffID),
+        where("date", "==", date),
+        where("time", "==", time)
+    );
+
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.some(docSnap => docSnap.id !== appointmentId);
+}
+
 editAppointmentBtn.addEventListener("click", async () => {
     if (!selectedRow) {
         alert("Please select an appointment first.");
+        return;
     }
 
     const appointmentId = selectedRow.dataset.id;
-    await loadServices();
+
+    await loadStaffOptions();
+    await loadServiceOptions();
 
     const ref = doc(db, "appointments", appointmentId);
     const snap = await getDoc(ref);
@@ -267,58 +362,68 @@ editAppointmentBtn.addEventListener("click", async () => {
 
     const appointment = snap.data();
 
-    // Set calendar to appointment date
-    if (window.setCalendarDate) {
-        window.setCalendarDate(appointment.date);
-    }
-
-    populateForm(appointment);
-
     editAptForm.style.display = "inline";
 
-    const confirmBtn = mustGet("confirm-appointment");
+    populateEditAppointmentForm(appointment);
 
-    confirmBtn.addEventListener("click", async (e) => {
+    saveEditAppointment.onclick = async (e) => {
         e.preventDefault();
 
-        const { barber, date, time } = getFormData();
+        const barberSelect = mustGet("barber");
+        const staffID = barberSelect.value.trim();
+        const barber = barberSelect.options[barberSelect.selectedIndex]?.textContent.trim() || "";
+        const date = mustGet("date").value.trim();
+        const time = mustGet("time").value.trim();
+        const serviceSelect = mustGet("service");
 
-        // Read all selected options from the multi-select
-        const serviceSelect = document.getElementById("editService");
-        const selectedOptions = Array.from(serviceSelect.selectedOptions);
+        const selectedServiceIds = Array.from(serviceSelect.selectedOptions).map(option => option.value);
+        const selectedServices = allServices.filter(service => selectedServiceIds.includes(service.id));
 
-        if (!barber || !date || !time || selectedOptions.length === 0) {
-            alert("Please fill out all fields and select at least one service.");
+        if (
+            !staffID ||
+            !barber ||
+            !date ||
+            !time ||
+            time === "Select Time" ||
+            selectedServices.length === 0
+        ) {
+            alert("Please fill out barber, date, time, and at least one service.");
             return;
         }
 
-        const selectedServices = selectedOptions.map(opt => {
-            const service = allServices.find(s => s.id === opt.value);
-            return {
-                serviceId: service.id,
-                serviceName: service.serviceName,
-                servicePrice: service.price,
-                serviceDuration: service.duration
-            };
-        });
+        const isBooked = await appointmentTimeAlreadyBooked(appointmentId, staffID, date, time);
+
+        if (isBooked) {
+            alert("This time slot is already booked.");
+            return;
+        }
 
         await updateDoc(ref, {
+            staffID,
             barber,
             date,
             time,
-            services: selectedServices,
-            totalPrice: selectedServices.reduce((sum, s) => sum + s.servicePrice, 0),
-            totalDuration: selectedServices.reduce((sum, s) => sum + s.serviceDuration, 0)
+            services: selectedServices.map(service => ({
+                serviceId: service.id,
+                serviceName: service.serviceName,
+                servicePrice: service.price,
+                serviceDuration: service.duration,
+            })),
+            serviceName: selectedServices.map(service => service.serviceName).join(", "),
+            totalCost: selectedServices.reduce((sum, service) => sum + Number(service.price || 0), 0),
+            totalPrice: selectedServices.reduce((sum, service) => sum + Number(service.price || 0), 0),
+            totalDuration: selectedServices.reduce((sum, service) => sum + Number(service.duration || 0), 0),
+            status: appointment.status || "confirmed"
         });
 
         alert("Appointment updated!");
         location.reload();
-    });
+    };
 });
 
 cancelEditAppointment.addEventListener("click", async () => {
     editAptForm.style.display = "none";
-})
+});
 
 async function loadAppointmentHistory(user) {
     currentHistoryUser = user;

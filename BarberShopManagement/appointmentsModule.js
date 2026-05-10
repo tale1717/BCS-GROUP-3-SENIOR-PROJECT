@@ -412,12 +412,11 @@ function isTimeSlotAvailable(barberId, date, startTime, duration, excludeId = nu
 
         const existingStart = timeToMinutes(a.time || "00:00");
 
-        const existingDuration = Array.isArray(a.services)
+        const existingDuration = Array.isArray(a.services) && a.services.length > 0
             ? a.services.reduce(
-                (sum, s) => sum + Number(s.serviceDuration || 0) + 10,
-                0
+                (sum, s) => sum + Number(s.serviceDuration || 0) + 10, 0
             )
-            : 0;
+            : Number(a.serviceDuration || 0) + 10; // fallback for older records
 
         const existingEnd = existingStart + existingDuration;
 
@@ -622,7 +621,7 @@ function setupCreate() {
             return;
         }
 
-        if (!isTimeSlotAvailable(barberSelect.value, barberName, selectedDate, selectedTime, duration)) {
+        if (!isTimeSlotAvailable(barberSelect.value, selectedDate, selectedTime, duration)) {
             alert("This time is no longer available.");
             populateAvailableTimes("a-time", "a-barber", "a-date", "a-service");
             return;
@@ -947,6 +946,7 @@ function setupUpdateButton() {
                 status: document.getElementById("edit-status").value
             });
 
+            alert("Appointment updated successfully!");
             closeModal("editAppointmentModal");
             await loadAppointments();
         } catch (error) {

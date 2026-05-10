@@ -18,6 +18,8 @@ async function init() {
     setupUpdateButton();
     setupCancelButtons();
     setupSorting();
+    setupEdit();
+    setupDelete();
 
 }
 
@@ -65,9 +67,6 @@ function renderServices(list) {
 
         body.appendChild(row);
     });
-
-    setupEdit();
-    setupDelete();
 }
 
 function setupCreate() {
@@ -116,19 +115,26 @@ function setupCreate() {
 }
 
 function setupEdit() {
-    document.querySelectorAll(".edit").forEach(btn => {
-        btn.onclick = () => {
-            const service = allServices.find(s => s.id === btn.dataset.id);
-            if (!service) return;
+    const body = document.getElementById("service-body");
+    if (!body) return;
 
-            document.getElementById("edit-id").value = service.id;
-            document.getElementById("edit-name").value = service.serviceName || "";
-            document.getElementById("edit-price").value = service.price || "";
-            document.getElementById("edit-duration").value = service.duration || "";
+    body.removeEventListener("click", handleEditClick);
+    body.addEventListener("click", handleEditClick);
+}
 
-            document.getElementById("editModal").style.display = "block";
-        };
-    });
+function handleEditClick(e) {
+    const btn = e.target.closest(".edit");
+    if (!btn) return;
+
+    const service = allServices.find(s => s.id === btn.dataset.id);
+    if (!service) return;
+
+    document.getElementById("edit-id").value = service.id;
+    document.getElementById("edit-name").value = service.serviceName || "";
+    document.getElementById("edit-price").value = service.price || "";
+    document.getElementById("edit-duration").value = service.duration || "";
+
+    document.getElementById("editModal").style.display = "block";
 }
 
 function setupUpdateButton() {
@@ -163,14 +169,20 @@ function setupUpdateButton() {
 }
 
 function setupDelete() {
-    document.querySelectorAll(".delete").forEach(btn => {
-        btn.onclick = async () => {
-            if (!confirm("Delete this service?")) return;
+    const body = document.getElementById("service-body");
+    if (!body) return;
 
-            await deleteService(btn.dataset.id);
-            await loadServices();
-        };
-    });
+    body.removeEventListener("click", handleDeleteClick);
+    body.addEventListener("click", handleDeleteClick);
+}
+
+async function handleDeleteClick(e) {
+    const btn = e.target.closest(".delete");
+    if (!btn) return;
+
+    if (!confirm("Delete this service?")) return;
+    await deleteService(btn.dataset.id);
+    await loadServices();
 }
 
 function setupSearch() {

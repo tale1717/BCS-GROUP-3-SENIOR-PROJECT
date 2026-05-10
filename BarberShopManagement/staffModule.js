@@ -1,5 +1,7 @@
+import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { firebaseConfig } from "../BarberShopWebsite/firebaseConfig.js";
 import { auth, db } from '../BarberShopWebsite/firebase.js';
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getAuth, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import {
     createStaff,
@@ -242,7 +244,6 @@ function setupCreate() {
                 : [];
             const workingHours = getWorkingHours("create");
             const email = document.getElementById("s-email").value;
-            const password = 'temp123';
 
             await createStaff({
                 staffID: id,
@@ -259,17 +260,22 @@ function setupCreate() {
                 workingDays: Object.keys(workingHours),
             });
 
+            const secondaryApp = initializeApp(firebaseConfig, "EmployeeCreation");
+            const secondaryAuth = getAuth(secondaryApp);
+
             try {
-                // Create the account in Firebase Auth
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const password = 'temp123';
+                const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
                 const user = userCredential.user;
 
-                // Save the user in Firestore with a default role
                 await setDoc(doc(db, 'users', user.uid), {
                     email: user.email,
                     role: position.toLowerCase(),
                     createdAt: new Date()
                 });
+
+                await signOut(secondaryAuth);
+                await deleteApp(secondaryApp);
 
                 alert('Employee account created successfully!');
 
