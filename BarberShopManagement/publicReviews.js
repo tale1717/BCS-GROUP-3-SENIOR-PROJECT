@@ -24,6 +24,7 @@ export async function syncPublicReview(appointmentId, appointmentData) {
         date: appointmentData.date || "",
         rating: appointmentData.rating || 0,
         review: appointmentData.review || "",
+        managerResponseName: appointmentData.managerResponseName || "Manager",
 
         // manager response (if exists)
         managerResponse: appointmentData.managerResponse || "",

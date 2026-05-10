@@ -1,6 +1,6 @@
 import { syncPublicReview } from "./publicReviews.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { collection, getDocs, getDoc, doc as docRef } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { collection, getDocs, getDoc, updateDoc, serverTimestamp, doc as docRef } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { auth, db } from "../BarberShopWebsite/firebase.js";
 
 const reviewCountText = document.getElementById("review-count");
@@ -101,15 +101,34 @@ async function loadReviews() {
                 card.className = "rating-item";
                 card.innerHTML = `
                     <div class="rating-top">
-                        <div>
-                            <strong>${customerName}</strong>
-                            <p class="service-text">Barber: ${barber}</p>
-                            <p class="service-text">Service: ${service}</p>
-                            <p class="service-text">Date ${date}</p>
-                        </div>
-                        <span class="rating-badge">${stars}</span>
-                    </div>
-                    <p class="feedback-text">${reviewText}</p>
+                    <div>
+                    <strong>${customerName}</strong>
+                <p class="service-text">Barber: ${barber}</p>
+                <p class="service-text">Service: ${service}</p>
+                <p class="service-text">Date ${date}</p>
+            </div>
+                <span class="rating-badge">${stars}</span>
+            </div>
+
+                <p class="feedback-text">${reviewText}</p>
+
+                ${
+                    role === "manager"
+                        ? `
+                <div class="manager-response-box">
+                    <textarea
+                        id="response-${doc.id}"
+                        class="manager-response-input"
+                        placeholder="Write a manager response..."
+                    >${data.managerResponse || ""}</textarea>
+                    <br><br>
+                    <button class="edit save-response" data-id="${doc.id}">
+                        Save Response
+                    </button>
+                </div>
+            `
+                        : ""
+                }
                 `;
 
                 if (score === 5) {
@@ -118,6 +137,24 @@ async function loadReviews() {
                 }
 
                 container.appendChild(card);
+
+                if (data.managerResponse) {
+                    const responseCard = document.createElement("div");
+                    responseCard.className = "rating-item card manager-response-card";
+
+                    responseCard.innerHTML = `
+        <div class="rating-top">
+            <div>
+                <strong>Triple T and G Barbers</strong>
+            </div>
+        </div>
+
+        <p class="feedback-text">${data.managerResponse}</p>
+    `;
+
+                    container.appendChild(responseCard);
+                }
+
                 reviewCount++;
                 reviewCountText.textContent = `${reviewCount}`;
 
@@ -127,6 +164,8 @@ async function loadReviews() {
             }
         }
 
+        setupManagerResponseButtons();
+
         if (reviewCount === 0) {
             container.innerHTML = `<br><h2 style="text-align:center; color: gray;">No reviews found.</brh2>`;
         }
@@ -134,5 +173,56 @@ async function loadReviews() {
     } catch (err) {
         container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
         console.error(err);
+    }
+
+    function setupManagerResponseButtons() {
+        document.querySelectorAll(".save-response").forEach(button => {
+            button.onclick = async () => {
+                const appointmentId = button.dataset.id;
+                const textarea = document.getElementById(`response-${appointmentId}`);
+                const responseText = textarea.value.trim();
+
+                if (!responseText) {
+                    alert("Please enter a response.");
+                    return;
+                }
+
+                try {
+                    const appointmentRef = docRef(db, "appointments", appointmentId);
+
+                    await updateDoc(appointmentRef, {
+                        managerResponse: responseText,
+                        managerResponseBy: auth.currentUser.email,
+                        managerResponseName: await getManagerName(),
+                        managerResponseAt: serverTimestamp()
+                    });
+
+                    const updatedSnap = await getDoc(appointmentRef);
+
+                    if (updatedSnap.exists()) {
+                        await syncPublicReview(appointmentId, updatedSnap.data());
+                    }
+
+                    alert("Manager response saved.");
+                    await loadReviews();
+
+                } catch (err) {
+                    console.error("Failed to save manager response:", err);
+                    alert("Failed to save manager response.");
+                }
+            };
+        });
+    }
+
+    async function getManagerName() {
+        const firebaseUser = auth.currentUser;
+        if (!firebaseUser) return "Manager";
+
+        const staffSnap = await getDocs(collection(db, "staff"));
+        const staffMatch = staffSnap.docs.find(
+            d => (d.data().email || "").toLowerCase() === firebaseUser.email.toLowerCase()
+        );
+
+        return staffMatch ? staffMatch.data().name : "Manager";
     }
 }
