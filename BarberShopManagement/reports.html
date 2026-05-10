@@ -83,6 +83,27 @@
         </div>
         <br>
         <div class="card">
+            <h2>Payroll Reports</h2><br>
+            <div class="grid">
+                <button class="report-button"
+                        onclick="exportPayrollReport('week')">
+                    Weekly Payroll
+                </button>
+
+                <button class="report-button"
+                        onclick="exportPayrollReport('month')">
+                    Monthly Payroll
+                </button>
+
+                <button class="report-button"
+                        onclick="exportPayrollReport('year')">
+                    Yearly Payroll
+                </button>
+            </div>
+        </div>
+        <br>
+
+        <div class="card">
             <h2>Customer Reports</h2><br>
             <div class="card">
                 <h3>Visit Reports</h3><br>
@@ -103,6 +124,33 @@
             </div>
         </div>
         <br>
+
+        <div class="card">
+            <h2>Revenue Reports</h2><br>
+
+            <div class="grid">
+                <button class="report-button"
+                        onclick="exportRevenueReport('today')">
+                    Today's Revenue
+                </button>
+
+                <button class="report-button"
+                        onclick="exportRevenueReport('week')">
+                    This Week Revenue
+                </button>
+
+                <button class="report-button"
+                        onclick="exportRevenueReport('month')">
+                    This Month Revenue
+                </button>
+
+                <button class="report-button"
+                        onclick="exportRevenueReport('year')">
+                    This Year Revenue
+                </button>
+            </div>
+        </div>
+
 
     </main>
 </div>

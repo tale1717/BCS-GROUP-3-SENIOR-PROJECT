@@ -199,3 +199,119 @@ window.exportAppointmentsReport = exportAppointmentsReport;
 window.exportSuppliesReport = exportSuppliesReport;
 window.exportBarberReport = exportBarberReport;
 window.exportCustomerReport = exportCustomerReport;
+
+//revenue report
+export async function exportRevenueReport(type = "today") {
+
+    const appointments = await getAppointments();
+
+    let filtered = [];
+
+    if (type === "today") {
+        filtered = appointments.filter(a => isToday(a.date));
+    }
+    else if (type === "week") {
+        filtered = appointments.filter(a => isThisWeek(a.date));
+    }
+    else if (type === "month") {
+        filtered = appointments.filter(a => isThisMonth(a.date));
+    }
+    else if (type === "year") {
+        filtered = appointments.filter(a => isThisYear(a.date));
+    }
+
+    let totalRevenue = 0;
+
+    const rows = filtered.map(a => {
+
+        const totalCost = Number(a.totalCost || 0);
+
+        totalRevenue += totalCost;
+
+        return {
+            AppointmentID: a.appointmentID || a.id,
+            Customer: a.customer || "",
+            Barber: a.barber || "",
+            Service: a.serviceName || "",
+            Revenue: totalCost.toFixed(2),
+            Date: a.date || "",
+            Status: a.status || ""
+        };
+    });
+
+    // total row
+    rows.push({
+        AppointmentID: "",
+        Customer: "",
+        Barber: "",
+        Service: "",
+        Revenue: totalRevenue.toFixed(2),
+        Date: "",
+        Status: "TOTAL REVENUE"
+    });
+
+    exportToExcel(`revenue_${type}`, rows);
+}
+
+//payroll report
+function convertToHours(time) {
+
+    if (!time) return 0;
+
+    const [hour, minute] = time.split(":").map(Number);
+
+    return hour + (minute / 60);
+}
+export async function exportPayrollReport(type = "week") {
+
+    const staff = await getStaff();
+
+    const rows = [];
+
+    staff.forEach(employee => {
+
+        const salaryPerHour = parseFloat(employee.salary) || 0;
+
+        const workingHours = employee.workingHours || {};
+
+        let totalHours = 0;
+
+        Object.values(workingHours).forEach(time => {
+
+            if (!time.start || !time.end) return;
+
+            const start = convertToHours(time.start);
+            const end = convertToHours(time.end);
+
+            totalHours += (end - start);
+        });
+
+        // weekly payroll
+        let multiplier = 1;
+
+        if (type === "month") {
+            multiplier = 4;
+        }
+        else if (type === "year") {
+            multiplier = 52;
+        }
+
+        const finalHours = totalHours * multiplier;
+
+        const payroll = salaryPerHour * finalHours;
+
+        rows.push({
+            StaffID: employee.staffID || "",
+            Employee: employee.name || "",
+            Position: employee.position || "",
+            HourlyRate: salaryPerHour.toFixed(2),
+            HoursWorked: finalHours.toFixed(2),
+            PayrollAmount: payroll.toFixed(2)
+        });
+    });
+
+    exportToExcel(`payroll_${type}`, rows);
+}
+
+window.exportRevenueReport = exportRevenueReport;
+window.exportPayrollReport = exportPayrollReport;
