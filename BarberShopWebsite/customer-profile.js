@@ -217,7 +217,7 @@ function renderUpcoming(table) {
             <td>${formatDate(data.date)}</td>
             <td>${data.barber}</td>
             <td>${serviceDisplay}</td>
-            <td>${data.time}</td>
+            <td>${formatTime(data.time)}</td>
         `;
         row.addEventListener("click", () => {
             table.querySelectorAll("tr").forEach(r => r.classList.remove("selected-row"));
@@ -625,7 +625,7 @@ function showReceipt(data) {
         <p style="font-size: 18px;"><strong>Date:</strong> ${data.date}</p>
         <p style="font-size: 18px;"><strong>Barber:</strong> ${data.barber}</p>
         <p style="font-size: 18px;"><strong>Services:</strong><br>${serviceDisplay}</p>
-        <p style="font-size: 18px;"><strong>Time:</strong> ${data.time}</p>
+        <p style="font-size: 18px;"><strong>Time:</strong> ${formatTime(data.time)}</p>
         <p style="font-size: 18px;"><strong>Total Duration:</strong> ${totalDuration} min</p>
         <p style="font-size: 18px;"><strong>Total Price:</strong> $${totalPrice}</p>
     `;
@@ -690,4 +690,18 @@ function formatDate(dateStr) {
     return date.toLocaleDateString("en-US", {
         month: "short", day: "2-digit", year: "numeric"
     });
+}
+
+function formatTime(timeStr) {
+    if (!timeStr) return "N/A";
+
+    // If time is already in "HH:MM" format
+    const [hour, minute] = timeStr.split(":").map(Number);
+
+    if (isNaN(hour) || isNaN(minute)) return timeStr;
+
+    const period = hour >= 12 ? "PM" : "AM";
+    const formattedHour = hour % 12 || 12;
+
+    return `${formattedHour}:${minute.toString().padStart(2, "0")} ${period}`;
 }
