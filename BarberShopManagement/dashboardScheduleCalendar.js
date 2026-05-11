@@ -75,16 +75,38 @@ function renderManagerCalendar() {
 
     for (let day = 1; day <= lastDate; day++) {
         const currentDate = new Date(year, month, day);
+        currentDate.setHours(0, 0, 0, 0);
+
         const dayName = dayNames[currentDate.getDay()];
         const workers = getWorkersForDay(dayName);
 
+        const weekEnd = selectedWeekStart
+            ? new Date(selectedWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+            : null;
+
+        const inSelectedWeek = selectedWeekStart &&
+            currentDate >= selectedWeekStart &&
+            currentDate < weekEnd;
+
         const hasWorkers = workers.length > 0 ? "highlight" : "";
 
+        let weekClass ="";
+        if(    document.getElementById("scheduleViewMode")?.value === "week" && inSelectedWeek){
+        weekClass = "week-selected";
+        if (currentDate.getDay() === 0) {
+            weekClass += " week-start";
+        }
+
+        if (currentDate.getDay() === 6) {
+            weekClass += " week-end";
+        }
+    }
+
         html += `
-            <li class="${hasWorkers}" data-day="${day}">
-                ${day}
-            </li>
-        `;
+        <li class="${hasWorkers} ${weekClass}" data-day="${day}">
+            ${day}
+        </li>
+    `;
     }
 
     for (let i = lastDay; i < 6; i++) {
@@ -140,8 +162,6 @@ function setupDateClicks() {
                     d.classList.remove("active");
                 });
 
-                li.classList.add("active");
-
                 const day = Number(li.dataset.day);
                 const selectedDate = new Date(year, month, day);
                 const dayName = dayNames[selectedDate.getDay()];
@@ -149,8 +169,11 @@ function setupDateClicks() {
                 if (document.getElementById("scheduleViewMode")?.value === "week") {
                     selectedWeekStart = getWeekStart(selectedDate);
                     renderWeeklySchedule();
+                    renderManagerCalendar();
                 } else {
+                    li.classList.add("active");
                     showWorkersForDay(dayName, day);
+
                 }
             };
         });
@@ -181,13 +204,13 @@ function showWorkersForDay(dayName, day) {
         <div class="manager-day-schedule">
             <div class="manager-time-column">
                 ${createTimeLabels()}
-            </div>
-
+            </div>       
             <div class="manager-barber-columns">
                 ${workers.map(worker => createBarberColumn(worker, dayName)).join("")}
             </div>
-        </div>
+        </div>  
     `;
+    setTimeout(scrollDayViewToNineAM, 0);
 }
 
 function createTimeLabels() {
@@ -231,6 +254,14 @@ function createBarberColumn(worker, dayName) {
     `;
 }
 
+function scrollDayViewToNineAM() {
+    const list = document.getElementById("manager-working-list");
+    if (!list) return;
+
+    // 9 hours * 60px per hour
+    list.scrollTop = 9 * 60;
+}
+
 function timeToMinutes(time) {
     const [h, m] = time.split(":").map(Number);
     return h * 60 + m;
@@ -263,13 +294,13 @@ function renderWeeklySchedule() {
     }
 
     const days = [
+        "Sunday",
         "Monday",
         "Tuesday",
         "Wednesday",
         "Thursday",
         "Friday",
         "Saturday",
-        "Sunday"
     ];
 
     const workers = allStaff.filter(staff => staff.workingHours);
@@ -330,6 +361,9 @@ function setupScheduleViewToggle() {
         if (select.value === "week") {
             dayView.style.display = "none";
             weekView.style.display = "block";
+            selectedWeekStart = getWeekStart(new Date());
+            renderWeeklySchedule();
+            renderManagerCalendar();
         } else {
             dayView.style.display = "flex";
             weekView.style.display = "none";
@@ -341,9 +375,7 @@ function getWeekStart(date) {
     const d = new Date(date);
     const day = d.getDay();
 
-    const diff = day === 0 ? -6 : 1 - day;
-
-    d.setDate(d.getDate() + diff);
+    d.setDate(d.getDate() - day);
     d.setHours(0, 0, 0, 0);
 
     return d;
@@ -360,12 +392,34 @@ function setupWeekNavigation() {
     if (!prevBtn || !nextBtn) return;
 
     prevBtn.onclick = () => {
-        selectedWeekStart.setDate(selectedWeekStart.getDate() - 7);
+        const previousWeek = new Date(selectedWeekStart);
+        previousWeek.setDate(selectedWeekStart.getDate() - 7);
+
+        if (previousWeek.getMonth() !== month) {
+            year = previousWeek.getFullYear();
+            month = previousWeek.getMonth();
+            selectedWeekStart = getWeekStart(new Date(year, month, 1));
+        } else {
+            selectedWeekStart = previousWeek;
+        }
+
         renderWeeklySchedule();
+        renderManagerCalendar();
     };
 
     nextBtn.onclick = () => {
-        selectedWeekStart.setDate(selectedWeekStart.getDate() + 7);
+        const nextWeek = new Date(selectedWeekStart);
+        nextWeek.setDate(selectedWeekStart.getDate() + 7);
+
+        if (nextWeek.getMonth() !== month) {
+            year = nextWeek.getFullYear();
+            month = nextWeek.getMonth();
+            selectedWeekStart = getWeekStart(new Date(year, month, 1));
+        } else {
+            selectedWeekStart = nextWeek;
+        }
+
         renderWeeklySchedule();
+        renderManagerCalendar();
     };
 }

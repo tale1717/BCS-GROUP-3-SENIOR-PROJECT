@@ -74,6 +74,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         // CUSTOMER TREND
         updateChart("week");
 
+        document.getElementById("viewMode").addEventListener("change", (e) => {
+            updateChart(e.target.value);
+        });
+
         document.getElementById("performanceView").addEventListener("change", (e) => {
             currentMode = e.target.value;
             // recalculate barber performance
@@ -86,14 +90,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             // update chart with selected barber
             const selectedId = select.value;
             renderSingleBarberChart(performanceData[selectedId]);
-
-
-            // only update customer chart correctly in month, week
-            if (currentMode === "month") {
-                updateChart("month");
-            } else {
-                updateChart("week");
-            }
         });
 
     } catch (err) {

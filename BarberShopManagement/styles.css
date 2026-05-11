@@ -694,9 +694,17 @@ textarea {
     min-height: 600px;
 }
 
-.manager-working-list {
+.manager-working-wrapper {
     width: 100%;
     overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.manager-working-list {
+    width: max-content;
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .manager-day-schedule {
@@ -809,4 +817,21 @@ textarea {
 
 #week-range {
     font-weight: bold;
+}
+
+.calendar-dates li.week-selected::before {
+    width: 100% !important;
+    height: 30px !important;
+    border-radius: 0 !important;
+    background: #6964ff !important;
+    opacity: 0.22 !important;
+    border: none !important;
+}
+
+.calendar-dates li.week-selected.week-start::before {
+    border-radius: 999px 0 0 999px !important;
+}
+
+.calendar-dates li.week-selected.week-end::before {
+    border-radius: 0 999px 999px 0 !important;
 }
