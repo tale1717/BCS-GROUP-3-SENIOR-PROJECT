@@ -104,6 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     await setDoc(appointmentRef, {
                         appointmentID: appointmentID,
                         customerID: customerProfile.customerID,
+                        customer: `${customerProfile.firstName} ${customerProfile.lastName}`,
                         customerEmail: user.email || "",
                         staffID,
                         barber,

@@ -255,19 +255,21 @@ function setupUpdate(){
             return;
         }
 
-        //  manual history add
-        const note = document.getElementById("history-input").value;
+        const historyInput = document.getElementById("history-input");
+        const note = historyInput?.value.trim() || "";
 
-        if(note){
-            customer.history = customer.history || [];
+        const updatedHistory = Array.isArray(customer.history)
+            ? [...customer.history]
+            : [];
 
-            customer.history.push({
+        if (note) {
+            updatedHistory.push({
                 date: new Date().toISOString().split("T")[0],
                 note: note,
                 staff: "Manual"
             });
 
-            document.getElementById("history-input").value = "";
+            historyInput.value = "";
         }
 
         await updateCustomer(id, {

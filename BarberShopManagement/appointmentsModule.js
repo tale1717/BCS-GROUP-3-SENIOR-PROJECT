@@ -29,6 +29,10 @@ import {
     updateSupply
 } from "../BarberShopWebsite/Collections/inventory.js";
 
+import {
+    getCustomerByEmail
+} from "../BarberShopWebsite/Collections/customers.js";
+
 let allAppointments = [];
 let allServices = [];
 let userCache = {};
@@ -219,16 +223,19 @@ async function renderTable(list) {
     body.innerHTML = "";
 
     for (const a of list) {
-        if (a.customerUid && !userCache[a.customerUid]) {
-            const user = await getUserProfile(a.customerUid);
-            userCache[a.customerUid] = user
-                ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+        const email = a.customerEmail; // or whatever field links to the customer table
+
+        if (email && !userCache[email]) {
+            const customer = await getCustomerByEmail(email); // query customer table
+            userCache[email] = customer
+                ? `${customer.firstName || ""} ${customer.lastName || ""}`.trim()
                 : "Unknown";
         }
 
-        const customerName = a.customerUid
-            ? userCache[a.customerUid]
+        const customerName = email
+            ? userCache[email]
             : (a.customer || "Unknown");
+
 
         const row = document.createElement("tr");
 

@@ -1,6 +1,6 @@
 import { syncPublicReview } from "./publicReviews.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { collection, getDocs, getDoc, updateDoc, serverTimestamp, doc as docRef } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { collection, getDocs, getDoc, updateDoc, serverTimestamp, doc as docRef, query, where, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { auth, db } from "../BarberShopWebsite/firebase.js";
 
 const reviewCountText = document.getElementById("review-count");
@@ -59,14 +59,31 @@ async function loadReviews() {
         // Collect unique user IDs
         const uniqueUids = [...new Set(scoredDocs.map(d => d.data().customerUid || d.data().customerID))];
 
+        // Collect unique emails
+        const uniqueEmails = [...new Set(scoredDocs.map(d => d.data().customerEmail).filter(Boolean))];
+
         // Fetch all users in parallel
         const userDocs = await Promise.all(uniqueUids.map(uid => getDoc(docRef(db, "users", uid))));
+
+        // Fetch all customers by email in parallel
+        const customerSnaps = await Promise.all(uniqueEmails.map(email =>
+            getDocs(query(collection(db, "customers"), where("email", "==", email), limit(1)))
+        ));
 
         // Build uid -> name map
         const nameMap = {};
         uniqueUids.forEach((uid, i) => {
             const d = userDocs[i];
             nameMap[uid] = d.exists() ? `${d.data().firstName} ${d.data().lastName}` : "Unknown";
+        });
+
+        // Merge email -> name into the same nameMap
+        uniqueEmails.forEach((email, i) => {
+            const snap = customerSnaps[i];
+            if (!snap.empty) {
+                const d = snap.docs[0].data();
+                nameMap[email] = `${d.firstName} ${d.lastName}`.trim();
+            }
         });
 
         // Reset counters on each load
@@ -77,8 +94,12 @@ async function loadReviews() {
         for (const doc of scoredDocs) {
             const data = doc.data();
             await syncPublicReview(doc.id, data);
+
             const uid = data.customerUid || data.customerID;
-            const customerName = nameMap[uid];
+            const email = data.customerEmail;
+
+            // Use email lookup first, fall back to uid lookup
+            const customerName = (email && nameMap[email]) || nameMap[uid] || "Unknown";
             const barber = data.barber;
             const service = data.serviceName;
             const date = data.date;

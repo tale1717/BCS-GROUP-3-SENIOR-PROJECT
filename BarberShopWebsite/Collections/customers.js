@@ -7,7 +7,10 @@ import {
     deleteDoc,
     doc,
     setDoc,
-    getDoc
+    getDoc,
+    query,
+    where,
+    limit
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const ref = collection(db, "customers");
@@ -47,6 +50,16 @@ export async function updateCustomer(id, data) {
 // DELETE
 export async function deleteCustomer(id) {
     await deleteDoc(doc(db, "customers", id));
-
-
 }
+
+// READ EMAIL
+export async function getCustomerByEmail(email) {
+    const q = query(
+        collection(db, "customers"),
+        where("email", "==", email),
+        limit(1)
+    );
+    const snap = await getDocs(q);
+    return snap.empty ? null : snap.docs[0].data();
+}
+
