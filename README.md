@@ -1,6 +1,6 @@
 ![](BarberShopWebsite/readme-logo.png)
 
-# ✂️ Triple T&G Barbers Barber Shop Management System ✂️
+# ✂️ Triple T&G Barbers Barber Shop Management System
 
 A web-based barber shop management system built for Triple T&G Barbers. This project provides both a customer-facing website and an internal management system for employees and managers.
 
@@ -86,8 +86,8 @@ The project includes authentication logic for customers, employees, and protecte
 
 ## 🟨 Technologies Used 
 
-| Front-End                                                                                                                                                                                                                                  | Back-End                                                                                                                                                                                           | Database                                                                                                                        |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| Front-End                                                                                                                                                                                                                                  | Back-End                                                                                                                                                                                            | Database                                                                                                                         |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg" alt="html5" width="100" /> <img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/CSS3_logo_and_wordmark.svg" alt="css3" width="70.9" /> | <img src="https://www.w3schools.com/js/img_javascript_480.jpg" alt="js" width="100" /> <img src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg" alt="node-js" width="100" /> | <img src="https://static.vecteezy.com/system/resources/previews/072/678/006/non_2x/firebase-logo-icon-free-png.png" width="100"> |
                                                                                                                                                                                                                                             |                                                                                                                                                                                                              
 
@@ -162,9 +162,3 @@ If the website is not available or not working properly, here's how to run the p
 - Vinh Co Thai
 - Jared Tobias
 - David Talero
-
-BCS 430 Senior Project
-
-Farmingdale State College
-
-Professor Mary Villani
