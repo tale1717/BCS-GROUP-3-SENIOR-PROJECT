@@ -157,9 +157,11 @@ If the website is not available or not working properly, here's how to run the p
 - Access management features
 - Manage appointments, customers, staff, services, inventory, ratings, and reports
 
-## 🟫 Authors
+## 🟫 Contributors
 
 - Jozka Guaman
 - Vinh Co Thai
 - Jared Tobias
 - David Talero
+
+:star: A big thank you to **Dr. Mary Villani** supervising and guiding us throughout the development of the project!
